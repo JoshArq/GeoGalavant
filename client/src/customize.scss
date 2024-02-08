@@ -1,12 +1,17 @@
 @import "../node_modules/bootstrap/scss/functions";
 
 // Default variable overrides
-$primary: #730071;
+$primary: #000180;
+$secondary: #33adad;
 
 $theme-colors: (
   "primary": $primary,
 );
 
-// Required
-@import "../node_modules/bootstrap"
 
+// Required
+@import "../node_modules/bootstrap";
+
+:export {
+  primary: $primary;
+}

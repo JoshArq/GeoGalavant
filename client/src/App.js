@@ -1,33 +1,29 @@
 import React from "react";
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 import './App.scss';
+import GeoNav from './components/GeoNav/GeoNav.js'
 
 function App() {
   const [data, setData] = React.useState(null);
 
+  // Test data call to check server connected
+  // TODO: delete
   React.useEffect(() => {
     fetch("/test")
       .then((res) => res.json())
-      .then((data) => setData(data.result));
+      .then((data) => {
+          setData(data.result)
+          console.log(data)
+      }).catch(error => {
+        console.log("Error. Server down.")
+      });
   }, []);
 
   return (
     <div className="App">
-      <Navbar bg="primary" data-bs-theme="dark">
-        <Container>
-          <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-          <Nav className="justify-content-end">
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#features">Features</Nav.Link>
-            <Nav.Link href="#pricing">Pricing</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
+      <GeoNav />
       <header className="App-header">
         <p>
-          Connection: {!data ? "Loading..." : data}
+          Test
         </p>
       </header>
     </div>
