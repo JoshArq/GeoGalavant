@@ -20,11 +20,17 @@ CREATE TABLE Users(
 	ZipCode VARCHAR(5) NOT NULL,
 	City VARCHAR(40) NOT NULL,
 	-- change this to enum later --
-	StateProvince VARCHAR(50) NOT NULL
+	StateProvince VARCHAR(2) NOT NULL
 );
 
 -- Creates Index for User table on username --
 CREATE INDEX Username ON Users (Username);
+
+-- Populates Users table with some sample data --
+INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvince) VALUES
+	(1, 'aaa', 'aaa', 'Alfred', 'Albertson', 'aaa@gmail.com', '123 Street', '12345', 'Rochester', 'NY'),
+	(2, 'bbb', 'bbb', 'Bruce', 'Batman', 'bbb@gmail.com', '321 Street', '12345', 'Rochester', 'NY'),
+	(3, 'ccc', 'ccc', 'Candice', 'Campbell', 'ccc@gmail.com', '231 Street', '12345', 'Rochester', 'NY');
 
 -- Generate Role table --
 Create Table Roles(
@@ -32,11 +38,24 @@ Create Table Roles(
 	Title Varchar(25) NOT NULL
 );
 
+INSERT INTO Roles (RoleID, Title) VALUES
+	(1, 'Administrator'),
+	(2, 'User'),
+	(3, 'Mechanic');
+
 -- Generate Permissions table --
 CREATE TABLE Permissions(
 	PermissionID SERIAL PRIMARY KEY,
 	Description Varchar(25) NOT NULL
 );
+
+--Populates the Permissions table --
+INSERT INTO Permissions (PermissionID, Description) VALUES
+	(1, 'View Cars'),
+	(2, 'Edit Cars'),
+	(3, 'View Users'),
+	(4, 'Approve Applications'),
+	(5, 'Suspend Users');
 
 -- Generate User_Role table --
 CREATE TABLE User_Role(
@@ -49,6 +68,12 @@ CREATE TABLE User_Role(
 		REFERENCES Roles (RoleID)
 );
 
+--Populates the User_Role table --
+INSERT INTO User_Role (UserID, RoleID) VALUES
+	(1,1),
+	(2,2),
+	(3,3);
+
 -- Generate Role_Permissions table --
 CREATE TABLE Role_Permission(
 	PermissionID INT NOT NULL,
@@ -59,6 +84,12 @@ CREATE TABLE Role_Permission(
 	FOREIGN KEY (RoleID)
 		REFERENCES Roles (RoleID)
 );
+
+--Populates the User_Role table --
+INSERT INTO Role_Permission (PermissionID, RoleID) VALUES
+	(1,1),
+	(2,2),
+	(3,3);
 
 -- Creates view with a user's permissions
 CREATE VIEW User_Permissions AS 
@@ -73,8 +104,9 @@ CREATE VIEW User_Permissions AS
 		INNER JOIN Permissions perm ON (rp.PermissionID = perm.PermissionID);
 
 -- Creates prepared statement for getting a user's permissions --
-PREPARE user_perms (TEXT) AS
+PREPARE User_Perms (TEXT) AS
 	SELECT Description
 	FROM User_Permissions
 	WHERE Name = $1
 	GROUP BY Description;
+
