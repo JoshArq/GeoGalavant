@@ -3,10 +3,17 @@
 // Default variable overrides
 $primary: #000180;
 $secondary: #33adad;
+$gray-900: #494949;
 
 $theme-colors: (
   "primary": $primary,
+  "secondary": $secondary,
 );
+
+$grays: (
+  "900": $gray-900
+);
+
 
 
 // Required
@@ -14,4 +21,5 @@ $theme-colors: (
 
 :export {
   primary: $primary;
+  gray-900: $gray-900;
 }

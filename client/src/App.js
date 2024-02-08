@@ -1,6 +1,7 @@
 import React from "react";
 import './App.scss';
 import GeoNav from './components/GeoNav/GeoNav.js'
+import GeoFooter from './components/GeoFooter/GeoFooter.js'
 
 function App() {
   const [data, setData] = React.useState(null);
@@ -26,6 +27,7 @@ function App() {
           Test
         </p>
       </header>
+      <GeoFooter />
     </div>
   );
 }

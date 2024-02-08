@@ -1,0 +1,9 @@
+@import '../../customize.scss';
+
+footer {
+    background-color: $gray-900;
+
+    #logo {
+        width: 300px;
+    }
+}
