@@ -1,3 +1,5 @@
+// This file is for Bootstrap variable overrides
+
 @import "../node_modules/bootstrap/scss/functions";
 
 // Default variable overrides
@@ -17,12 +19,11 @@ $grays: (
 );
 
 
-
-// Required
 @import "../node_modules/bootstrap";
 
 :export {
   primary: $primary;
+  secondary: $secondary;
   gray-100: $gray-100;
   gray-900: $gray-900;
 }

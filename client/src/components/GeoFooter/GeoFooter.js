@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import logo from '../../assets/Logo-Grey.jpg';
 import './GeoFooter.scss'
 
-export default function GeoNav() {
+export default function GeoFooter() {
     return (
         <footer className="mw-100 text-white py-5">
             <Container>

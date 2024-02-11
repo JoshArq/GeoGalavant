@@ -11,7 +11,7 @@ import interior from '../../../assets/Car-Interior.jpg';
 import rear from '../../../assets/Car-Rear.jpg';
 import './Home.scss'
 
-export default function About() {
+export default function Home() {
     return (
         <main>
             <Container as={'header'}>
@@ -69,55 +69,53 @@ export default function About() {
                     </Row>
                 </Container>
             </section>
-            <section className="py-5">
-                <Container>
-                    <h2 className="mb-4 fw-semibold">Benefits</h2>
-                    <Row>
-                        <Col md="4">
-                            <Card className="mb-4 text-center shadow">
-                                <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
-                                <Card.Body className="py-3 px-1">
-                                    <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
-                                        Avoid Bad Weather
-                                    </Card.Title>
-                                    <hr className="mb-3 w-25 mx-auto border border-black opacity-100" />
-                                    <Card.Text>
-                                        Arrive at your destination in comfort and looking professional regardless of the weather.
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                        <Col md="4">
-                            <Card className="mb-4 text-center shadow">
-                                <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
-                                <Card.Body className="py-3 px-1">
-                                    <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
-                                        Easier Parking
-                                    </Card.Title>
-                                    <hr className="mb-3 w-25 mx-auto border border-black opacity-100" />
-                                    <Card.Text>
-                                        Gyrocars are authorized to park in designated motorcycle spaces. 
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                        <Col md="4">
-                            <Card className="mb-4 text-center shadow">
-                                <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
-                                <Card.Body className="py-3 px-1">
-                                    <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
-                                        Make Deliveries
-                                    </Card.Title>
-                                    <hr className="mb-3 w-25 mx-auto border border-black opacity-100" />
-                                    <Card.Text>
-                                    The bus and the subway just aren’t going to work. Light deliveries are a piece of cake with GyroGoGo!
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    </Row>
-                </Container>
-            </section>
+            <Container as={"section"} className="py-5">
+                <h2 className="mb-4 fw-semibold">Benefits</h2>
+                <Row>
+                    <Col md="4">
+                        <Card className="mb-4 text-center shadow">
+                            <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
+                            <Card.Body className="py-3 px-1">
+                                <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
+                                    Avoid Bad Weather
+                                </Card.Title>
+                                <hr className="mb-3 w-25 mx-auto border border-black opacity-100" />
+                                <Card.Text>
+                                    Arrive at your destination in comfort and looking professional regardless of the weather.
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col md="4">
+                        <Card className="mb-4 text-center shadow">
+                            <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
+                            <Card.Body className="py-3 px-1">
+                                <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
+                                    Easier Parking
+                                </Card.Title>
+                                <hr className="mb-3 w-25 mx-auto border border-black opacity-100" />
+                                <Card.Text>
+                                    Gyrocars are authorized to park in designated motorcycle spaces. 
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col md="4">
+                        <Card className="mb-4 text-center shadow">
+                            <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
+                            <Card.Body className="py-3 px-1">
+                                <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
+                                    Make Deliveries
+                                </Card.Title>
+                                <hr className="mb-3 w-25 mx-auto border border-black opacity-100" />
+                                <Card.Text>
+                                The bus and the subway just aren’t going to work. Light deliveries are a piece of cake with GyroGoGo!
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
             <section className="grey-section py-5">
                 <Container>
                     <h2 className="mb-4 fw-semibold">The Gyrocar</h2>
