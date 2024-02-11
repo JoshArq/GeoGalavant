@@ -1,0 +1,9 @@
+@import '../../../customize.scss';
+
+header img {
+    object-fit: cover;
+}
+
+.grey-section {
+    background-color: $gray-100;
+}
