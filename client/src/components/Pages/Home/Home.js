@@ -9,7 +9,7 @@ import front from '../../../assets/Car-Front.jpg';
 import side from '../../../assets/Car-Side.jpg';
 import interior from '../../../assets/Car-Interior.jpg';
 import rear from '../../../assets/Car-Rear.jpg';
-import './Home.scss'
+import './Home.scss';
 
 export default function Home() {
     return (

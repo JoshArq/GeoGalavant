@@ -6,6 +6,7 @@
 $primary: #000180;
 $secondary: #33adad;
 $gray-100: #ededed;
+$gray-300: #dcdcdc;
 $gray-900: #494949;
 
 $theme-colors: (
@@ -15,6 +16,7 @@ $theme-colors: (
 
 $grays: (
   "100": $gray-100,
+  "300": $gray-300,
   "900": $gray-900
 );
 
@@ -25,5 +27,6 @@ $grays: (
   primary: $primary;
   secondary: $secondary;
   gray-100: $gray-100;
+  gray-300: $gray-300;
   gray-900: $gray-900;
 }

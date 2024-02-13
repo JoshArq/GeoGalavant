@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
-import front from '../../../assets/Car-Front.jpg';
+import court from '../../../assets/Court-Building.jpg';
 
 export default function About() {
     return (
@@ -19,7 +19,7 @@ export default function About() {
                         <p>We invite you to join us in using GyroGoGo for easy, convenient personal transportation. Rent a gyrocar for a single run into downtown, or rent it for the day to visit multiple destinations. The cars are designed to carry a single passenger and a small amount of cargo. </p>
                     </Col>
                     <Col md={6} className="d-flex align-items-center pt-4 pt-md-0">
-                        <Image src={front} alt="PLACEHOLDER" rounded fluid />
+                        <Image src={court} alt="PLACEHOLDER" rounded fluid />
                     </Col>
                 </Row>
                 <Row as={'section'} className="py-5">
@@ -30,7 +30,7 @@ export default function About() {
                         <p>You can also save money! Renting an environmentally friendly gyrocar as needed is far more cost effective than commuting in an automobile that you own and maintain.</p>
                     </Col>
                     <Col md={{ span: 6, order: 'first' }} className="d-flex align-items-center pt-4 pt-md-0">
-                        <Image src={front} alt="PLACEHOLDER" rounded fluid />
+                        <Image src={court} alt="PLACEHOLDER" rounded fluid />
                     </Col>
                 </Row>
                 <Row as={'section'} className="py-5">
@@ -44,7 +44,7 @@ export default function About() {
             </Container>
             <section className="bg-primary mb-5 py-5 text-white text-center">
                 <Container>
-                    <h2 className="fw-bold mb-4">It’s easy. It’s convenient. It’s cost effective. GyroGoGo!</h2>
+                    <h2 className="fw-bold mb-4">It’s easy. It’s convenient. It’s cost effective. <em>GyroGoGo!</em></h2>
                     <hr className="opacity-100 border-2 w-25 mx-auto"/>
                     <p className="fw-bold mt-4">Gyrogogo, Inc. is a privately owned, United States based corporation that provides commuting solutions for individuals. </p>
                 </Container>
