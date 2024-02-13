@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React, { useState } from 'react';
 import Header from '../../GeoHeader/GeoHeader.js';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -7,6 +7,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
 import './Contact.scss';
 
 //TODO
@@ -14,9 +15,25 @@ import './Contact.scss';
 // - favicon/page title stuff
 // - images on other pages
 // - real faq content
-// - consider swapping icons for accordions
 
 export default function Contact() {
+    // Handling contact form
+    const [isValid, setIsValid] = useState(true);
+    const [isSent, setIsSent] = useState(false);
+    const handleContact = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+            setIsValid(false);
+            
+        }
+        else {
+            setIsValid(true);
+            setIsSent(true);
+        }
+    };
+
     return (
         <main>
             <Header title="Contact" />
@@ -59,14 +76,25 @@ export default function Contact() {
                         <Col md={6}>
                             <Card className="py-3 px-1 mb-4 border-2">
                                 <Card.Body>
-                                    <Form>
+                                    { isValid ? '' : // Error alert
+                                        <Alert variant="danger" className="text-danger bg-danger-subtle">
+                                            Something is wrong with your submission. Please try again.
+                                        </Alert> 
+                                    }
+                                    { isSent ?  // Error alert
+                                        <Alert variant="success" className="text-success bg-success-subtle">
+                                            Your ticket has been submitted! A representative will reach out to you shortly.
+                                        </Alert> 
+                                        : ''
+                                    }
+                                    <Form noValidate onSubmit={handleContact}>
                                         <Form.Group className="mb-3" controlId="contact-email">
                                             <Form.Label>Email</Form.Label>
                                             <Form.Control type="email" placeholder="name@example.com" required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="contact-phone">
                                             <Form.Label>Phone</Form.Label>
-                                            <Form.Control type="tel" placeholder="585-555-1234" required />
+                                            <Form.Control type="tel" placeholder="585-555-1234" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="contact-message">
                                             <Form.Label>Message</Form.Label>
