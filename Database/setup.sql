@@ -2,8 +2,8 @@
 DEALLOCATE ALL;
 DROP INDEX IF EXISTS Username;
 DROP VIEW IF EXISTS User_Permissions;
-DROP TABLE IF EXISTS TicketStatus;
 DROP TABLE IF EXISTS Ticket;
+DROP TABLE IF EXISTS TicketStatus;
 DROP TABLE IF EXISTS Rental;
 DROP TABLE IF EXISTS Card;
 DROP TABLE IF EXISTS Application;
@@ -76,7 +76,9 @@ CREATE TABLE ApplicationStatus(
 
 -- Populates AccountStatus table with some sample data --
 INSERT INTO ApplicationStatus (StatusID, StatusName) VALUES
-	(1, 'Accepted');
+	(1, 'Created'),
+	(2, 'Accepted'),
+	(3, 'Denied');
 
 -- Generate PaymentType lookup table --
 CREATE TABLE PaymentType(
