@@ -2,6 +2,8 @@
 DEALLOCATE ALL;
 DROP INDEX IF EXISTS Username;
 DROP VIEW IF EXISTS User_Permissions;
+DROP TABLE IF EXISTS Ticket;
+DROP TABLE IF EXISTS TicketStatus;
 DROP TABLE IF EXISTS Rental;
 DROP TABLE IF EXISTS Card;
 DROP TABLE IF EXISTS Application;
@@ -18,6 +20,33 @@ DROP TABLE IF EXISTS PaymentType;
 DROP TABLE IF EXISTS ApplicationStatus;
 DROP TABLE IF EXISTS AccountStatus;
 DROP TABLE IF EXISTS StateProvince;
+
+CREATE TABLE TicketStatus(
+	StatusID SERIAL PRIMARY KEY,
+	Name VARCHAR(15) NOT NULL
+);
+
+INSERT INTO TicketStatus (StatusID, Name) VALUES 
+	(1, 'Open'),
+	(2, 'Assigned'),
+	(3, 'Resolved');
+
+CREATE TABLE Ticket(
+	TicketID SERIAL PRIMARY KEY,
+	Name VARCHAR(50),
+	Email VARCHAR(50),
+	Phone VARCHAR(11),
+	Submitted TIMESTAMP,
+	Comment TEXT,
+	StatusID INT,
+	FOREIGN KEY (StatusID)
+		REFERENCES TicketStatus(StatusID)
+);
+
+INSERT INTO Ticket (TicketID, Name, Email, Phone, Submitted, Comment, StatusID) VALUES
+	(1, 'Adam', 'adam@gmail.com', '12223334444', '2017-01-03 00:00:00', 'Not enough shapes', 1),
+	(2, 'Brian', 'brian@gmail.com', '12223334444', '2017-01-03 00:00:00', 'Too many shapes', 2),
+	(3, 'Carol', 'carol@gmail.com', '12223334444', '2017-01-03 00:00:00', 'My spoon is too big', 3);
 
 -- Generate StateProvince lookup table --
 CREATE TABLE StateProvince(
@@ -47,7 +76,9 @@ CREATE TABLE ApplicationStatus(
 
 -- Populates AccountStatus table with some sample data --
 INSERT INTO ApplicationStatus (StatusID, StatusName) VALUES
-	(1, 'Accepted');
+	(1, 'Created'),
+	(2, 'Accepted'),
+	(3, 'Denied');
 
 -- Generate PaymentType lookup table --
 CREATE TABLE PaymentType(
