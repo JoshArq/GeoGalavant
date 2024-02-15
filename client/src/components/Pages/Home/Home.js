@@ -9,6 +9,9 @@ import front from '../../../assets/Car-Front.jpg';
 import side from '../../../assets/Car-Side.jpg';
 import interior from '../../../assets/Car-Interior.jpg';
 import rear from '../../../assets/Car-Rear.jpg';
+import boxes from '../../../assets/Woman-Boxes.jpg';
+import rain from '../../../assets/Rainy-Traffic.jpg';
+import parking from '../../../assets/Motorcycle-Parking.jpg';
 import './Home.scss';
 
 export default function Home() {
@@ -74,8 +77,8 @@ export default function Home() {
                 <Row>
                     <Col md="4">
                         <Card className="mb-4 text-center shadow">
-                            <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
-                            <Card.Body className="py-3 px-1">
+                            <Card.Img variant="top" src={boxes} alt="Woman carrying boxes" />
+                            <Card.Body className="py-3 px-3">
                                 <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
                                     Avoid Bad Weather
                                 </Card.Title>
@@ -88,8 +91,8 @@ export default function Home() {
                     </Col>
                     <Col md="4">
                         <Card className="mb-4 text-center shadow">
-                            <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
-                            <Card.Body className="py-3 px-1">
+                            <Card.Img variant="top" src={rain} alt="Person holding an umbrella in the rain next to a busy street" />
+                            <Card.Body className="py-3 px-3">
                                 <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
                                     Easier Parking
                                 </Card.Title>
@@ -102,8 +105,8 @@ export default function Home() {
                     </Col>
                     <Col md="4">
                         <Card className="mb-4 text-center shadow">
-                            <Card.Img variant="top" src={front} alt="PLACEHOLDER" />
-                            <Card.Body className="py-3 px-1">
+                            <Card.Img variant="top" src={parking} alt="Motorcycle parking spaces" />
+                            <Card.Body className="py-3 px-3">
                                 <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
                                     Make Deliveries
                                 </Card.Title>
