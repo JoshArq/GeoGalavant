@@ -12,9 +12,12 @@ router.get("/test", (req, res) => {
 });
 
 
-router.post("/createUser", (req, res) => {
+router.post("/createCustomer", (req, res) => {
   const username = req.body.username
   const password = req.body.password
+  const email = req.body.email
+  const appliedBefore = req.body.appliedBefore
+  const driversLicense = req.body.driversLicense
 
   console.log(username)
   console.log(password)
