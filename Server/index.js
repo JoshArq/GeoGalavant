@@ -10,8 +10,11 @@ app.get("/test", (req, res) => {
     res.json({ result: "All good!" });
 });
 
+app.get("/api/test", (req, res) => {
+  res.json({ result: "All good!" });
+});
 
-app.post("/submitContactForm", (req, res) => {
+app.post("/api/submitContactForm", (req, res) => {
   //insert DB logic here
 
   res.json({

@@ -24,13 +24,44 @@ export default function Contact() {
         event.preventDefault();
         event.stopPropagation();
         const form = event.currentTarget;
+        // Error in validation (validation is mostly handled via HTML elements + browser)
         if (form.checkValidity() === false) {
             setIsValid(false);
-            
+            setIsSent(false);
         }
+        // Valid input, sending comment
         else {
-            setIsValid(true);
-            setIsSent(true);
+            fetch("/api/submitContactForm", {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: form.contactName.value, 
+                    phone: form.contactPhone.value, 
+                    email: form.contactEmail.value, 
+                    comment: form.contactMessage.value
+                }),
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                // Server returned successful
+                if(data.success) {
+                    setIsValid(true);
+                    setIsSent(true);
+                    // Clearing out inputs
+                    form.contactName.value = '';
+                    form.contactPhone.value = '';
+                    form.contactEmail.value = '';
+                    form.contactMessage.value = '';
+                }
+                // Server returned unsuccessful
+                else {
+                    setIsValid(false);
+                    setIsSent(false);
+                }
+            // Error with server
+            }).catch(error => {
+                setIsValid(false);
+                setIsSent(false);
+            });
         }
     };
 
@@ -81,22 +112,26 @@ export default function Contact() {
                                             Something is wrong with your submission. Please try again.
                                         </Alert> 
                                     }
-                                    { isSent ?  // Error alert
+                                    { isSent ?  // Message sent alert
                                         <Alert variant="success" className="text-success bg-success-subtle">
                                             Your ticket has been submitted! A representative will reach out to you shortly.
                                         </Alert> 
                                         : ''
                                     }
                                     <Form noValidate onSubmit={handleContact}>
-                                        <Form.Group className="mb-3" controlId="contact-email">
+                                        <Form.Group className="mb-3" controlId="contactName">
+                                            <Form.Label>Name</Form.Label>
+                                            <Form.Control type="text" placeholder="John Doe" required />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3" controlId="contactEmail">
                                             <Form.Label>Email</Form.Label>
                                             <Form.Control type="email" placeholder="name@example.com" required />
                                         </Form.Group>
-                                        <Form.Group className="mb-3" controlId="contact-phone">
+                                        <Form.Group className="mb-3" controlId="contactPhone">
                                             <Form.Label>Phone</Form.Label>
                                             <Form.Control type="tel" placeholder="585-555-1234" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
                                         </Form.Group>
-                                        <Form.Group className="mb-3" controlId="contact-message">
+                                        <Form.Group className="mb-3" controlId="contactMessage">
                                             <Form.Label>Message</Form.Label>
                                             <Form.Control as="textarea" placeholder="Let us know what you need help with!" required/>
                                         </Form.Group>

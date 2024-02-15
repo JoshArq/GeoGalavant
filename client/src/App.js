@@ -13,14 +13,15 @@ function App() {
   // Test data call to check server connected
   // TODO: delete
   React.useEffect(() => {
-    fetch("/test")
-      .then((res) => res.json())
-      .then((data) => {
-          setData(data.result)
-          console.log(data)
-      }).catch(error => {
-        console.log("Error. Server down.")
-      });
+    fetch("/api/test")
+    .then((res) => res.json())
+    .then((data) => {
+        setData(data.result)
+        console.log(data)
+    }).catch(error => {
+      console.log(error)
+      console.log("Error. Server down.")
+    });
   }, []);
 
   return (
