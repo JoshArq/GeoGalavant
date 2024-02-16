@@ -39,7 +39,7 @@ export default function About() {
                         <hr className="border-top border-secondary opacity-100 border-4 w-25"/>
                         <h2 className="fw-bold py-4">How does it work?</h2>
                         <p>We have five convenient pick up/drop off locations in Monroe County, including in center city. Your rental is operated with a unique access code that prevents anyone else from entering your vehicle. If you’ve opted for a longer rental, our gyrocars can be recharged at any EV charging station.</p>
-                        <p>If you need more information, check out the Q&A section or send us a message through our <Link to="/contact">Contact Page</Link>.</p>
+                        <p>If you need more information, check out the Q&A section or send us a message through our <Link to="/contact#contact">Contact Page</Link>.</p>
                     </Col>
                 </Row>
             </Container>

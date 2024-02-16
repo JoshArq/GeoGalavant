@@ -146,7 +146,7 @@ export default function Contact() {
 
                 </Accordion>
             </Container>
-            <section className="grey-section py-5">
+            <section className="grey-section py-5" id="contact">
                 <Container>
                     <h2 className="fw-bold">Contact Us</h2>
                     <Row>
