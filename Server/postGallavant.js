@@ -24,10 +24,23 @@ const pool = new Pool({
     port: PGPORT
   })
  
-
-
 async function pulseCheck(){
-    console.log(await pool.query('SELECT NOW()'))
+  console.log(await pool.query('SELECT NOW()'))
 }
 
-module.exports = {pulseCheck}
+async function createCustomer(obj){
+//create user, customer, usr-role, 
+
+  var sql = "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES (???????)"
+  await pool.query('')
+}
+
+async function login(username, password){
+
+  var sql = "SELECT * FROM Users"
+
+  console.log(await pool.query(sql))
+
+}
+
+module.exports = {pulseCheck, createCustomer, login}
