@@ -4,5 +4,11 @@
 const assert = require('assert');
 const pg = require('./postGallavant.js')
 
-// pg.pulseCheck()
-pg.login("username", "password")
+
+async function main(){ 
+    // pg.pulseCheck()
+    console.log(await pg.login("bbb", "bbb"))
+    console.log(await pg.login("aaa", "bbb")) 
+}
+
+main()

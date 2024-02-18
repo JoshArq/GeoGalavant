@@ -37,10 +37,28 @@ async function createCustomer(obj){
 
 async function login(username, password){
 
-  var sql = "SELECT * FROM Users"
+  const query = {
+    name: 'login',
+    text: "SELECT * FROM Users WHERE Username = $1 AND Password = $2",
+    values: [username, password],
+  }
 
-  console.log(await pool.query(sql))
+  const result = (await pool.query(query)).rows
 
+  console.log(result)
+
+  if(result.length == 0){
+    return  {
+      success: false,
+      errorMessage: "Invalid username/password combination." 
+    };
+    
+  } else {
+    return {
+      success: true,
+      sessionToken: "to_be_implemented"
+    };
+  }
 }
 
 module.exports = {pulseCheck, createCustomer, login}
