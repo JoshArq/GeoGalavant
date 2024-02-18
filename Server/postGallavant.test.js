@@ -8,7 +8,7 @@ const pg = require('./postGallavant.js')
 async function main(){ 
     // pg.pulseCheck()
     console.log(await pg.login("bbb", "bbb"))
-    console.log(await pg.login("aaa", "bbb")) 
+    // console.log(await pg.login("aaa", "bbb")) 
 }
 
 main()

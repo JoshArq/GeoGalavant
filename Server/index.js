@@ -24,7 +24,7 @@ router.post("/createCustomer", (req, res) => {
   console.log(username)
   console.log(password)
 
-  res.json({ success: true, sessionToken: "to_be_implemented"});
+  res.json({ success: true, sessionToken: "to_be_implemented", role: 4});
 });
 
 

@@ -24,9 +24,13 @@ const pool = new Pool({
     port: PGPORT
   })
  
+
+
 async function pulseCheck(){
   console.log(await pool.query('SELECT NOW()'))
 }
+
+
 
 async function createCustomer(obj){
 //create user, customer, usr-role, 
@@ -35,9 +39,11 @@ async function createCustomer(obj){
   await pool.query('')
 }
 
+
+
 async function login(username, password){
 
-  const query = {
+  var query = {
     name: 'login',
     text: "SELECT * FROM Users WHERE Username = $1 AND Password = $2",
     values: [username, password],
@@ -45,18 +51,31 @@ async function login(username, password){
 
   const result = (await pool.query(query)).rows
 
-  console.log(result)
-
   if(result.length == 0){
     return  {
       success: false,
       errorMessage: "Invalid username/password combination." 
-    };
-    
+    }; 
   } else {
+    const query = {
+      name: 'login_role',
+      text: "SELECT RoleID FROM User_Role LEFT JOIN Users ON User_Role.UserID = Users.UserID WHERE Users.UserID = $1",
+      values: [result[0].userid],
+    }
+
+    var role = (await pool.query(query)).rows
+
+    if(role.length == 0){
+      return  {
+        success: false,
+        errorMessage: "User has no role assigned." 
+      }; 
+    }
+
     return {
       success: true,
-      sessionToken: "to_be_implemented"
+      sessionToken: "to_be_implemented",
+      role: role[0].roleid
     };
   }
 }
