@@ -1,9 +1,6 @@
+// This file is for styles reused across multiple components
 @import 'customize.scss';
 
-.navbar .nav-link {
-    color: $white;
-
-    &:hover {
-        color: $secondary;
-    }
+.grey-section {
+    background-color: $gray-100;
 }
