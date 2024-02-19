@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "testDL": "node server/postGallavant.test.js",
+    "dev": "nodemon server/index.js"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +17,9 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "create-react-app": "^5.0.1",
+    "dotenv": "^16.4.1",
     "express": "^4.18.2",
+    "nodemon": "^3.0.3",
     "pg": "^8.11.3"
   }
 }

@@ -1,4 +1,6 @@
 const express = require("express");
+const pg = require('./postGallavant.js')
+
 
 const PORT = process.env.PORT || 5001;
 
@@ -21,19 +23,16 @@ router.post("/createCustomer", (req, res) => {
   console.log(username)
   console.log(password)
 
-  res.json({ success: true, sessionToken: "to_be_implemented"});
+  res.json({ success: true, sessionToken: "to_be_implemented", role: 4});
 });
 
 
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const username = req.body.username
   const password = req.body.password
 
-  console.log(username)
-  console.log(password)
-
-  res.json({ success: true, sessionToken: "to_be_implemented"});
+  res.json(await pg.login(username, password));
 });
 
 
