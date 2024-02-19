@@ -11,7 +11,6 @@ router.get("/test", (req, res) => {
     res.json({ result: "All good!" });
 });
 
-
 router.post("/createCustomer", (req, res) => {
   const username = req.body.username
   const password = req.body.password

@@ -1,12 +1,32 @@
+// This file is for Bootstrap variable overrides
+
 @import "../node_modules/bootstrap/scss/functions";
 
 // Default variable overrides
-$primary: #730071;
+$primary: #000180;
+$secondary: #33adad;
+$gray-100: #ededed;
+$gray-300: #dcdcdc;
+$gray-900: #494949;
 
 $theme-colors: (
   "primary": $primary,
+  "secondary": $secondary,
 );
 
-// Required
-@import "../node_modules/bootstrap"
+$grays: (
+  "100": $gray-100,
+  "300": $gray-300,
+  "900": $gray-900
+);
 
+
+@import "../node_modules/bootstrap";
+
+:export {
+  primary: $primary;
+  secondary: $secondary;
+  gray-100: $gray-100;
+  gray-300: $gray-300;
+  gray-900: $gray-900;
+}

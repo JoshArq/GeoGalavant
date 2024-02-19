@@ -1,0 +1,14 @@
+@import '../../../customize.scss';
+
+.accordion-item {
+    border-color: $gray-300 !important;
+
+    .accordion-button {
+        font-weight: 600;
+        box-shadow: none !important;
+
+        &:not(.collapsed) {
+            background-color: $white;
+        }
+    }
+}
