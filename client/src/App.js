@@ -5,6 +5,7 @@ import GeoFooter from './components/GeoFooter/GeoFooter.js';
 import Home from './components/Pages/Home/Home.js';
 import About from './components/Pages/About/About.js';
 import Contact from './components/Pages/Contact/Contact.js';
+import Login from './components/Pages/Login/Login.js';
 import './App.scss';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="login" element={<Login />} />
       </Routes>
       <GeoFooter />
     </div>

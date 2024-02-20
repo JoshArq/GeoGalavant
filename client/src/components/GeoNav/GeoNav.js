@@ -24,7 +24,7 @@ export default function GeoNav() {
                     <Nav>
                         <Nav.Link as={Link} to="/about" className="text-center mx-md-4 my-xs-4 my-md-0">About</Nav.Link>
                         <Nav.Link as={Link} to="/contact" className="text-center mx-md-4 my-xs-4 my-md-0">Contact</Nav.Link>
-                        <Nav.Link className="text-center mx-md-4 my-xs-4 my-md-0" href="#login">Login</Nav.Link>
+                        <Nav.Link as={Link} to="/login" className="text-center mx-md-4 my-xs-4 my-md-0">Login</Nav.Link>
                         <Button className="text-center mx-md-4 my-xs-4 my-md-0 d-inline d-sm-none d-md-inline" variant="primary">Apply</Button>
                     </Nav>
                 </Navbar.Collapse>

@@ -16,7 +16,7 @@ export default function GeoFooter() {
                     <Col sm={4}>
                         <p><b>Reservation</b></p>
                         <p><a href="#apply" className="text-white link-underline link-underline-opacity-0">Apply</a></p>
-                        <p><a href="#login" className="text-white link-underline link-underline-opacity-0">Login</a></p>
+                        <p><Link to="/login" className="text-white link-underline link-underline-opacity-0">Login</Link></p>
                     </Col>
                     <Col sm={4}>
                         <p><b>Contact</b></p>
