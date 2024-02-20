@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
-export default function About() {
+export default function Login() {
     const handleLogin = (event) => {
         console.log("logging in")
     }
@@ -15,7 +15,7 @@ export default function About() {
                 <section className="grey-section p-5 rounded">
                     <Form.Group className="mb-3" controlId="username">
                         <Form.Label>Username</Form.Label>
-                        <Form.Control type="email" placeholder="name@example.com" required />
+                        <Form.Control type="text" placeholder="jdoe1234" required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="password">
                         <Form.Label>Password</Form.Label>

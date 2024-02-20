@@ -15,7 +15,7 @@ export default function GeoFooter() {
                 <Row className="my-4 py-4 border-top border-bottom border-white border-2 border-opacity-10">
                     <Col sm={4}>
                         <p><b>Reservation</b></p>
-                        <p><a href="#apply" className="text-white link-underline link-underline-opacity-0">Apply</a></p>
+                        <p><Link to="/apply" className="text-white link-underline link-underline-opacity-0">Apply</Link></p>
                         <p><Link to="/login" className="text-white link-underline link-underline-opacity-0">Login</Link></p>
                     </Col>
                     <Col sm={4}>

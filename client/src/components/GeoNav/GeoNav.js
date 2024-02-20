@@ -19,13 +19,13 @@ export default function GeoNav() {
                         className="mw-100"
                     />
                 </Navbar.Brand>
-                <Button className="d-none d-sm-block d-md-none" variant="primary">Apply</Button>
+                <Button as={Link} to="/apply" className="d-none d-sm-block d-md-none" variant="primary">Apply</Button>
                 <Navbar.Collapse className="justify-content-end">
                     <Nav>
                         <Nav.Link as={Link} to="/about" className="text-center mx-md-4 my-xs-4 my-md-0">About</Nav.Link>
                         <Nav.Link as={Link} to="/contact" className="text-center mx-md-4 my-xs-4 my-md-0">Contact</Nav.Link>
                         <Nav.Link as={Link} to="/login" className="text-center mx-md-4 my-xs-4 my-md-0">Login</Nav.Link>
-                        <Button className="text-center mx-md-4 my-xs-4 my-md-0 d-inline d-sm-none d-md-inline" variant="primary">Apply</Button>
+                        <Button as={Link} to="/apply" className="text-center mx-md-4 my-xs-4 my-md-0 d-inline d-sm-none d-md-inline" variant="primary">Apply</Button>
                     </Nav>
                 </Navbar.Collapse>
             </Container>
