@@ -37,6 +37,25 @@ router.post("/login", async (req, res) => {
 
 
 
+router.get("/getUserData", (req, res) => {
+  res.json({
+    username: "hardcoded_user",
+    email: "hardcoded_email"
+  });
+});
+
+
+
+router.post("/editUserData", (req, res) => {
+  res.json({
+    success: false,
+    errorMessage: "Feature to be implemented soon"
+  });
+})
+
+
+
+
 router.post("/submitContactForm", (req, res) => {
   //insert DB logic here
 
