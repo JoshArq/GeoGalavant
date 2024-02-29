@@ -161,21 +161,31 @@ Create Table Roles(
 INSERT INTO Roles (RoleID, Title) VALUES
 	(1, 'Administrator'),
 	(2, 'User'),
-	(3, 'Mechanic');
+	(3, 'Mechanic'),
+	(4, 'Customer'),
+	(5, 'Customer Service');
 
 -- Generate Permissions table --
 CREATE TABLE Permissions(
 	PermissionID SERIAL PRIMARY KEY,
-	Description Varchar(25) NOT NULL
+	Description Text NOT NULL
 );
 
 --Populates the Permissions table --
 INSERT INTO Permissions (PermissionID, Description) VALUES
-	(1, 'View Cars'),
-	(2, 'Edit Cars'),
+	(1, 'Manage Cars'),
+	(2, 'Car Reports'),
 	(3, 'View Users'),
-	(4, 'Approve Applications'),
-	(5, 'Suspend Users');
+	(4, 'Manage Customer Accounts'),
+	(5, 'Manage Customer Account Requests'),
+	(6, 'Manage Reservations'),
+	(7, 'Customer Reports'),
+	(8, 'Reservation Reports'),
+	(9, 'Answer Inquiries'),
+	(10, 'View Car Availability'),
+	(11, 'Reserve Car'),
+	(12, 'Manage Employee Accounts'),
+	(13, 'Request Customer Account');
 
 -- Generate User_Role table --
 CREATE TABLE User_Role(
@@ -206,10 +216,27 @@ CREATE TABLE Role_Permission(
 );
 
 --Populates the User_Role table --
-INSERT INTO Role_Permission (PermissionID, RoleID) VALUES
+INSERT INTO Role_Permission (RoleID, PermissionID) VALUES
 	(1,1),
-	(2,2),
-	(3,3);
+	(1,2),
+	(1,3),
+	(1,4),
+	(1,5),
+	(1,6),
+	(1,7),
+	(1,8),
+	(1,9),
+	(1,12),
+	(2,13),
+	(3,1),
+	(3,2),
+	(4,10),
+	(5,3),
+	(5,5),
+	(5,6),
+	(5,7),
+	(5,8),
+	(5,9);
 
 -- Creates view with a user's permissions
 CREATE VIEW User_Permissions AS 
