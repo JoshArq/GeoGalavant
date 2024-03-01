@@ -51,3 +51,14 @@ app.use("/api", router)
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
+
+
+
+
+
+
+//UTILITY FUNCTIONS
+
+function apiLog(msg){
+  console.log('\x1b[95m[Server]:\x1b[0m', msg)
+}
