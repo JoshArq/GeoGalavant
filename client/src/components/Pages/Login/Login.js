@@ -1,17 +1,34 @@
-import * as React from 'react';
+import  React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
 
 export default function Login() {
+    const [isValid, setIsValid] = useState(true);
+    
     const handleLogin = (event) => {
-        console.log("logging in")
+        event.preventDefault();
+        event.stopPropagation();
+        const form = event.currentTarget;// Error in validation (validation is mostly handled via HTML elements + browser)
+        if (form.checkValidity() === false) {
+            setIsValid(false);
+        }
+        // Valid input, logging in
+        else { 
+            
+        }
     }
 
     return (
         <Container as={'main'} className="py-5">
             <h1 className="mb-4 fw-bold">Login</h1>
             <Form noValidate onSubmit={handleLogin}>
+                { isValid ? '' : // Error alert
+                    <Alert variant="danger" className="text-danger bg-danger-subtle">
+                        Something is wrong with your submission. Please try again.
+                    </Alert> 
+                }
                 <section className="grey-section p-5 rounded">
                     <Form.Group className="mb-3" controlId="username">
                         <Form.Label>Username</Form.Label>

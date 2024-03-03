@@ -114,7 +114,7 @@ export default function Apply() {
         <Container as={'main'} className="py-5">
             <h1 className="mb-4 fw-bold">Join GyroGoGo!</h1>
             <p className="mb-4">Fill out all the fields in the form below in order to complete your application for GyroGoGo.</p>
-            <Form noValidate onSubmit={handleNext}>
+            <Form noValidate>
                 <h2 className="fs-5 fw-bold mb-3">Step {step + 1} of 4</h2>
                 <ProgressBar className="mb-4" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
                 <section className="grey-section p-5 rounded" id="step-0">

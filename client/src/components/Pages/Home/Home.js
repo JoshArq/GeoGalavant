@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -25,7 +26,7 @@ export default function Home() {
                     <Col md={{ span: 4, order: 'first' }} className="p-4 d-flex flex-column justify-content-center">
                         <h1 className="fw-bold">Need a ride?</h1>
                         <p>Rent an easy-to-drive gyrocar for your local commuting needs. Become a GyroGoGo member and enjoy the very best way to get around town!</p>
-                        <Button>APPLY NOW</Button>
+                        <Button as={Link} to="/apply">APPLY NOW</Button>
                     </Col>
                 </Row>
             </Container>
