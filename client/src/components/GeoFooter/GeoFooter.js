@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/Logo-Grey.jpg';
-import tos from '../../assets/GyroGoGo Rental Terms and Conditions.pdf'
+import tos from '../../assets/GyroGoGo Rental Terms and Conditions.pdf';
 import './GeoFooter.scss'
 
 export default function GeoFooter() {
