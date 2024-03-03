@@ -8,29 +8,56 @@ import tos from '../../../assets/GyroGoGo Rental Terms and Conditions.pdf';
 
 // Outline for handling form data storage until we submit
 let form_template = {
-    currentStep: 0,
     data: {
         
     }
 }
 
 export default function Apply() {
-    const [form, setForm] = useState(form_template);
+    const form = form_template;
+    const [step, setStep] = useState(0);
 
     const handleCreateAcct = (event) => {
         console.log("create")
+        console.log(event)
     }
 
     const handleNext = (event) => {
-        console.log("next")
-        // Validate current step
+        // Disable everything so we can process
+        event.preventDefault();
+        event.stopPropagation();
+        event.target.next.setAttribute("disabled", "disabled");
+
+        // Variables for step so we don't get caught up in weird state stuff
+        let oldStep = step;
+        let newStep = oldStep + 1;
+
+        // Validate current step + save results
+
+        // Check for submission case
+        if (oldStep == 3) {
+            handleCreateAcct(event)
+            return;
+        }
 
         // Increment step number
-        setForm(form.currentStep = form.currentStep + 1)
-        // Next / Prev button deactivation so it can't go out of bounds 
+        // Calculations swap from old to new step
+        setStep(step + 1)
+
+        // Next / Prev button de/activation so it can't go out of bounds 
+        if (newStep == 1) {
+            event.target.previous.removeAttribute("disabled");
+        }
+        else if (newStep == 3) {
+            event.target.next.textContent = "Submit";
+        }
 
         // Hide old step / show new step
-        console.log(form)
+        document.getElementById("step-"+ (oldStep)).classList.add("d-none");
+        document.getElementById("step-"+ newStep).classList.remove("d-none");
+
+        // Reactivate next btn
+        event.target.next.removeAttribute("disabled");
     }
 
     return (
@@ -38,8 +65,8 @@ export default function Apply() {
             <h1 className="mb-4 fw-bold">Join GyroGoGo!</h1>
             <p className="mb-4">Fill out all the fields in the form below in order to complete your application for GyroGoGo.</p>
             <Form noValidate onSubmit={handleNext}>
-                <h2 className="fs-5 fw-bold mb-3">Step {0 + 1} of 4</h2>
-                <ProgressBar className="mb-4" now={0/4 * 100} label={`${0/4 * 100}%`} />
+                <h2 className="fs-5 fw-bold mb-3">Step {step + 1} of 4</h2>
+                <ProgressBar className="mb-4" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
                 <section className="grey-section p-5 rounded" id="step-0">
                     <h3 className="mb-4 fw-bold">Profile Information</h3>
                     <Form.Group className="mb-3" controlId="username">
@@ -166,8 +193,8 @@ export default function Apply() {
                     </Form.Group>
                 </section>
                 <section className="my-4 d-flex justify-content-between">
-                    <Button disabled>Previous</Button>
-                    <Button type="submit">Next</Button>
+                    <Button id="previous" disabled>Previous</Button>
+                    <Button type="submit" id="next">Next</Button>
                 </section>
             </Form>
         </Container>
