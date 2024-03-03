@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import ProgressBar from 'react-bootstrap/ProgressBar';
@@ -17,16 +17,23 @@ export default function Apply() {
     const form = form_template;
     const [step, setStep] = useState(0);
 
+    useEffect(() => {
+        document.getElementById("previous").setAttribute("disabled", "disabled")
+    }, [])
+
+
     const handleCreateAcct = (event) => {
         console.log("create")
         console.log(event)
     }
 
-    const handleNext = (event) => {
+    const handleNext = () => {
+        let nextBtn = document.getElementById("next");
+        let prevBtn = document.getElementById("previous");
+
         // Disable everything so we can process
-        event.preventDefault();
-        event.stopPropagation();
-        event.target.next.setAttribute("disabled", "disabled");
+        nextBtn.setAttribute("disabled", "disabled");
+        prevBtn.setAttribute("disabled", "disabled");
 
         // Variables for step so we don't get caught up in weird state stuff
         let oldStep = step;
@@ -36,28 +43,71 @@ export default function Apply() {
 
         // Check for submission case
         if (oldStep == 3) {
-            handleCreateAcct(event)
+            handleCreateAcct()
             return;
         }
 
         // Increment step number
-        // Calculations swap from old to new step
         setStep(step + 1)
 
         // Next / Prev button de/activation so it can't go out of bounds 
         if (newStep == 1) {
-            event.target.previous.removeAttribute("disabled");
+            prevBtn.removeAttribute("disabled");
         }
         else if (newStep == 3) {
-            event.target.next.textContent = "Submit";
+            nextBtn.textContent = "Submit";
         }
 
         // Hide old step / show new step
         document.getElementById("step-"+ (oldStep)).classList.add("d-none");
         document.getElementById("step-"+ newStep).classList.remove("d-none");
 
-        // Reactivate next btn
-        event.target.next.removeAttribute("disabled");
+        // Reactivate btns
+        nextBtn.removeAttribute("disabled");
+        if (newStep != 0) {
+            prevBtn.removeAttribute("disabled");
+        }
+    }
+
+    const handlePrev = () => {
+        let nextBtn = document.getElementById("next");
+        let prevBtn = document.getElementById("previous");
+
+        // Check for invalid backing
+        if (step == 0) {
+            return;
+        }
+        
+        // Disable everything so we can process
+        nextBtn.setAttribute("disabled", "disabled");
+        prevBtn.setAttribute("disabled", "disabled");
+
+        // Variables for step so we don't get caught up in weird state stuff
+        let oldStep = step;
+        let newStep = oldStep - 1;
+
+        // Save results (no validation; only really needs to happen on next and could cause frustration on prev)
+
+        // Decrement step number
+        setStep(step - 1)
+
+        // Next / Prev button de/activation so it can't go out of bounds 
+        if (newStep == 0) {
+            prevBtn.setAttribute("disabled", "disabled");
+        }
+        else if (oldStep == 3) {
+            nextBtn.textContent = "Next";
+        }
+
+        // Hide old step / show new step
+        document.getElementById("step-"+ (oldStep)).classList.add("d-none");
+        document.getElementById("step-"+ newStep).classList.remove("d-none");
+
+        // Reactivate btns
+        nextBtn.removeAttribute("disabled");
+        if (newStep != 0) {
+            prevBtn.removeAttribute("disabled");
+        }
     }
 
     return (
@@ -193,8 +243,8 @@ export default function Apply() {
                     </Form.Group>
                 </section>
                 <section className="my-4 d-flex justify-content-between">
-                    <Button id="previous" disabled>Previous</Button>
-                    <Button type="submit" id="next">Next</Button>
+                    <Button variant="primary" id="previous" onClick={() => {handlePrev()}}>Previous</Button>
+                    <Button variant="primary" onClick={() => {handleNext()}} id="next">Next</Button>
                 </section>
             </Form>
         </Container>
