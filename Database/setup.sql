@@ -3,6 +3,7 @@ DEALLOCATE ALL;
 DROP INDEX IF EXISTS Username;
 DROP VIEW IF EXISTS User_Permissions;
 DROP TABLE IF EXISTS Ticket;
+DROP TABLE IF EXISTS User_Status;
 DROP TABLE IF EXISTS TicketStatus;
 DROP TABLE IF EXISTS Rental;
 DROP TABLE IF EXISTS Card;
@@ -42,6 +43,10 @@ CREATE TABLE Ticket(
 	FOREIGN KEY (StatusID)
 		REFERENCES TicketStatus(StatusID)
 );
+
+-- Creates Index for Ticket table on Submitted and status --
+CREATE INDEX Time ON Ticket (StatusID);
+
 
 INSERT INTO Ticket (TicketID, Name, Email, Phone, Submitted, Comment, StatusID) VALUES
 	(1, 'Adam', 'adam@gmail.com', '12223334444', '2017-01-03 00:00:00', 'Not enough shapes', 1),
@@ -110,7 +115,10 @@ CREATE TABLE CarStatus(
 
 -- Populates CarStatus lookup table with some sample data --
 INSERT INTO CarStatus (StatusID, Name) VALUES
-	(1, 'Operational');
+	(1, 'Available'),
+	(2, 'Unavailable'),
+	(3, 'Rented'),
+	(4, 'Non-operational');
 
 -- Generate Car table --
 CREATE TABLE Car(
@@ -151,6 +159,24 @@ INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Addre
 	(1, 'aaa', 'aaa', 'Alfred', 'Albertson', 'aaa@gmail.com', '123 Street', '12345', 'Rochester', 1),
 	(2, 'bbb', 'bbb', 'Bruce', 'Batman', 'bbb@gmail.com', '321 Street', '12345', 'Rochester', 1),
 	(3, 'ccc', 'ccc', 'Candice', 'Campbell', 'ccc@gmail.com', '231 Street', '12345', 'Rochester', 1);
+
+
+-- Table containing the statuses of various users --
+CREATE TABLE User_Status(
+	UserStatusID SERIAL PRIMARY KEY,
+	UserID INT NOT NULL,
+	StatusID INT NOT NULL,
+	CurrentStatus BOOLEAN NOT NULL,
+	Reason TEXT,
+	StatusApply TIMESTAMP,
+	StatusChange TIMESTAMP,
+	FOREIGN KEY (UserID) 
+		REFERENCES Users(UserID),
+	FOREIGN KEY (StatusID)
+		REFERENCES AccountStatus (StatusID)
+);
+
+CREATE INDEX CurrentStatus ON User_Status (UserID, CurrentStatus);
 
 -- Generate Role table --
 Create Table Roles(
@@ -243,12 +269,16 @@ CREATE VIEW User_Permissions AS
 	SELECT u.UserID AS id,
 		u.Username as Name,
 		r.Title as Title,
-		perm.Description AS Description
+		perm.Description AS Description,
+		acc.StatusName
 	FROM Users u
 		INNER JOIN User_Role ur ON (u.UserID = ur.UserID)
 		INNER JOIN Roles r ON (ur.RoleID = ur.RoleID)
 		INNER JOIN Role_Permission rp ON (r.RoleID = rp.RoleID)
-		INNER JOIN Permissions perm ON (rp.PermissionID = perm.PermissionID);
+		INNER JOIN Permissions perm ON (rp.PermissionID = perm.PermissionID)
+		INNER JOIN User_Status us ON (u.UserID = us.UserID)
+		INNER JOIN AccountStatus acc ON (us.StatusID = acc.StatusID)
+	WHERE us.CurrentStatus IS TRUE;
 
 -- Creates prepared statement for getting a user's permissions --
 PREPARE User_Perms (TEXT) AS
@@ -263,10 +293,7 @@ CREATE TABLE Customer(
 	LicenseNumber VARCHAR(10),
 	LicenseExpires DATE,
 	StateProvinceID INT NOT NULL,
-	AccountStatusID INT NOT NULL,
 	UserID INT NOT NULL,
-	FOREIGN KEY (AccountStatusID)
-		REFERENCES AccountStatus (StatusID),
 	FOREIGN KEY (UserID)
 		REFERENCES Users (UserID)
 );
