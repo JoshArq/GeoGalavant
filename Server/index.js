@@ -29,6 +29,7 @@ router.post("/createCustomer", (req, res) => {
 
 
 router.post("/login", async (req, res) => {
+  console.log(req.body)
   const username = req.body.username
   const password = req.body.password
 

@@ -42,6 +42,8 @@ async function createCustomer(obj){
 
 
 async function login(username, password){
+  console.log(username)
+  console.log(password)
 
   var query = {
     name: 'login',

@@ -3,9 +3,11 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Login({saveData}) {
     const [isValid, setIsValid] = useState(true);
+    let navigate = useNavigate();
     
     const handleLogin = (event) => {
         event.preventDefault();
@@ -16,7 +18,34 @@ export default function Login() {
         }
         // Valid input, logging in
         else { 
-            
+            fetch("/api/login", {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: form.username.value, 
+                    password: form.password.value, 
+                }),
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data)
+                if(data.success) {
+                    setIsValid(true);
+                    
+                    // Save user data
+                    saveData(data);
+
+                    // Redirect
+                    navigate("/account");
+                }
+                // Server returned unsuccessful
+                else {
+                    setIsValid(false);
+                }
+            }).catch(error => {
+                console.log(error);
+                setIsValid(false);
+            });
         }
     }
 
