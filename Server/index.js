@@ -20,8 +20,6 @@ router.post("/createCustomer", (req, res) => {
   const appliedBefore = req.body.appliedBefore
   const driversLicense = req.body.driversLicense
 
-  console.log(username)
-  console.log(password)
 
   res.json({ success: true, sessionToken: "to_be_implemented", role: 4});
 });
@@ -29,7 +27,6 @@ router.post("/createCustomer", (req, res) => {
 
 
 router.post("/login", async (req, res) => {
-  console.log(req.body)
   const username = req.body.username
   const password = req.body.password
 
