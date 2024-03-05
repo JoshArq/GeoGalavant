@@ -27,8 +27,7 @@ CREATE TABLE TicketStatus(
 	Name VARCHAR(15) NOT NULL
 );
 
-INSERT INTO TicketStatus (StatusID, Name) VALUES 
-	(1, 'Open'),
+INSERT INTO TicketStatus (StatusID, Name) VALUES (1, 'Open'),
 	(2, 'Assigned'),
 	(3, 'Resolved');
 
@@ -48,8 +47,7 @@ CREATE TABLE Ticket(
 CREATE INDEX Time ON Ticket (StatusID);
 
 
-INSERT INTO Ticket (TicketID, Name, Email, Phone, Submitted, Comment, StatusID) VALUES
-	(1, 'Adam', 'adam@gmail.com', '12223334444', '2017-01-03 00:00:00', 'Not enough shapes', 1),
+INSERT INTO Ticket (TicketID, Name, Email, Phone, Submitted, Comment, StatusID) VALUES (1, 'Adam', 'adam@gmail.com', '12223334444', '2017-01-03 00:00:00', 'Not enough shapes', 1),
 	(2, 'Brian', 'brian@gmail.com', '12223334444', '2017-01-03 00:00:00', 'Too many shapes', 2),
 	(3, 'Carol', 'carol@gmail.com', '12223334444', '2017-01-03 00:00:00', 'My spoon is too big', 3);
 
@@ -60,8 +58,7 @@ CREATE TABLE StateProvince(
 );
 
 -- Populates StateProvince table with some sample data --
-INSERT INTO StateProvince (StateProvinceID, StateProvinceName) VALUES
-	(1, 'New York');
+INSERT INTO StateProvince (StateProvinceID, StateProvinceName) VALUES (1, 'New York');
 
 -- Generate AccountStatus lookup table --
 CREATE TABLE AccountStatus(
@@ -70,8 +67,7 @@ CREATE TABLE AccountStatus(
 );
 
 -- Populates AccountStatus table with some sample data --
-INSERT INTO AccountStatus (StatusID, StatusName) VALUES
-	(1, 'Good');
+INSERT INTO AccountStatus (StatusID, StatusName) VALUES (1, 'Good');
 
 -- Generate ApplicationStatus lookup table --
 CREATE TABLE ApplicationStatus(
@@ -80,8 +76,7 @@ CREATE TABLE ApplicationStatus(
 );
 
 -- Populates AccountStatus table with some sample data --
-INSERT INTO ApplicationStatus (StatusID, StatusName) VALUES
-	(1, 'Created'),
+INSERT INTO ApplicationStatus (StatusID, StatusName) VALUES (1, 'Created'),
 	(2, 'Accepted'),
 	(3, 'Denied');
 
@@ -92,8 +87,7 @@ CREATE TABLE PaymentType(
 );
 
 -- Populates PaymentType table with some sample data --
-INSERT INTO PaymentType (PaymentTypeID, PaymentType) VALUES
-	(1, 'Mastercard');
+INSERT INTO PaymentType (PaymentTypeID, PaymentType) VALUES (1, 'Mastercard');
 
 -- Generate Station table --
 CREATE TABLE Station(
@@ -104,8 +98,7 @@ CREATE TABLE Station(
 );
 
 -- Populates Station table with some sample data --
-INSERT INTO Station (StationID, StationName, Address, IsClosed) VALUES
-	(1, 'North Street', '2 North Street Rochester NY', FALSE);
+INSERT INTO Station (StationID, StationName, Address, IsClosed) VALUES (1, 'North Street', '2 North Street Rochester NY', FALSE);
 
 -- Generate CarStatus table --
 CREATE TABLE CarStatus(
@@ -114,8 +107,7 @@ CREATE TABLE CarStatus(
 );
 
 -- Populates CarStatus lookup table with some sample data --
-INSERT INTO CarStatus (StatusID, Name) VALUES
-	(1, 'Available'),
+INSERT INTO CarStatus (StatusID, Name) VALUES (1, 'Available'),
 	(2, 'Unavailable'),
 	(3, 'Rented'),
 	(4, 'Non-operational');
@@ -132,8 +124,7 @@ CREATE TABLE Car(
 );
 
 -- Populates Car lookup table with some sample data --
-INSERT INTO Car (CarID, CarStatusID, StationID) VALUES
-	(1, 1, 1);
+INSERT INTO Car (CarID, CarStatusID, StationID) VALUES (1, 1, 1);
 
 -- Generate user table --
 CREATE TABLE Users(
@@ -155,8 +146,7 @@ CREATE TABLE Users(
 CREATE INDEX Username ON Users (Username);
 
 -- Populates Users table with some sample data --
-INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES
-	(1, 'aaa', 'aaa', 'Alfred', 'Albertson', 'aaa@gmail.com', '123 Street', '12345', 'Rochester', 1),
+INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES (1, 'aaa', 'aaa', 'Alfred', 'Albertson', 'aaa@gmail.com', '123 Street', '12345', 'Rochester', 1),
 	(2, 'bbb', 'bbb', 'Bruce', 'Batman', 'bbb@gmail.com', '321 Street', '12345', 'Rochester', 1),
 	(3, 'ccc', 'ccc', 'Candice', 'Campbell', 'ccc@gmail.com', '231 Street', '12345', 'Rochester', 1);
 
@@ -184,8 +174,7 @@ Create Table Roles(
 	Title Varchar(25) NOT NULL
 );
 
-INSERT INTO Roles (RoleID, Title) VALUES
-	(1, 'Administrator'),
+INSERT INTO Roles (RoleID, Title) VALUES (1, 'Administrator'),
 	(2, 'User'),
 	(3, 'Mechanic'),
 	(4, 'Customer'),
@@ -198,8 +187,7 @@ CREATE TABLE Permissions(
 );
 
 --Populates the Permissions table --
-INSERT INTO Permissions (PermissionID, Description) VALUES
-	(1, 'Manage Cars'),
+INSERT INTO Permissions (PermissionID, Description) VALUES (1, 'Manage Cars'),
 	(2, 'Car Reports'),
 	(3, 'View Users'),
 	(4, 'Manage Customer Accounts'),
@@ -225,8 +213,7 @@ CREATE TABLE User_Role(
 );
 
 --Populates the User_Role table --
-INSERT INTO User_Role (UserID, RoleID) VALUES
-	(1,1),
+INSERT INTO User_Role (UserID, RoleID) VALUES (1,1),
 	(2,2),
 	(3,3);
 
@@ -242,8 +229,7 @@ CREATE TABLE Role_Permission(
 );
 
 --Populates the User_Role table --
-INSERT INTO Role_Permission (RoleID, PermissionID) VALUES
-	(1,1),
+INSERT INTO Role_Permission (RoleID, PermissionID) VALUES (1,1),
 	(1,2),
 	(1,3),
 	(1,4),
@@ -265,8 +251,7 @@ INSERT INTO Role_Permission (RoleID, PermissionID) VALUES
 	(5,9);
 
 -- Creates view with a user's permissions
-CREATE VIEW User_Permissions AS 
-	SELECT u.UserID AS id,
+CREATE VIEW User_Permissions AS SELECT u.UserID AS id,
 		u.Username as Name,
 		r.Title as Title,
 		perm.Description AS Description,
