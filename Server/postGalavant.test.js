@@ -2,7 +2,7 @@
 //https://www.w3schools.com/nodejs/ref_assert.asp
 
 const assert = require('assert');
-const pg = require('./postGallavant.js')
+const pg = require('./postGalavant.js')
 
 
 async function main(){ 
