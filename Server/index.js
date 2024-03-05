@@ -1,5 +1,5 @@
 const express = require("express");
-const pg = require('./postGallavant.js')
+const pg = require('./postGalavant.js')
 
 
 const PORT = process.env.PORT || 5001;

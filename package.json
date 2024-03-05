@@ -4,16 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node server/index.js",
+    "client": "cd client && npm run start",
     "testDL": "node server/postGallavant.test.js",
-    "dev": "nodemon --env-file=.env server/index.js"
+    "dev:server": "nodemon --env-file=.env server/index.js",
+    "dev:all": "concurrently \"npm run dev:server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "create-react-app": "^5.0.1",
