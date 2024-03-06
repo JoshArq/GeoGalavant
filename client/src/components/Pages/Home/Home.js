@@ -78,7 +78,7 @@ export default function Home() {
                 <Row>
                     <Col md="4">
                         <Card className="mb-4 text-center shadow">
-                            <Card.Img variant="top" src={boxes} alt="Woman carrying boxes" />
+                            <Card.Img variant="top" src={rain} alt="Person holding an umbrella in the rain next to a busy street" />
                             <Card.Body className="py-3 px-3">
                                 <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
                                     Avoid Bad Weather
@@ -92,7 +92,7 @@ export default function Home() {
                     </Col>
                     <Col md="4">
                         <Card className="mb-4 text-center shadow">
-                            <Card.Img variant="top" src={rain} alt="Person holding an umbrella in the rain next to a busy street" />
+                            <Card.Img variant="top" src={parking} alt="Motorcycle parking spaces" />
                             <Card.Body className="py-3 px-3">
                                 <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
                                     Easier Parking
@@ -106,7 +106,7 @@ export default function Home() {
                     </Col>
                     <Col md="4">
                         <Card className="mb-4 text-center shadow">
-                            <Card.Img variant="top" src={parking} alt="Motorcycle parking spaces" />
+                            <Card.Img variant="top" src={boxes} alt="Woman carrying boxes" />
                             <Card.Body className="py-3 px-3">
                                 <Card.Title as={'h3'} className="fs-4 fw-semibold mb-3">
                                     Make Deliveries
