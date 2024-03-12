@@ -93,7 +93,7 @@ export default function Apply() {
                     return false;
                 }
                 // Email
-                if (app.emanil.checkValidity()) {
+                if (app.email.checkValidity()) {
                     form.email = app.email.value;
                 }
                 else {
