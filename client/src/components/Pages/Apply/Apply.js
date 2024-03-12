@@ -443,7 +443,7 @@ export default function Apply() {
                         <Form.Control type="text" placeholder="1234567890" required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="licenseExp">
-                        <Form.Label>Driver's License Experiation Date (MM/DD/YYYY)</Form.Label>
+                        <Form.Label>Driver's License Expiration Date (MM/DD/YYYY)</Form.Label>
                         <Form.Control type="text" placeholder="01/02/2025"  pattern="\d{1,2}/\d{1,2}/\d{4}" required />
                     </Form.Group>
                 </section>
@@ -458,7 +458,7 @@ export default function Apply() {
                         <Form.Control type="text" placeholder="John Doe" required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="cardExp">
-                        <Form.Label>Credit Card Experiation Date (MM/YY)</Form.Label>
+                        <Form.Label>Credit Card Expiration Date (MM/YY)</Form.Label>
                         <Form.Control type="text" placeholder="01/25"  pattern="\d{1,2}/\d{2}" required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="ccvNum">
