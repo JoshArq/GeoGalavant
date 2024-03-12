@@ -4,3 +4,8 @@
 .grey-section {
     background-color: $gray-100;
 }
+
+.btn-primary:disabled {
+    background-color: $gray-900;
+    border-color: $gray-900;
+}
