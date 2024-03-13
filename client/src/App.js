@@ -12,6 +12,7 @@ import Contact from './components/Pages/Contact/Contact.js';
 import Login from './components/Pages/Login/Login.js';
 import Apply from './components/Pages/Apply/Apply.js';
 import Account from './components/Pages/Account/Account.js';
+import Reserve from './components/Pages/Reserve/Reserve.js';
 import './App.scss';
 
 function App() {
@@ -59,8 +60,13 @@ function App() {
               <Apply />
             </ProtectedRoute>} />
           <Route path="account" element={
-            <ProtectedRoute role={role}  clearData={clearUserData} permitted={[1,2]}>
+            <ProtectedRoute role={role}  clearData={clearUserData} permitted={[2,4]}>
               <Account />
+            </ProtectedRoute>
+          }/>
+          <Route path="reserve" element={
+            <ProtectedRoute role={role}  clearData={clearUserData} permitted={[2,4]}> {/*TODO: remove 2 from this */}
+              <Reserve />
             </ProtectedRoute>
           }/>
         </Routes>
