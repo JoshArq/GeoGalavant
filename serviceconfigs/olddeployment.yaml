@@ -13,8 +13,8 @@ spec:
         app: nodejs
     spec:
       containers:
-      - name: nodejs
-        image: your-nodejs-image:tag
+      - name: geogalavant
+        image: vhafener/geogalavant
         ports:
         - containerPort: 3000
 
