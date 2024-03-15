@@ -44,7 +44,6 @@ export default function Apply() {
 
 
     const handleCreateAcct = () => {
-        console.log("create");
         fetch("/api/createCustomer", {
             method: 'POST',
             body: JSON.stringify(form),
@@ -60,7 +59,6 @@ export default function Apply() {
                 document.getElementById("step-3").classList.add("d-none");
             }
             else {
-                console.log('test')
                 document.getElementById("err").innerText = "There was an issue sending your application. Please try again."
                 setIsValid(false);
                 setIsSent(false);

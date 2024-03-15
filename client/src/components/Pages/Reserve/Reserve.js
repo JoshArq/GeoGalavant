@@ -15,14 +15,172 @@ let form_template = {}
 export default function Reserve() {
     const form = form_template;
     const [step, setStep] = useState(0);
+    const [isValid, setIsValid] = useState(true);
+
+    const handleReserveCar = () => {
+        // TODO: CHANGE EXAMPLE CODE
+        // fetch("/api/createCustomer", {
+        //     method: 'POST',
+        //     body: JSON.stringify(form),
+        // })
+        // .then((res) => res.json())
+        // .then((data) => {
+        //     if (data.success) {
+                // Show just success message
+                setStep(4);
+                document.getElementById("step-heading").innerText = "Completed";
+                document.getElementById("progBtns").classList.add("d-none");
+                document.getElementById("step-3").classList.add("d-none");
+                document.getElementById("done").classList.remove("d-none");
+            // }
+            // else {
+            //     document.getElementById("err").innerText = "There was an issue sending your reservation. Please try again."
+            //     setIsValid(false);
+            // }
+        // }).catch(error => {
+        //     console.log(error)
+        //     document.getElementById("err").innerText = "There was an issue sending your reservation. Please try again."
+        //     setIsValid(false);
+        // });
+    }
+
+    const validateStep = (step) => {
+        // Get form data
+        let app = document.getElementById("reservation");
+        let err = document.getElementById("err");
+        // Determine which fields to validate
+        // switch (step) {
+            // case 0: // THIS IS AN EXAMPLE WITH APPLICATION CODE. 
+            // // TODO: CHANGE 
+            //     // Applied before
+            //     if(app.appliedBefore.value !== "") {
+            //         form.appliedBefore = app.appliedBefore.value;
+            //     }
+            //     else {
+            //         err.innerText = "Answer whether you've applied to GyroGoGo before."
+            //         setIsValid(false);
+            //         return false;
+            //     }
+            //     // Agree to TOS
+            //     if(app.terms.checked === true) {
+            //         form.tos = app.terms.checked;
+            //     }
+            //     else {
+            //         err.innerText = "Agree to the Terms of Service."
+            //         setIsValid(false);
+            //         return false;
+            //     }
+            //     // All good
+            //     setIsValid(true);
+            //     return true;
+        // }
+        return true;
+    }
+
+    const handleNext = () => {
+        let nextBtn = document.getElementById("next");
+        let prevBtn = document.getElementById("previous");
+
+        // Disable everything so we can process
+        nextBtn.setAttribute("disabled", "disabled");
+        prevBtn.setAttribute("disabled", "disabled");
+
+        // Variables for step so we don't get caught up in weird state stuff
+        let oldStep = step;
+        let newStep = oldStep + 1;
+
+        // Validate current step + save results
+        // If it returns true, data was valid and saved
+        // If false, corrections are needed before proceeding
+        // (error msg handled in validation for specific feedback)
+        if(!validateStep(oldStep)) {
+            // Reactivate buttons
+            nextBtn.removeAttribute("disabled");
+            if (newStep !== 0) {
+                prevBtn.removeAttribute("disabled");
+            }
+            return;
+        }
+
+        // Check for submission case
+        if (oldStep === 3) {
+            handleReserveCar()
+            return;
+        }
+
+        // Increment step number
+        setStep(step + 1)
+
+        // Next / Prev button de/activation so it can't go out of bounds 
+        if (newStep === 1) {
+            prevBtn.removeAttribute("disabled");
+        }
+        else if (newStep === 3) {
+            nextBtn.textContent = "Reserve";
+        }
+
+        // Hide old step / show new step
+        document.getElementById("step-"+ (oldStep)).classList.add("d-none");
+        document.getElementById("step-"+ newStep).classList.remove("d-none");
+
+        // Reactivate btns
+        nextBtn.removeAttribute("disabled");
+        if (newStep !== 0) {
+            prevBtn.removeAttribute("disabled");
+        }
+    }
+
+    const handlePrev = () => {
+        let nextBtn = document.getElementById("next");
+        let prevBtn = document.getElementById("previous");
+
+        // Don't need to check for invalid backing bc prev is hidden on step 0
+        
+        // Disable everything so we can process
+        nextBtn.setAttribute("disabled", "disabled");
+        prevBtn.setAttribute("disabled", "disabled");
+
+        // Variables for step so we don't get caught up in weird state stuff
+        let oldStep = step;
+        let newStep = oldStep - 1;
+
+        // Save results (no validation; only really needs to happen on next and could cause frustration on prev)
+
+        // Decrement step number
+        setStep(step - 1)
+
+        // Next / Prev button de/activation so it can't go out of bounds 
+        if (newStep === 0) {
+            prevBtn.setAttribute("disabled", "disabled");
+        }
+        else if (oldStep === 3) {
+            nextBtn.textContent = "Next";
+        }
+
+        // Hide error messages for the old step
+        setIsValid(true);
+
+        // Hide old step / show new step
+        document.getElementById("step-"+ (oldStep)).classList.add("d-none");
+        document.getElementById("step-"+ newStep).classList.remove("d-none");
+
+        // Reactivate btns
+        nextBtn.removeAttribute("disabled");
+        if (newStep !== 0) {
+            prevBtn.removeAttribute("disabled");
+        }
+    }
     
     return (
         <Container as={'main'} className="py-5">
-            <Form noValidate id="application">
+            <Form noValidate id="reservation">
                 <div className={'' + (step > 0 ? '' : ' d-none')} id="progBar">
                     <h2 className="fs-5 fw-bold mb-3" id="step-heading">Step {step + 1} of 4</h2>
                     <ProgressBar className="mb-4" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
                 </div>
+                <Alert variant="danger" className={'text-danger bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
+                    Something is wrong with your submission. Please try again.
+                </Alert> 
                 <section className="" id="step-0">
                     <h1 className="mb-4 fw-bold">Make a Reservation</h1>
                     <p className="mt-5 mb-4">Choose a date and time for picking up and dropping off a gyrocar and we’ll find you available locations!</p>
@@ -45,7 +203,7 @@ export default function Reserve() {
                         </Card.Body>
                     </Card>
                     <div className="d-flex justify-content-end mt-4">
-                        <Button variant="primary" id="search">Search</Button>
+                        <Button variant="primary" onClick={() => {handleNext()}} id="search">Search</Button>
                     </div>
                 </section>
                 <section className="d-none" id="step-1">
@@ -247,8 +405,8 @@ export default function Reserve() {
                     <p>Go to your <Link to="/account">account</Link> to view, modify, or cancel your reservation.</p>
                 </section>
                 <div className={'my-4 d-flex justify-content-between' + (step > 0 ? '' : ' d-none')} id="progBtns">
-                    <Button variant="primary" id="previous">Previous</Button>
-                    <Button variant="primary" id="next">Next</Button>
+                    <Button variant="primary" onClick={() => {handlePrev()}} id="previous">Previous</Button>
+                    <Button variant="primary" onClick={() => {handleNext()}} id="next">Next</Button>
                 </div>
             </Form>
         </Container> 
