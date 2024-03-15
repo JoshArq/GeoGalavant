@@ -9,8 +9,9 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
+import LocMap from '../../LocMap/LocMap.js';
 
-let form_template = {}
+let form_template = {};
 
 export default function Reserve() {
     const form = form_template;
@@ -258,7 +259,7 @@ export default function Reserve() {
                                 </Form.Group>
                             </Col>
                             <Col md={8}>
-                                <Card className="grey-section p-5"><p>map</p></Card>
+                                <LocMap />
                             </Col>
                         </Row>
                     </Container>
@@ -315,7 +316,7 @@ export default function Reserve() {
                                 </Form.Group>
                             </Col>
                             <Col md={8}>
-                                <Card className="grey-section p-5"><p>map</p></Card>
+                                <LocMap />
                             </Col>
                         </Row>
                     </Container>
