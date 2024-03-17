@@ -334,7 +334,7 @@ export default function Apply() {
             <p className="mb-4">Fill out all the fields in the form below in order to complete your application for GyroGoGo.</p>
             <Form noValidate id="application">
                 <h2 className="fs-5 fw-bold mb-3" id="step-heading">Step {step + 1} of 4</h2>
-                <ProgressBar className="mb-4" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
+                <ProgressBar className="mb-4" variant="secondary" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
                 <Alert variant="danger" className={'text-danger bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
                     Something is wrong with your submission. Please try again.
                 </Alert> 

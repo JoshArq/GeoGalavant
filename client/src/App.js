@@ -27,7 +27,6 @@ function App() {
     .then((res) => res.json())
     .then((data) => {
         setData(data.result)
-        console.log(data)
     }).catch(error => {
       console.log(error)
       console.log("Error. Server down.")

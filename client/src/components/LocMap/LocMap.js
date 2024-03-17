@@ -1,6 +1,7 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
 
 const containerStyle = {
     width: '100%',
@@ -31,23 +32,22 @@ const markers = [
     },
 ];
 
-export default function GeoHeader(props) {
-    const { title } = props;
+export default function LocMap(props) {
 
-     // Google maps setup stuff
-     const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: process.env.REACT_APP_GMAPS
-      });  
-      const [map, setMap] = React.useState(null)
-      const onLoad = React.useCallback(function callback(map) {
-          const bounds = new window.google.maps.LatLngBounds(center);
-          map.fitBounds(bounds);
-          setMap(map)
-      }, [])
-      const onUnmount = React.useCallback(function callback(map) {
-          setMap(null)
-      }, [])
+    // Google maps setup stuff
+    const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.REACT_APP_GMAPS
+    });  
+    const [map, setMap] = React.useState(null)
+    const onLoad = React.useCallback(function callback(map) {
+        const bounds = new window.google.maps.LatLngBounds(center);
+        map.fitBounds(bounds);
+        setMap(map)
+    }, [])
+    const onUnmount = React.useCallback(function callback(map) {
+        setMap(null)
+    }, [])
 
     return (
         <>
@@ -59,8 +59,8 @@ export default function GeoHeader(props) {
             onLoad={onLoad}
             onUnmount={onUnmount}
             >
-                {markers.map(marker => (
-                    <Marker
+            {markers.map(marker => (
+                    <MarkerF
                     position={{ lat: marker.lat, lng: marker.lng }}
                     key={marker.id}
                     />

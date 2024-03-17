@@ -177,7 +177,7 @@ export default function Reserve() {
             <Form noValidate id="reservation">
                 <div className={'' + (step > 0 ? '' : ' d-none')} id="progBar">
                     <h2 className="fs-5 fw-bold mb-3" id="step-heading">Step {step + 1} of 4</h2>
-                    <ProgressBar className="mb-4" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
+                    <ProgressBar className="mb-4" variant="secondary" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
                 </div>
                 <Alert variant="danger" className={'text-danger bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
                     Something is wrong with your submission. Please try again.
@@ -377,7 +377,7 @@ export default function Reserve() {
                     </Container>
                 </section>
                 <section className="d-none" id="done">
-                    <h1 className="mb-4 fw-bold">Reservation Successful</h1>
+                    <h1 className="mb-4 fw-bold"><i class="bi bi-check-circle-fill me-3"></i> Reservation Successful</h1>
                     <p>Your reservation number is #####. Use this code to unlock your Gyrocar.</p>
                     <Card className="grey-section border-0 my-4 p-4">
                         <Card.Body as={Container}>

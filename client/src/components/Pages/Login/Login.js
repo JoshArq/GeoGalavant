@@ -28,7 +28,6 @@ export default function Login({saveData}) {
             })
             .then((res) => res.json())
             .then((data) => {
-                console.log(data)
                 if(data.success) {
                     setIsValid(true);
                     
