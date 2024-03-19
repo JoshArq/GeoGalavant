@@ -14,10 +14,10 @@ DROP TABLE IF EXISTS User_Role;
 DROP TABLE IF EXISTS Permissions;
 DROP TABLE IF EXISTS Roles;
 DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Car;
-DROP TABLE IF EXISTS CarStatus;
+DROP TABLE IF EXISTS Car CASCADE;
+DROP TABLE IF EXISTS CarStatus CASCADE;
 DROP TABLE IF EXISTS CarTracking;
-DROP TABLE IF EXISTS Station;
+DROP TABLE IF EXISTS Station CASCADE;
 DROP TABLE IF EXISTS PaymentType;
 DROP TABLE IF EXISTS ApplicationStatus;
 DROP TABLE IF EXISTS AccountStatus;
@@ -165,7 +165,9 @@ INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, ZipC
 	('bbb', 'bbb', 'Bruce', 'Batman', 'bbb@gmail.com', '321 Street', '12345', 'Rochester', 1),
 	('ccc', 'ccc', 'Candice', 'Campbell', 'ccc@gmail.com', '231 Street', '12345', 'Rochester', 1),
 	('ddd', 'ddd', 'Daniel', 'Denkins', 'ddd@gmail.com', '231 Street', '12345', 'Rochester', 1),
-	('eee', 'eee', 'Evelyn', 'Escaflone', 'eee@gmail.com', '231 Street', '12345', 'Rochester', 1);
+	('eee', 'eee', 'Evelyn', 'Escaflone', 'eee@gmail.com', '231 Street', '12345', 'Rochester', 1),
+	('fff', 'fff', 'Franklin', 'Figaro', 'fff@gmail.com', '231 Street', '12345', 'Rochester', 1),
+	('ggg', 'ggg', 'Gladys', 'Gladstone', 'ggg@gmail.com', '231 Street', '12345', 'Rochester', 1);
 
 
 -- Table containing the statuses of various users --
@@ -191,14 +193,13 @@ Create Table Roles(
 	Title Varchar(25) NOT NULL
 );
 
-INSERT INTO Roles (RoleID, Title) VALUES 
-	(1, 'System Administrator'),
+INSERT INTO Roles (RoleID, Title) VALUES (1, 'System Administrator'),
 	(2, 'Business Administrator'),
 	(3, 'Manager'),
 	(4, 'Mechanic'),
-	(5, 'Customer Service');
-	(6, "Customer")
-	(7, "User")
+	(5, 'Customer Service'),
+	(6, 'Customer'),
+	(7, 'User');
 
 -- Generate Permissions table --
 CREATE TABLE Permissions(
@@ -238,7 +239,9 @@ INSERT INTO User_Role (UserID, RoleID) VALUES (1,1),
 	(2,2),
 	(3,3),
 	(4,4),
-	(5,5);
+	(5,5),
+	(6,6),
+	(7,7);
 
 -- Generate Role_Permissions table --
 CREATE TABLE Role_Permission(
