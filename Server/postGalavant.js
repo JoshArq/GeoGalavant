@@ -34,7 +34,8 @@ async function pulseCheck(){
 
 
 
-async function createCustomer(obj){
+//returns -1 on failure, return userID on success
+async function createUser(obj){
 //create user, customer, usr-role, 
 
   const username = obj.username
@@ -47,7 +48,7 @@ async function createCustomer(obj){
 
 
   var query = {
-    name: 'createCustomerInfo',
+    name: 'insertUser',
     text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, City, Zipcode, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING UserID",
     values: [username, password, firstName, lastName, email, "TBD", "TBD", "TBD", 1]
   }
@@ -55,28 +56,105 @@ async function createCustomer(obj){
   
   try{
     var userID = (await pool.query(query)).rows[0].userid
+    return userID
   }
   catch (err){
-    console.log(err.detail)
+    return -1
   }
 
-  var unapproved_customer_role_ID = 2
+
+}
+
+async function updateUser(obj){
+  const query = {
+    text: "UPDATE Users SET Username = $1, Password = $2, FirstName = $3, LastName = $4, Email = $5, Address = $6, ZipCode = $7, City = $8, StateProvinceID = $9 WHERE UserID = $10",
+    values: [obj.username, obj.password, obj.firstName, obj.lastName, obj.email, obj.address, obj.zipcode, obj.stateProvinceID, obj.userId]
+  };
+
+  const res = await pool.query(query);
+  return res.rowCount;
+}
+
+async function deleteUser(userId){
+  const query = {
+    text: "DELETE FROM Users WHERE UserID = $1",
+    values: [userId]
+  };
+
+  const res = await pool.query(query);
+  return res.rowCount;
+}
+
+async function getUserByName(username){
+  const query = {
+    text: "SELECT * FROM Users WHERE Username = $1",
+    values: [username]
+  };
+
+  const res = await pool.query(query);
+  return res.rows[0];
+}
+
+async function getUserById(userId){
+  const query = {
+    text: "SELECT * FROM Users WHERE UserID = $1",
+    values: [userId]
+  };
+
+  const res = await pool.query(query);
+  return res.rows[0];
+}
+
+async function getAllUsers(){
+  const query = {
+    text: "SELECT * FROM Users WHERE UserID = $1",
+    values: [userId]
+  };
+
+  const res = await pool.query(query);
+  return res.rows[0];
+}
+
+async function addUserRole(userID, userRole){
 
   query = {
-    name: 'createCustomerRole',
-    text: "INSERT INTO User_Role (UserID, RoleID) VALUES ($1, $2)",
-    values: [userID, unapproved_customer_role_ID]
+    name: 'insertUserRole',
+    text: "INSERT INTO User_Role (UserID, RoleID) VALUES ($1, $2) RETURNING RoleID",
+    values: [userID, userRole]
   }
 
   try{
-    await pool.query(query)
+    var roleID = (await pool.query(query)).rows[0].roleid
+    console.log(roleID)
+    return roleID;
   }
   catch (err){
-    console.log(err.detail)
+    return -1
   }
 
 }
 
+async function deleteUserRole(){
+
+}
+
+async function addUserStatus(){
+
+}
+
+async function removeUserStatus(){
+
+}
+
+async function getUserPerms(userId){
+  var query = {
+    text: "SELECT Description FROM User_Permissions WHERE UserID = $1",
+    values: [userId]
+  };
+
+  const res = await pool.query(query);
+  return res.rows;
+}
 
 
 async function login(username, password){
@@ -118,4 +196,4 @@ async function login(username, password){
   }
 }
 
-module.exports = {pulseCheck, createCustomer, login}
+module.exports = {pulseCheck, createUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login}

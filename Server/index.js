@@ -17,10 +17,31 @@ router.get("/test", (req, res) => {
 
 router.post("/createCustomer", async (req, res) => {
 
-  await pg.createCustomer(req.body)
+  var custID = await pg.createUser(req.body)
+
+  if(custID == -1){
+    res.json({
+      success: false,
+      errorMessage: "Could not create user." 
+    }); 
+    return;
+  }
+
+  var unapproved_customer_role_ID = 2
 
 
-  res.json({ success: true, sessionToken: "to_be_implemented", role: 4});
+  var roleID = await pg.addUserRole(custID, unapproved_customer_role_ID)
+
+  if(roleID == -1){
+    res.json({
+      success: false,
+      errorMessage: "User cannot be assigned role." 
+    }); 
+    return;
+  }
+
+
+  res.json({ success: true, sessionToken: "to_be_implemented", role: roleID});
 });
 
 
