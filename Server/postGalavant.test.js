@@ -13,7 +13,7 @@ async function main(){
     // console.log(await pg.login("max123", "password"))
 
     //Customer Creation Tests
-    await pg.createCustomer({
+    var custObj = {
         "username": "max123",
         "password": "password",
         "email": "random@yahoo.com",
@@ -32,7 +32,9 @@ async function main(){
             "expirationDate": "11/1/27",
             "ccv": "666"
         }
-    });
+    }
+    
+    await pg.createCustomer(custObj);
 
 
 }

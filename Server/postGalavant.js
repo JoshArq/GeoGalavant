@@ -53,8 +53,14 @@ async function createCustomer(obj){
   }
 
   
+  try{
+    var result = await pool.query(query).rows[0]
+  }
+  catch (err){
+    console.log(err.detail)
+  }
 
-  console.log(await pool.query(query).rows)
+  console.log(result)
 
   query = {
     name: 'createCustomerRole',
