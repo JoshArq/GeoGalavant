@@ -9,13 +9,19 @@ RUN apt-get update && apt-get install -y git
 
 # Clone the application code from the GitHub repository
 RUN git clone https://github.com/JoshArq/GeoGalavant .
+WORKDIR /usr/src/app/
+RUN git checkout sysadmin
 
 # Install dependencies
-WORKDIR /usr/src/app/client
 RUN npm install
-CMD ["npm", "run", "server"]
+RUN npm install -g react-scripts react react-bootstrap react-dom react-router-dom
+WORKDIR /usr/src/app/client/
+RUN npm install
+WORKDIR /usr/src/app/
+
 # Expose the port that your Node.js app listens on
-WORKDIR /usr/src/app/client
-RUN npm install
 EXPOSE 3000
-CMD ["npm","start"]
+
+# Run server and client scripts
+CMD node Server/index.js & cd ./client && npm start
+
