@@ -9,7 +9,11 @@ RUN apt-get update && apt-get install -y git
 
 # Clone the application code from the GitHub repository
 RUN git clone https://github.com/JoshArq/GeoGalavant .
+WORKDIR /usr/src/app/
+RUN npm install
+CMD ["npm", "start"]
 
+# Client
 # Install dependencies
 WORKDIR /usr/src/app/client
 RUN npm install
