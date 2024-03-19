@@ -35,8 +35,21 @@ async function pulseCheck(){
 async function createCustomer(obj){
 //create user, customer, usr-role, 
 
-  var sql = "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES (???????)"
-  await pool.query('')
+  const username = obj.username
+  const password = obj.password
+  const email = obj.email
+  const appliedBefore = obj.appliedBefore
+  const driversLicense = obj.driversLicense
+
+  console.log(username)
+
+  var query = {
+    name: 'createCustomer',
+    text: "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES (???????)",
+    values: [username, password, "FIRSTNAME", "LASTNAME", email, "ADDRESS", "ZIPCODE", "CITY", "STATE ID"],
+  }
+
+  await pool.query(query)
 }
 
 

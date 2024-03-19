@@ -14,11 +14,8 @@ router.get("/test", (req, res) => {
 });
 
 router.post("/createCustomer", (req, res) => {
-  const username = req.body.username
-  const password = req.body.password
-  const email = req.body.email
-  const appliedBefore = req.body.appliedBefore
-  const driversLicense = req.body.driversLicense
+
+  pg.createCustomer(req.body)
 
 
   res.json({ success: true, sessionToken: "to_be_implemented", role: 4});
