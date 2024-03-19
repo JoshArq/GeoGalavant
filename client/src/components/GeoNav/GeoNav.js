@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import logo from '../../assets/Logo.png';
 import './GeoNav.scss'
 
-export default function GeoNav() {
+export default function GeoNav({role, clearData}) {
     return (
         <Navbar expand="md" bg="light" data-bs-theme="light" className="shadow-sm">
             <Container>
@@ -19,13 +19,15 @@ export default function GeoNav() {
                         className="mw-100"
                     />
                 </Navbar.Brand>
-                <Button className="d-none d-sm-block d-md-none" variant="primary">Apply</Button>
+                { role ? '' : <Button as={Link} to="/apply" className="d-none d-sm-block d-md-none" variant="primary">Apply</Button> }
                 <Navbar.Collapse className="justify-content-end">
                     <Nav>
                         <Nav.Link as={Link} to="/about" className="text-center mx-md-4 my-xs-4 my-md-0">About</Nav.Link>
                         <Nav.Link as={Link} to="/contact" className="text-center mx-md-4 my-xs-4 my-md-0">Contact</Nav.Link>
-                        <Nav.Link className="text-center mx-md-4 my-xs-4 my-md-0" href="#login">Login</Nav.Link>
-                        <Button className="text-center mx-md-4 my-xs-4 my-md-0 d-inline d-sm-none d-md-inline" variant="primary">Apply</Button>
+                        { role ? <Nav.Link as={Link} to="/account" className="text-center mx-md-4 my-xs-4 my-md-0">My Account</Nav.Link> : '' }
+                        { role ? <Nav.Link onClick={() => {clearData()}} className="text-center mx-md-4 my-xs-4 my-md-0">Logout</Nav.Link> : '' }
+                        { role ? '' : <Nav.Link as={Link} to="/login" className="text-center mx-md-4 my-xs-4 my-md-0">Login</Nav.Link> }
+                        { role ? '' : <Button as={Link} to="/apply" className="text-center mx-md-4 my-xs-4 my-md-0 d-inline d-sm-none d-md-inline" variant="primary">Apply</Button> }
                     </Nav>
                 </Navbar.Collapse>
             </Container>
