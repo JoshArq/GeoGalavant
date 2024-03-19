@@ -161,9 +161,11 @@ CREATE TABLE Users(
 CREATE INDEX Username ON Users (Username);
 
 -- Populates Users table with some sample data --
-INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES (1, 'aaa', 'aaa', 'Alfred', 'Albertson', 'aaa@gmail.com', '123 Street', '12345', 'Rochester', 1),
-	(2, 'bbb', 'bbb', 'Bruce', 'Batman', 'bbb@gmail.com', '321 Street', '12345', 'Rochester', 1),
-	(3, 'ccc', 'ccc', 'Candice', 'Campbell', 'ccc@gmail.com', '231 Street', '12345', 'Rochester', 1);
+INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES ('aaa', 'aaa', 'Alfred', 'Albertson', 'aaa@gmail.com', '123 Street', '12345', 'Rochester', 1),
+	('bbb', 'bbb', 'Bruce', 'Batman', 'bbb@gmail.com', '321 Street', '12345', 'Rochester', 1),
+	('ccc', 'ccc', 'Candice', 'Campbell', 'ccc@gmail.com', '231 Street', '12345', 'Rochester', 1),
+	('ddd', 'ddd', 'Daniel', 'Denkins', 'ddd@gmail.com', '231 Street', '12345', 'Rochester', 1),
+	('eee', 'eee', 'Evelyn', 'Escaflone', 'eee@gmail.com', '231 Street', '12345', 'Rochester', 1);
 
 
 -- Table containing the statuses of various users --
@@ -230,7 +232,9 @@ CREATE TABLE User_Role(
 --Populates the User_Role table --
 INSERT INTO User_Role (UserID, RoleID) VALUES (1,1),
 	(2,2),
-	(3,3);
+	(3,3)
+	(4,4),
+	(5,5);
 
 -- Generate Role_Permissions table --
 CREATE TABLE Role_Permission(
