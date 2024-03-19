@@ -47,7 +47,7 @@ async function createCustomer(obj){
 
   var query = {
     name: 'createCustomer',
-    text: "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6)",
+    text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6)",
     values: [username, password, driversLicense.firstname, driversLicense.firstname, email, driversLicense.state,]
   }
 
