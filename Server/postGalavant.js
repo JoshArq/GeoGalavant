@@ -48,26 +48,32 @@ async function createCustomer(obj){
 
   var query = {
     name: 'createCustomerInfo',
-    text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, City, Zipcode, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+    text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, City, Zipcode, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING UserID",
     values: [username, password, firstName, lastName, email, "TBD", "TBD", "TBD", 1]
   }
 
   
   try{
-    var result = await pool.query(query).rows[0]
+    var userID = (await pool.query(query)).rows[0].userid
   }
   catch (err){
     console.log(err.detail)
   }
 
-  console.log(result)
+  var unapproved_customer_role_ID = 2
 
   query = {
     name: 'createCustomerRole',
-    text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, City, Zipcode, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-    values: [username, password, firstName, lastName, email, "TBD", "TBD", "TBD", 1]
+    text: "INSERT INTO User_Role (UserID, RoleID) VALUES ($1, $2)",
+    values: [userID, unapproved_customer_role_ID]
   }
 
+  try{
+    await pool.query(query)
+  }
+  catch (err){
+    console.log(err.detail)
+  }
 
 }
 

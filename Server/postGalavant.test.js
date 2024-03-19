@@ -10,7 +10,7 @@ async function main(){
     
     //Login tests
     // console.log(await pg.login("bbb", "bbb"))
-    // console.log(await pg.login("max123", "password"))
+    console.log(await pg.login("max123", "password"))
 
     //Customer Creation Tests
     var custObj = {
@@ -34,7 +34,7 @@ async function main(){
         }
     }
     
-    await pg.createCustomer(custObj);
+    // await pg.createCustomer(custObj);
 
 
 }
