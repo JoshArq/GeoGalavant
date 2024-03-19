@@ -7,7 +7,7 @@
     "server": "nodemon server/index.js",
     "client": "cd client && npm run start",
     "testDL": "node server/postGalavant.test.js",
-    "all": "concurrently \"npm run dev:server\" \"npm run client\""
+    "all": "concurrently \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
