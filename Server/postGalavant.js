@@ -38,14 +38,14 @@ async function pulseCheck(){
 async function createUser(obj){
 //create user, customer, usr-role, 
 
-  const username = obj.username
-  const password = obj.password
-  const email = obj.email
-  const appliedBefore = obj.appliedBefore
-  const driversLicense = obj.driversLicense
-  const firstName = driversLicense.firstName
-  const lastName = driversLicense.lastName
+  const query = {
+    text: "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+    values: [obj.userId, obj.username, obj.password, obj.firstName, obj.lastName, obj.email, obj.address, obj.zipcode, obj.stateProvinceID]
+  };
 
+  const res = await pool.query(query);
+  return res.rowCount;
+}
 
   var query = {
     name: 'insertUser',
@@ -62,6 +62,37 @@ async function createUser(obj){
     return -1
   }
 
+async function getUserByName(username){
+  const query = {
+    text: "SELECT * FROM Users WHERE Username = $1",
+    values: [username]
+  };
+
+  const res = await pool.query(query);
+  return res.rows[0];
+}
+
+async function getUserById(userId){
+  const query = {
+    text: "SELECT * FROM Users WHERE UserID = $1",
+    values: [userId]
+  };
+
+  const res = await pool.query(query);
+  return res.rows[0];
+}
+
+async function getAllUsers(){
+  const query = {
+    text: "SELECT * FROM Users WHERE UserID = $1",
+    values: [userId]
+  };
+
+  const res = await pool.query(query);
+  return res.rows[0];
+}
+
+async function addUserRole(){
 
 }
 
