@@ -62,6 +62,12 @@ async function createUser(obj){
     return -1
   }
 
+  try{
+    await pool.query(query)
+  }
+  catch (err){
+    console.log(err.detail)
+  }
 
 }
 
