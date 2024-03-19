@@ -253,6 +253,27 @@ CREATE TABLE Role_Permission(
 
 --Populates the User_Role table --
 INSERT INTO Role_Permission (RoleID, PermissionID) VALUES (1,1),
+	(7,13),
+	(6,10),
+	(6,11),
+	(5,3),
+	(5,4),
+	(5,5),
+	(5,6),
+	(5,7),
+	(5,8),
+	(5,9),
+	(4,1),
+	(4,2),
+	(3,1),
+	(3,2),
+	(3,3),
+	(3,4),
+	(3,5),
+	(3,6),
+	(3,7),
+	(3,8),
+	(3,9),
 	(1,2),
 	(1,3),
 	(1,4),
@@ -261,17 +282,9 @@ INSERT INTO Role_Permission (RoleID, PermissionID) VALUES (1,1),
 	(1,7),
 	(1,8),
 	(1,9),
-	(1,12),
-	(2,13),
-	(3,1),
-	(3,2),
-	(4,10),
-	(5,3),
-	(5,5),
-	(5,6),
-	(5,7),
-	(5,8),
-	(5,9);
+	(1,12);
+
+	
 
 -- Creates view with a user's permissions
 CREATE VIEW User_Permissions AS SELECT u.UserID AS id,

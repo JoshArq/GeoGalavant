@@ -27,7 +27,7 @@ router.post("/createCustomer", async (req, res) => {
     return;
   }
 
-  var unapproved_customer_role_ID = 2
+  var unapproved_customer_role_ID = 7
 
 
   var roleID = await pg.addUserRole(custID, unapproved_customer_role_ID)
@@ -49,8 +49,25 @@ router.post("/createCustomer", async (req, res) => {
 router.post("/login", async (req, res) => {
   const username = req.body.username
   const password = req.body.password
+  const ip = req.ip
 
-  res.json(await pg.login(username, password));
+  result = await pg.login(username, password)
+
+  if(result.success == false){
+    res.json(result);
+    return;
+  }
+  else{
+    var authToken = await generateToken(result.userID, ip)
+
+    res.json({
+      success: true,
+      sessionToken: authToken,
+      role: result.role
+    })
+  }
+
+  res.json();
 });
 
 

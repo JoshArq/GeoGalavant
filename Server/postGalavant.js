@@ -190,7 +190,7 @@ async function login(username, password){
 
     return {
       success: true,
-      sessionToken: "to_be_implemented",
+      userID: result[0].userid,
       role: role[0].roleid
     };
   }
