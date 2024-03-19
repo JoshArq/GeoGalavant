@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS Roles;
 DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS Car;
 DROP TABLE IF EXISTS CarStatus;
+DROP TABLE IF EXISTS CarTracking;
 DROP TABLE IF EXISTS Station;
 DROP TABLE IF EXISTS PaymentType;
 DROP TABLE IF EXISTS ApplicationStatus;
@@ -93,12 +94,15 @@ INSERT INTO PaymentType (PaymentTypeID, PaymentType) VALUES (1, 'Mastercard');
 CREATE TABLE Station(
 	StationID SERIAL PRIMARY KEY,
 	StationName VARCHAR(20),
-	Address VARCHAR(50),
+	MinLatitude NUMERIC(8,6),
+	MaxLatitude NUMERIC(8,6),
+	MinLongitude NUMERIC(8,6),
+	MaxLongitude NUMERIC(8,6),
 	IsClosed BOOLEAN NOT NULL
 );
 
 -- Populates Station table with some sample data --
-INSERT INTO Station (StationID, StationName, Address, IsClosed) VALUES (1, 'North Street', '2 North Street Rochester NY', FALSE);
+INSERT INTO Station (StationID, StationName, MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, IsClosed) VALUES (1, 'RIT', 43.0813185, 43.081585, -77.677650, -77.678876, FALSE);
 
 -- Generate CarStatus table --
 CREATE TABLE CarStatus(
@@ -125,6 +129,17 @@ CREATE TABLE Car(
 
 -- Populates Car lookup table with some sample data --
 INSERT INTO Car (CarID, CarStatusID, StationID) VALUES (1, 1, 1);
+
+--generate the car tracking table --
+CREATE TABLE CarTracking(
+	CarID INT,
+	Time TIMESTAMP,
+	Latitude NUMERIC(8,6),
+	Longitude NUMERIC(8,6),
+	PRIMARY KEY (CarID, Time),
+	FOREIGN KEY (CarID)
+		REFERENCES Car(CarID)
+);
 
 -- Generate user table --
 CREATE TABLE Users(
