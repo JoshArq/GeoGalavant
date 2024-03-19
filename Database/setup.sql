@@ -191,11 +191,14 @@ Create Table Roles(
 	Title Varchar(25) NOT NULL
 );
 
-INSERT INTO Roles (RoleID, Title) VALUES (1, 'Administrator'),
-	(2, 'User'),
-	(3, 'Mechanic'),
-	(4, 'Customer'),
+INSERT INTO Roles (RoleID, Title) VALUES 
+	(1, 'System Administrator'),
+	(2, 'Business Administrator'),
+	(3, 'Manager'),
+	(4, 'Mechanic'),
 	(5, 'Customer Service');
+	(6, "Customer")
+	(7, "User")
 
 -- Generate Permissions table --
 CREATE TABLE Permissions(
@@ -204,7 +207,8 @@ CREATE TABLE Permissions(
 );
 
 --Populates the Permissions table --
-INSERT INTO Permissions (PermissionID, Description) VALUES (1, 'Manage Cars'),
+INSERT INTO Permissions (PermissionID, Description) VALUES 
+	(1, 'Manage Cars'),
 	(2, 'Car Reports'),
 	(3, 'View Users'),
 	(4, 'Manage Customer Accounts'),
