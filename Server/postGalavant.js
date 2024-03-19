@@ -42,16 +42,27 @@ async function createCustomer(obj){
   const email = obj.email
   const appliedBefore = obj.appliedBefore
   const driversLicense = obj.driversLicense
+  const firstName = driversLicense.firstName
+  const lastName = driversLicense.lastName
 
-  console.log(username)
 
   var query = {
-    name: 'createCustomer',
-    text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6)",
-    values: [username, password, driversLicense.firstname, driversLicense.firstname, email, driversLicense.state,]
+    name: 'createCustomerInfo',
+    text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, City, Zipcode, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+    values: [username, password, firstName, lastName, email, "TBD", "TBD", "TBD", 1]
   }
 
-  await pool.query(query);
+  
+
+  console.log(await pool.query(query).rows)
+
+  query = {
+    name: 'createCustomerRole',
+    text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, City, Zipcode, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+    values: [username, password, firstName, lastName, email, "TBD", "TBD", "TBD", 1]
+  }
+
+
 }
 
 
