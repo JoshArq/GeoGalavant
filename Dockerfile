@@ -13,11 +13,9 @@ RUN git clone https://github.com/JoshArq/GeoGalavant .
 # Install dependencies
 WORKDIR /usr/src/app/client
 RUN npm install
-#RUN npm run all
-CMD ["npm", "run", "all"]
-
+CMD ["npm", "run", "server"]
 # Expose the port that your Node.js app listens on
+WORKDIR /usr/src/app/client
+RUN npm install
 EXPOSE 3000
-
-# Command to run your Node.js application
-CMD ["npm", "start"]
+CMD ["npm","start"]
