@@ -232,7 +232,7 @@ CREATE TABLE User_Role(
 --Populates the User_Role table --
 INSERT INTO User_Role (UserID, RoleID) VALUES (1,1),
 	(2,2),
-	(3,3)
+	(3,3),
 	(4,4),
 	(5,5);
 
