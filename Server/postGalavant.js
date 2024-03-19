@@ -47,11 +47,11 @@ async function createUser(obj){
 
   var query = {
     name: 'createCustomer',
-    text: "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES (???????)",
-    values: [username, password, "FIRSTNAME", "LASTNAME", email, "ADDRESS", "ZIPCODE", "CITY", "STATE ID"],
+    text: "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6)",
+    values: [username, password, driversLicense.firstname, driversLicense.firstname, email, driversLicense.state,]
   }
 
-  await pool.query(query)
+  await pool.query(query);
 }
 
 async function updateUser(obj){

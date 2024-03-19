@@ -15,9 +15,9 @@ router.get("/test", (req, res) => {
     res.json({ result: "All good!" });
 });
 
-router.post("/createCustomer", (req, res) => {
+router.post("/createCustomer", async (req, res) => {
 
-  pg.createCustomer(req.body)
+  await pg.createCustomer(req.body)
 
 
   res.json({ success: true, sessionToken: "to_be_implemented", role: 4});
