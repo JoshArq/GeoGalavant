@@ -37,13 +37,21 @@ async function pulseCheck(){
 async function createUser(obj){
 //create user, customer, usr-role, 
 
-  const query = {
-    text: "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
-    values: [obj.userId, obj.username, obj.password, obj.firstName, obj.lastName, obj.email, obj.address, obj.zipcode, obj.stateProvinceID]
-  };
+  const username = obj.username
+  const password = obj.password
+  const email = obj.email
+  const appliedBefore = obj.appliedBefore
+  const driversLicense = obj.driversLicense
 
-  const res = await pool.query(query);
-  return res.rowCount;
+  console.log(username)
+
+  var query = {
+    name: 'createCustomer',
+    text: "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES (???????)",
+    values: [username, password, "FIRSTNAME", "LASTNAME", email, "ADDRESS", "ZIPCODE", "CITY", "STATE ID"],
+  }
+
+  await pool.query(query)
 }
 
 async function updateUser(obj){
