@@ -1,5 +1,7 @@
 const express = require("express");
 const pg = require('./postGalavant.js')
+require('dotenv').config()
+
 
 
 const PORT = process.env.PORT || 5001;
@@ -13,15 +15,33 @@ router.get("/test", (req, res) => {
     res.json({ result: "All good!" });
 });
 
-router.post("/createCustomer", (req, res) => {
-  const username = req.body.username
-  const password = req.body.password
-  const email = req.body.email
-  const appliedBefore = req.body.appliedBefore
-  const driversLicense = req.body.driversLicense
+router.post("/createCustomer", async (req, res) => {
+
+  var custID = await pg.createUser(req.body)
+
+  if(custID == -1){
+    res.json({
+      success: false,
+      errorMessage: "Could not create user." 
+    }); 
+    return;
+  }
+
+  var unapproved_customer_role_ID = 7
 
 
-  res.json({ success: true, sessionToken: "to_be_implemented", role: 4});
+  var roleID = await pg.addUserRole(custID, unapproved_customer_role_ID)
+
+  if(roleID == -1){
+    res.json({
+      success: false,
+      errorMessage: "User cannot be assigned role." 
+    }); 
+    return;
+  }
+
+
+  res.json({ success: true, sessionToken: "to_be_implemented", role: roleID});
 });
 
 
@@ -29,9 +49,45 @@ router.post("/createCustomer", (req, res) => {
 router.post("/login", async (req, res) => {
   const username = req.body.username
   const password = req.body.password
+  const ip = req.ip
 
-  res.json(await pg.login(username, password));
+  result = await pg.login(username, password)
+
+  if(result.success == false){
+    res.json(result);
+    return;
+  }
+  else{
+    var authToken = await generateToken(result.userID, ip)
+
+    res.json({
+      success: true,
+      sessionToken: authToken,
+      role: result.role
+    })
+  }
+
+  res.json();
 });
+
+
+
+router.get("/getUserData", (req, res) => {
+  res.json({
+    username: "hardcoded_user",
+    email: "hardcoded_email"
+  });
+});
+
+
+
+router.post("/editUserData", (req, res) => {
+  res.json({
+    success: false,
+    errorMessage: "Feature to be implemented soon"
+  });
+})
+
 
 
 
