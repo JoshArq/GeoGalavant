@@ -194,6 +194,7 @@ Create Table Roles(
 	Title Varchar(25) NOT NULL
 );
 
+
 INSERT INTO Roles (RoleID, Title) VALUES 
 	(1, 'System Administrator'),
 	(2, 'Business Administrator'),
@@ -202,6 +203,7 @@ INSERT INTO Roles (RoleID, Title) VALUES
 	(5, 'Customer Service'),
 	(6, 'Customer'),
 	(7, 'User');
+
 
 -- Generate Permissions table --
 CREATE TABLE Permissions(
