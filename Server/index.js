@@ -88,6 +88,17 @@ router.get("/getUserData", (req, res) => {
 });
 
 
+
+//TODO connect to backend
+router.post("/editUserData", (req, res) => {
+  res.json({
+    success: false,
+    errorMessage: "Feature to be implemented soon"
+  });
+})
+
+
+
 //TODO connect to DB
 router.get("/getCreditCards", (req, res) => {
   res.json({
@@ -135,14 +146,51 @@ router.post("/deleteCreditCard", (req, res) => {
 
 
 
-
 //TODO connect to backend
-router.post("/editUserData", (req, res) => {
+router.get("/getLocations", (req, res) => {
   res.json({
-    success: false,
-    errorMessage: "Feature to be implemented soon"
+    locations:[
+      {
+        stationID: 1,
+        name: "GyroGoGo Northwest", 
+        address: "The mall at Greece Ridge...",
+        latitude: 111.11,
+        longitude: 111.11
+      },
+      {
+        stationID: 2,
+        name: "GyroGoGo Northeast", 
+        address: "Town Center of Webster...",
+        latitude: 111.11,
+        longitude: 111.11
+      },
+      {
+        stationID: 3,
+        name: "GyroGoGo Center City", 
+        address: "Genesee Crossroads Garage...",
+        latitude: 111.11,
+        longitude: 111.11
+      }
+    ]
   });
-})
+});
+
+
+
+
+
+//TODO - connect to DB
+router.post("/makeReservation", (req, res) => {
+  //insert DB logic here
+
+  res.json({
+    success: true, 
+    reservationNumber: 1111
+  })
+});
+
+
+
 
 
 
