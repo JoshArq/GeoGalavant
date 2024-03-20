@@ -26,22 +26,43 @@ const pool = new Pool({
  
 
 
+
+
 async function pulseCheck(){
   console.log(await pool.query('SELECT NOW()'))
 }
 
 
 
+//returns -1 on failure, return userID on success
 async function createUser(obj){
 //create user, customer, usr-role, 
 
-  const query = {
-    text: "INSERT INTO Users (UserID, Username, Password, FirstName, LastName, Email, Address, ZipCode, City, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
-    values: [obj.userId, obj.username, obj.password, obj.firstName, obj.lastName, obj.email, obj.address, obj.zipcode, obj.stateProvinceID]
-  };
+  const username = obj.username
+  const password = obj.password
+  const email = obj.email
+  const appliedBefore = obj.appliedBefore
+  const driversLicense = obj.driversLicense
+  const firstName = driversLicense.firstName
+  const lastName = driversLicense.lastName
 
-  const res = await pool.query(query);
-  return res.rowCount;
+
+  var query = {
+    name: 'insertUser',
+    text: "INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, City, Zipcode, StateProvinceID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING UserID",
+    values: [username, password, firstName, lastName, email, "TBD", "TBD", "TBD", 1]
+  }
+
+  
+  try{
+    var userID = (await pool.query(query)).rows[0].userid
+    return userID
+  }
+  catch (err){
+    return -1
+  }
+
+
 }
 
 async function updateUser(obj){
@@ -94,7 +115,22 @@ async function getAllUsers(){
   return res.rows[0];
 }
 
-async function addUserRole(){
+async function addUserRole(userID, userRole){
+
+  query = {
+    name: 'insertUserRole',
+    text: "INSERT INTO User_Role (UserID, RoleID) VALUES ($1, $2) RETURNING RoleID",
+    values: [userID, userRole]
+  }
+
+  try{
+    var roleID = (await pool.query(query)).rows[0].roleid
+    console.log(roleID)
+    return roleID;
+  }
+  catch (err){
+    return -1
+  }
 
 }
 
@@ -154,7 +190,7 @@ async function login(username, password){
 
     return {
       success: true,
-      sessionToken: "to_be_implemented",
+      userID: result[0].userid,
       role: role[0].roleid
     };
   }
