@@ -115,6 +115,26 @@ router.get("/getCreditCards", (req, res) => {
 });
 
 
+//TODO connect to backend
+router.post("/addCreditCard", (req, res) => {
+  res.json({
+    success: false,
+    errorMessage: "Feature to be implemented soon"
+  });
+})
+
+
+
+//TODO connect to backend
+router.post("/deleteCreditCard", (req, res) => {
+  res.json({
+    success: false,
+    errorMessage: "Feature to be implemented soon"
+  });
+})
+
+
+
 
 //TODO connect to backend
 router.post("/editUserData", (req, res) => {
@@ -126,7 +146,7 @@ router.post("/editUserData", (req, res) => {
 
 
 
-
+//TODO - connect to DB
 router.post("/submitContactForm", (req, res) => {
   //insert DB logic here
 
