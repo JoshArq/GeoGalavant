@@ -14,10 +14,20 @@ import Apply from './components/Pages/Apply/Apply.js';
 import Account from './components/Pages/Account/Account.js';
 import './App.scss';
 
+
 function App() {
   const [data, setData] = React.useState(null);
   const [token, setToken] = React.useState(null);
   const [role, setRole] = React.useState(null); // 1 admin 2 user 3 mech 4 cust 5 cust serve
+
+  // Named roles / arrays for roles so I can more easily determine
+  const roles = {
+    admins: [1, 2],
+    employees: [1, 2, 3, 4, 5], 
+    customers: [6, 7],
+    approvedCustomer: 6,
+  }
+  
 
   // Test data call to check server connected
   // TODO: delete
@@ -45,7 +55,7 @@ function App() {
 
   return (
     <div className="App">
-      <GeoNav role={role} clearData={clearUserData} />
+      <GeoNav role={role} roles={roles} clearData={clearUserData} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="about" element={<About />} />
@@ -59,12 +69,12 @@ function App() {
               <Apply />
             </ProtectedRoute>} />
           <Route path="account" element={
-            <ProtectedRoute role={role}  clearData={clearUserData} permitted={[1,2]}>
+            <ProtectedRoute role={role}  clearData={clearUserData} permitted={customers}>
               <Account />
             </ProtectedRoute>
           }/>
         </Routes>
-      <GeoFooter />
+      { employee.includes(role) ? '' : <GeoFooter /> }
     </div>
   );
 }
