@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y git
 
 # Clone the application code from the GitHub repository
-RUN git clone https://github.com/JoshArq/GeoGalavant .
+RUN git clone -b integration https://github.com/JoshArq/GeoGalavant .
 WORKDIR /usr/src/app/
 
 # Install dependencies
