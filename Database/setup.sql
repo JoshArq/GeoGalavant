@@ -165,7 +165,9 @@ INSERT INTO Users (Username, Password, FirstName, LastName, Email, Address, ZipC
 	('bbb', 'bbb', 'Bruce', 'Batman', 'bbb@gmail.com', '321 Street', '12345', 'Rochester', 1),
 	('ccc', 'ccc', 'Candice', 'Campbell', 'ccc@gmail.com', '231 Street', '12345', 'Rochester', 1),
 	('ddd', 'ddd', 'Daniel', 'Denkins', 'ddd@gmail.com', '231 Street', '12345', 'Rochester', 1),
-	('eee', 'eee', 'Evelyn', 'Escaflone', 'eee@gmail.com', '231 Street', '12345', 'Rochester', 1);
+	('eee', 'eee', 'Evelyn', 'Escaflone', 'eee@gmail.com', '231 Street', '12345', 'Rochester', 1),
+	('fff', 'fff', 'Fiona', 'Flowers', 'fff@gmail.com', '231 Street', '12345', 'Rochester', 1),
+	('ggg', 'ggg', 'Giovanni', 'Gorgonzola', 'ggg@gmail.com', '231 Street', '12345', 'Rochester', 1);
 
 
 -- Table containing the statuses of various users --
@@ -238,7 +240,9 @@ INSERT INTO User_Role (UserID, RoleID) VALUES (1,1),
 	(2,2),
 	(3,3),
 	(4,4),
-	(5,5);
+	(5,5),
+	(6,6),
+	(7,7);
 
 -- Generate Role_Permissions table --
 CREATE TABLE Role_Permission(
