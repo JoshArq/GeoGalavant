@@ -15,6 +15,8 @@ router.get("/test", (req, res) => {
     res.json({ result: "All good!" });
 });
 
+
+//TODO needs address fix
 router.post("/createCustomer", async (req, res) => {
 
   var custID = await pg.createUser(req.body)
@@ -29,7 +31,6 @@ router.post("/createCustomer", async (req, res) => {
 
   var unapproved_customer_role_ID = 7
 
-
   var roleID = await pg.addUserRole(custID, unapproved_customer_role_ID)
 
   if(roleID == -1){
@@ -39,7 +40,6 @@ router.post("/createCustomer", async (req, res) => {
     }); 
     return;
   }
-
 
   res.json({ success: true, sessionToken: "to_be_implemented", role: roleID});
 });
@@ -71,16 +71,52 @@ router.post("/login", async (req, res) => {
 });
 
 
-
+//TODO connect to DB
 router.get("/getUserData", (req, res) => {
   res.json({
     username: "hardcoded_user",
-    email: "hardcoded_email"
+    email: "hardcoded_email",
+    driversLicense: {
+      firstName: "hardcoded_fname",
+      lastName: "hardcoded_lname",
+      state: "hardcoded_state",
+      ID: "hardcoded_DL_ID",
+      expirationDate: "hardcoded_exp_date"
+    }
+    
+  });
+});
+
+
+//TODO connect to DB
+router.get("/getCreditCards", (req, res) => {
+  res.json({
+    cards: [
+      {
+        lastNumbers: "Credit card ending in ####",
+        fullname: "hardcoded_cc_name",
+        expirationDate: "hardcoded_exp_date",
+        cvv: "hardcoded_cvv"
+      },
+      {
+        lastNumbers: "Credit card ending in ####",
+        fullname: "hardcoded_cc_name",
+        expirationDate: "hardcoded_exp_date",
+        cvv: "hardcoded_cvv"
+      },
+      {
+        lastNumbers: "Credit card ending in ####",
+        fullname: "hardcoded_cc_name",
+        expirationDate: "hardcoded_exp_date",
+        cvv: "hardcoded_cvv"
+      }
+    ]
   });
 });
 
 
 
+//TODO connect to backend
 router.post("/editUserData", (req, res) => {
   res.json({
     success: false,
