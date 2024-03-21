@@ -104,18 +104,21 @@ router.get("/getCreditCards", (req, res) => {
   res.json({
     cards: [
       {
+        cardToken: "11111111",
         lastNumbers: "Credit card ending in ####",
         fullname: "hardcoded_cc_name",
         expirationDate: "hardcoded_exp_date",
         cvv: "hardcoded_cvv"
       },
       {
+        cardToken: "22222222222",
         lastNumbers: "Credit card ending in ####",
         fullname: "hardcoded_cc_name",
         expirationDate: "hardcoded_exp_date",
         cvv: "hardcoded_cvv"
       },
       {
+        cardToken: "333333333",
         lastNumbers: "Credit card ending in ####",
         fullname: "hardcoded_cc_name",
         expirationDate: "hardcoded_exp_date",
@@ -137,7 +140,7 @@ router.post("/addCreditCard", (req, res) => {
 
 
 //TODO connect to backend
-router.post("/deleteCreditCard", (req, res) => {
+router.delete("/removeCreditCard", (req, res) => {
   res.json({
     success: false,
     errorMessage: "Feature to be implemented soon"
@@ -191,6 +194,70 @@ router.post("/makeReservation", (req, res) => {
 
 
 
+
+
+
+
+
+//TODO - connect to DB
+router.get("/getUserReservations", (req, res) => {
+  //insert DB logic here
+
+  res.json({
+    reservations: [
+      {
+        reservationNumber: 1111,
+        pickupStationName: "GyroGoGo Northwest",
+        pickupStationAddress: "The mall at Greece Ridge...",
+        dropoffStationName: "GyroGoGo Center City",
+        dropoffStationAddress: "Genesee Crossroads Garage...",
+        pickupDateTime: "2012-04-23T18:25:43.511Z",
+        dropoffDateTime: "2012-04-23T18:25:43.511Z"
+      },
+      {
+        reservationNumber: 2222,
+        pickupStationName: "GyroGoGo Northwest",
+        pickupStationAddress: "The mall at Greece Ridge...",
+        dropoffStationName: "GyroGoGo Center City",
+        dropoffStationAddress: "Genesee Crossroads Garage...",
+        pickupDateTime: "2012-04-23T18:25:43.511Z",
+        dropoffDateTime: "2012-04-23T18:25:43.511Z"
+      },
+      {
+        reservationNumber: 3333,
+        pickupStationName: "GyroGoGo Northwest",
+        pickupStationAddress: "The mall at Greece Ridge...",
+        dropoffStationName: "GyroGoGo Center City",
+        dropoffStationAddress: "Genesee Crossroads Garage...",
+        pickupDateTime: "2012-04-23T18:25:43.511Z",
+        dropoffDateTime: "2012-04-23T18:25:43.511Z"
+      }   
+    ]
+    
+  })
+});
+
+
+
+
+
+
+//TODO - connect to DB
+router.get("/getUserReservationByID", (req, res) => {
+  //insert DB logic here
+
+  res.json({
+    reservationNumber: 3333,
+    pickupStationName: "GyroGoGo Northwest",
+    pickupStationAddress: "The mall at Greece Ridge...",
+    dropoffStationName: "GyroGoGo Center City",
+    dropoffStationAddress: "Genesee Crossroads Garage...",
+    pickupDateTime: "2012-04-23T18:25:43.511Z",
+    dropoffDateTime: "2012-04-23T18:25:43.511Z",
+    cardLastNumbers: "Credit card ending in ####"
+  });
+
+});
 
 
 
