@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { useNavigate } from "react-router-dom";
 
-export default function Login({saveData}) {
+export default function Login({saveData, customers}) {
     const [isValid, setIsValid] = useState(true);
     let navigate = useNavigate();
     
@@ -34,8 +34,13 @@ export default function Login({saveData}) {
                     // Save user data
                     saveData(data);
 
-                    // Redirect
-                    navigate("/account");
+                    // Redirect to acct page if user
+                    if (customers.includes(data.role)) {
+                        navigate("/account");
+                    }
+                    else {
+                        navigate("/employee/account")
+                    }
                 }
                 // Server returned unsuccessful
                 else {

@@ -4,21 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "testDL": "node server/postGallavant.test.js",
-    "dev": "nodemon server/index.js"
+    "server": "nodemon server/index.js",
+    "client": "cd client && npm run start",
+    "testDL": "node server/postGalavant.test.js",
+    "resetDB": "psql -U postgres -d postgres -f Database/setup.sql",
+    "all": "concurrently \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "create-react-app": "^5.0.1",
     "dotenv": "^16.4.1",
-    "express": "^4.18.2",
+    "express": "^4.18.3",
     "nodemon": "^3.0.3",
     "pg": "^8.11.3"
   }
