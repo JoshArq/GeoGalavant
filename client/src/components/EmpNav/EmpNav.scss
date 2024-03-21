@@ -1,0 +1,16 @@
+@import '../../customize.scss';
+
+.empNav {
+    background-color: $gray-200;
+    min-height: calc(100vh - 56px);
+}
+
+.blue-hov:hover {
+    background-color: $primary;
+    color: white !important;
+}
+
+#active {
+    background-color: $primary;
+    color: white !important;
+}
