@@ -1,5 +1,45 @@
-      containers:                                                                                                                                                      [0/820]
-      - image: vhafener/geogalavant:v1.3
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "29"
+  creationTimestamp: "2024-02-22T15:42:51Z"
+  generation: 30
+  name: nodejs-app
+  namespace: default
+  resourceVersion: "8852243"
+  uid: 7b78e8a6-2433-496d-ade9-09c1146d8bec
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nodejs
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nodejs
+    spec:
+      containers:
+      - env:
+        - name: PGUSER
+          value: ps_user
+        - name: PGHOST
+          value: postgres
+        - name: PGDATABASE
+          value: postgres
+        - name: PGPASSWORD
+          value: cGFzc3dvcmQK
+        - name: PGPORT
+          value: "5432"
+        image: vhafener/geogalavant:v1.3
         imagePullPolicy: Always
         name: geogalavant
         ports:
@@ -23,12 +63,12 @@ status:
     status: "True"
     type: Available
   - lastTransitionTime: "2024-03-19T21:11:46Z"
-    lastUpdateTime: "2024-03-20T23:16:30Z"
-    message: ReplicaSet "nodejs-app-654ff4667b" has successfully progressed.
+    lastUpdateTime: "2024-03-21T14:02:51Z"
+    message: ReplicaSet "nodejs-app-b8d865ff4" has successfully progressed.
     reason: NewReplicaSetAvailable
     status: "True"
     type: Progressing
-  observedGeneration: 27
+  observedGeneration: 30
   readyReplicas: 1
   replicas: 1
   updatedReplicas: 1
