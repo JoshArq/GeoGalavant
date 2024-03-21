@@ -1,6 +1,8 @@
 const express = require("express");
 const pg = require('./postGalavant.js')
 require('dotenv').config()
+const bcrypt = require('bcrypt');
+
 
 
 
@@ -13,6 +15,16 @@ app.use(express.json());
 
 router.get("/test", (req, res) => {
     res.json({ result: "All good!" });
+});
+
+
+router.get("/testToken", async (req, res) => {
+  const token = req.body.token
+
+  var data = await decodeToken(token)
+
+  
+  res.json({ data});
 });
 
 
@@ -352,4 +364,56 @@ async function generateToken(id, ip = "127.0.0.1"){
   
   apiLog("Generated token:" + tokenstr)
   return tokenstr
+}
+
+
+
+//TODO
+// fix race conditions for return
+// fix IP decoding
+async function decodeToken(token){
+  var data = {validToken: false}
+
+  var checksum = token.substring(0, 60)
+  var interleavedToken = token.substring(60, token.length)
+
+
+  //analyze checksum to make sure string has not been tampered with
+  await bcrypt.compare(interleavedToken, checksum, (err, result)=>{
+    if(err){
+      apiLog("token decryption error");
+      return;
+    }
+
+    //de-interleave all values
+    var ip = ""
+    var id = ""
+
+    for(let i = 3; i < interleavedToken.length; i += 4){
+      ip += interleavedToken[i]
+    }
+
+    for(let i = interleavedToken.length -2; i > 0; i -= 4){
+      id += interleavedToken[i]
+    }
+
+    ip = ip.toString(16)
+    while(ip.charAt[0] == '0'){
+      ip = ip.substring(1, ip.length)
+    }
+
+    id = parseInt(id, 8)
+
+    apiLog(id);
+    apiLog(ip);
+
+    data.validToken = true
+    data.ip = ip;
+    data.id = id;
+    return;
+  });
+
+
+
+  return data
 }
