@@ -42,7 +42,6 @@ export default function LocMap(props) {
     const [map, setMap] = React.useState(null)
     const onLoad = React.useCallback(function callback(map) {
         const bounds = new window.google.maps.LatLngBounds(center);
-        map.fitBounds(bounds);
         setMap(map)
     }, [])
     const onUnmount = React.useCallback(function callback(map) {

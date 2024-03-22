@@ -37,7 +37,7 @@ export default function GeoNav({role, roles, clearData}) {
                         { role ? <Nav.Link onClick={() => {clearData()}} className="text-center mx-md-4 my-xs-4 my-md-0">Logout</Nav.Link> : '' }
                         { role ? '' : <Nav.Link as={Link} to="/login" className="text-center mx-md-4 my-xs-4 my-md-0">Login</Nav.Link> }
                         { role ? '' : <Button as={Link} to="/apply" className="text-center mx-md-4 my-xs-4 my-md-0 d-inline d-sm-none d-md-inline" variant="primary">Apply</Button> }
-                        { role ? <Button as={Link} to="/reserve" className="text-center mx-md-4 my-xs-4 my-md-0 d-inline d-sm-none d-md-inline" variant="primary">Reserve</Button> : '' }
+                        { roles.approvedCustomer.includes(role) ? <Button as={Link} to="/reserve" className="text-center mx-md-4 my-xs-4 my-md-0 d-inline d-sm-none d-md-inline" variant="primary">Reserve</Button> : '' }
                     </Nav>
                 </Navbar.Collapse>
             </Container>
