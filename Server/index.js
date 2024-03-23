@@ -14,12 +14,19 @@ var router = express.Router()
 app.use(express.json());
 
 router.get("/test", (req, res) => {
+  const token = req.headers['auth-token']
+  console.log(token)
+
     res.json({ result: "All good!" });
 });
 
 
 router.get("/testToken", async (req, res) => {
-  const token = req.headers['auth-Token']
+  
+  
+  const token = req.headers['auth-token']
+  console.log(token)
+  // const token = req.body.token
 
   var data = await decodeToken(token)
 
@@ -120,21 +127,18 @@ router.get("/getCreditCards", (req, res) => {
         lastNumbers: "Credit card ending in ####",
         fullname: "hardcoded_cc_name",
         expirationDate: "hardcoded_exp_date",
-        cvv: "hardcoded_cvv"
       },
       {
         cardToken: "22222222222",
         lastNumbers: "Credit card ending in ####",
         fullname: "hardcoded_cc_name",
         expirationDate: "hardcoded_exp_date",
-        cvv: "hardcoded_cvv"
       },
       {
         cardToken: "333333333",
         lastNumbers: "Credit card ending in ####",
         fullname: "hardcoded_cc_name",
         expirationDate: "hardcoded_exp_date",
-        cvv: "hardcoded_cvv"
       }
     ]
   });

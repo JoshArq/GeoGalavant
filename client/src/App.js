@@ -22,7 +22,11 @@ function App() {
   // Test data call to check server connected
   // TODO: delete
   React.useEffect(() => {
-    fetch("/api/test")
+    fetch("/api/test", {
+      headers: {
+        "auth-token": "TEST-TOKEN"
+      }
+    })
     .then((res) => res.json())
     .then((data) => {
         setData(data.result)
