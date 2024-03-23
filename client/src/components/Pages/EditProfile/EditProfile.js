@@ -7,7 +7,6 @@ import Form from 'react-bootstrap/Form';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import tos from '../../../assets/GyroGoGo Rental Terms and Conditions.pdf';
 
 // Outline for handling form data storage until we submit
 // Put here so you can see the structure while debugging :)
@@ -22,17 +21,9 @@ let form_template = {
         ID: "",
         expirationDate: "",
     },
-    creditCard: {
-        number: 0,
-        fullName: "",
-        expirationDate: "",
-        ccv: "",
-    },
-    appliedBefore: null,
-    tos: null,
 }
 
-export default function Apply() {
+export default function EditProfile() {
     const form = form_template;
     const [step, setStep] = useState(0);
     const [isValid, setIsValid] = useState(true);
@@ -40,50 +31,61 @@ export default function Apply() {
 
     useEffect(() => {
         document.getElementById("previous").setAttribute("disabled", "disabled")
+        let profile = document.getElementById("profile");
+        profile.username.value = "jdoe1234";
+        profile.email.value="name@example.com";
+        profile.password.value="password";
+        profile.confirmPassword.value="password";
+        profile.firstName.value="John";
+        profile.lastName.value="Doe";
+        profile.state.value="NY";
+        profile.licenseNumber.value = "123456780";
+        profile.licenseExp.value="12/10/2025";
     }, [])
 
 
     const handleCreateAcct = () => {
-        fetch("/api/createCustomer", {
-            method: 'POST',
-            body: JSON.stringify(form),
-        })
-        .then((res) => res.json())
-        .then((data) => {
-            if (data.success) {
-                // Show just success message
+        // TODO: replace with real 
+        // fetch("/api/createCustomer", {
+        //     method: 'POST',
+        //     body: JSON.stringify(form),
+        // })
+        // .then((res) => res.json())
+        // .then((data) => {
+        //     if (data.success) {
+        //         // Show just success message
                 setIsSent(true);
-                setStep(4);
+                setStep(2);
                 document.getElementById("step-heading").innerText = "Completed"
                 document.getElementById("progBtns").classList.add("d-none");
-                document.getElementById("step-3").classList.add("d-none");
-            }
-            else {
-                document.getElementById("err").innerText = "There was an issue sending your application. Please try again."
-                setIsValid(false);
-                setIsSent(false);
-            }
-        }).catch(error => {
-            console.log(error)
-            document.getElementById("err").innerText = "There was an issue sending your application. Please try again."
-            setIsValid(false);
-            setIsSent(false);
-        });
+                document.getElementById("step-1").classList.add("d-none");
+        //     }
+        //     else {
+        //         document.getElementById("err").innerText = "There was an issue editing your profile. Please try again."
+        //         setIsValid(false);
+        //         setIsSent(false);
+        //     }
+        // }).catch(error => {
+        //     console.log(error)
+        //     document.getElementById("err").innerText = "There was an issue editing your profile. Please try again."
+        //     setIsValid(false);
+        //     setIsSent(false);
+        // });
 
         
     }
 
     const validateStep = (step) => {
         // Get form data
-        let app = document.getElementById("application");
+        let profile = document.getElementById("profile");
         let err = document.getElementById("err");
         // Determine which fields to validate
         switch (step) {
             // If valid, save field. If false, return false.
             case 0:
                 // Username
-                if(app.username.checkValidity()) {
-                    form.username = app.username.value;
+                if(profile.username.checkValidity()) {
+                    form.username = profile.username.value;
                 }
                 else {
                     err.innerText = "Enter a username."
@@ -91,8 +93,8 @@ export default function Apply() {
                     return false;
                 }
                 // Email
-                if (app.email.checkValidity()) {
-                    form.email = app.email.value;
+                if (profile.email.checkValidity()) {
+                    form.email = profile.email.value;
                 }
                 else {
                     err.innerText = "Enter an email of valid format."
@@ -100,14 +102,14 @@ export default function Apply() {
                     return false;
                 }
                 // Password
-                if (app.password.checkValidity() && app.confirmPassword.checkValidity()) {
+                if (profile.password.checkValidity() && profile.confirmPassword.checkValidity()) {
                     // Checking confirm password, for the specific feedback
-                    if (app.password.value !== app.confirmPassword.value) {
+                    if (profile.password.value !== profile.confirmPassword.value) {
                         err.innerText = "Check that your password and confirmation match."
                         setIsValid(false);
                         return false;
                     }
-                    form.password = app.password.value;
+                    form.password = profile.password.value;
                 }
                 else {
                     err.innerText = "Enter a password and confirm it."
@@ -119,8 +121,8 @@ export default function Apply() {
                 return true;
             case 1: 
                 // First name
-                if(app.firstName.checkValidity()) {
-                    form.driversLicense.firstName = app.firstName.value;
+                if(profile.firstName.checkValidity()) {
+                    form.driversLicense.firstName = profile.firstName.value;
                 }
                 else {
                     err.innerText = "Enter a first name."
@@ -128,8 +130,8 @@ export default function Apply() {
                     return false;
                 }
                 // Last name
-                if(app.lastName.checkValidity()) {
-                    form.driversLicense.lastName = app.lastName.value;
+                if(profile.lastName.checkValidity()) {
+                    form.driversLicense.lastName = profile.lastName.value;
                 }
                 else {
                     err.innerText = "Enter a last name."
@@ -137,8 +139,8 @@ export default function Apply() {
                     return false;
                 }
                 // State
-                if(app.state.checkValidity() && app.state.value.length > 0) {
-                    form.driversLicense.state = app.state.value;
+                if(profile.state.checkValidity() && profile.state.value.length > 0) {
+                    form.driversLicense.state = profile.state.value;
                 }
                 else {
                     err.innerText = "Select a state."
@@ -146,8 +148,8 @@ export default function Apply() {
                     return false;
                 }
                 // DL number
-                if(app.licenseNumber.checkValidity()) {
-                    form.driversLicense.ID = app.licenseNumber.value;
+                if(profile.licenseNumber.checkValidity()) {
+                    form.driversLicense.ID = profile.licenseNumber.value;
                 }
                 else {
                     err.innerText = "Enter a driver's license number."
@@ -155,73 +157,11 @@ export default function Apply() {
                     return false;
                 }
                 // Exp date
-                if(app.licenseExp.checkValidity()) {
-                    form.driversLicense.expirationDate = app.licenseExp.value;
+                if(profile.licenseExp.checkValidity()) {
+                    form.driversLicense.expirationDate = profile.licenseExp.value;
                 }
                 else {
                     err.innerText = "Enter an expiration in the format of MM/DD/YYYY"
-                    setIsValid(false);
-                    return false;
-                }
-                // All good
-                setIsValid(true);
-                return true;
-            case 2: 
-                // Card number
-                if(app.cardNum.checkValidity()) {
-                    form.creditCard.number = app.cardNum.value;
-                }
-                else {
-                    err.innerText = "Enter a card number."
-                    setIsValid(false);
-                    return false;
-                }
-                // Card name
-                if(app.cardName.checkValidity()) {
-                    form.creditCard.fullName = app.cardName.value;
-                }
-                else {
-                    err.innerText = "Enter the name on the card."
-                    setIsValid(false);
-                    return false;
-                }
-                // Card expiration
-                if(app.cardExp.checkValidity()) {
-                    form.creditCard.expirationDate = app.cardExp.value;
-                }
-                else {
-                    err.innerText = "Enter an expiration date in the format of MM/YY"
-                    setIsValid(false);
-                    return false;
-                }
-                // CCV
-                if(app.ccvNum.checkValidity() && app.ccvNum.value.length === 3) {
-                    form.creditCard.ccv = app.ccvNum.value;
-                }
-                else {
-                    err.innerText = "Enter a CCV of the correct format"
-                    setIsValid(false);
-                    return false;
-                }
-                // All good
-                setIsValid(true);
-                return true;
-            case 3: 
-                // Applied before
-                if(app.appliedBefore.value !== "") {
-                    form.appliedBefore = app.appliedBefore.value;
-                }
-                else {
-                    err.innerText = "Answer whether you've applied to GyroGoGo before."
-                    setIsValid(false);
-                    return false;
-                }
-                // Agree to TOS
-                if(app.terms.checked === true) {
-                    form.tos = app.terms.checked;
-                }
-                else {
-                    err.innerText = "Agree to the Terms of Service."
                     setIsValid(false);
                     return false;
                 }
@@ -257,7 +197,7 @@ export default function Apply() {
         }
 
         // Check for submission case
-        if (oldStep === 3) {
+        if (oldStep === 1) {
             handleCreateAcct()
             return;
         }
@@ -269,7 +209,7 @@ export default function Apply() {
         if (newStep === 1) {
             prevBtn.removeAttribute("disabled");
         }
-        else if (newStep === 3) {
+        else if (newStep === 1) {
             nextBtn.textContent = "Submit";
         }
 
@@ -310,7 +250,7 @@ export default function Apply() {
         if (newStep === 0) {
             prevBtn.setAttribute("disabled", "disabled");
         }
-        else if (oldStep === 3) {
+        else if (oldStep === 1) {
             nextBtn.textContent = "Next";
         }
 
@@ -330,11 +270,11 @@ export default function Apply() {
 
     return (
         <Container as={'main'} className="py-5">
-            <h1 className="mb-4 fw-bold">Join GyroGoGo!</h1>
-            <p className="mb-4">Fill out all the fields in the form below in order to complete your application for GyroGoGo.</p>
-            <Form noValidate id="application">
-                <h2 className="fs-5 fw-bold mb-3" id="step-heading">Step {step + 1} of 4</h2>
-                <ProgressBar className="mb-4" variant="secondary" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
+            <h1 className="mb-4 fw-bold">Edit your profile</h1>
+            <p className="mb-4">Verify all of the form fields and hit "save" at the end.</p>
+            <Form noValidate id="profile">
+                <h2 className="fs-5 fw-bold mb-3" id="step-heading">Step {step + 1} of 2</h2>
+                <ProgressBar className="mb-4" variant="secondary" now={step/2 * 100} label={`${step/2 * 100}%`} id="progress" />
                 <Alert variant="danger" className={'text-danger bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
                     Something is wrong with your submission. Please try again.
                 </Alert> 
@@ -345,7 +285,7 @@ export default function Apply() {
                                 <i className="bi bi-check2-circle"></i>
                             </Col>
                             <Col md={10} className="mt-2 mt-md-0">
-                                <p>Your application has been sent! We will email you with a status update when it has been approved.</p>
+                                <p>Your profile changes have been saved.</p>
                             </Col>
                         </Row>
                     </Container>
@@ -443,36 +383,6 @@ export default function Apply() {
                     <Form.Group className="mb-3" controlId="licenseExp">
                         <Form.Label>Driver's License Expiration Date (MM/DD/YYYY)</Form.Label>
                         <Form.Control type="text" placeholder="01/02/2025"  pattern="\d{1,2}/\d{1,2}/\d{4}" required />
-                    </Form.Group>
-                </section>
-                <section className="grey-section p-5 rounded d-none" id="step-2">
-                    <h3 className="mb-4 fw-bold">Credit Card Information</h3>
-                    <Form.Group className="mb-3" controlId="cardNum">
-                        <Form.Label>Credit Card Number</Form.Label>
-                        <Form.Control type="text" placeholder="1234567890" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="cardName">
-                        <Form.Label>Name on Card</Form.Label>
-                        <Form.Control type="text" placeholder="John Doe" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="cardExp">
-                        <Form.Label>Credit Card Expiration Date (MM/YY)</Form.Label>
-                        <Form.Control type="text" placeholder="01/25"  pattern="\d{1,2}/\d{2}" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="ccvNum">
-                        <Form.Label>CCV</Form.Label>
-                        <Form.Control type="password" placeholder="123" required />
-                    </Form.Group>
-                </section>
-                <section className="grey-section p-5 rounded d-none" id="step-3">
-                    <Form.Group className="mb-3" controlId="appliedBefore">
-                        <Form.Label>Have you applied to GyroGoGo before?</Form.Label>
-                        <Form.Check name="appliedBefore" type="radio" label="Yes" required/>
-                        <Form.Check name="appliedBefore" type="radio" label="No" required/>
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="terms">
-                        <Form.Label>I agree to the <a href={tos} target="_blank">Terms and Conditions</a></Form.Label>
-                        <Form.Check name="terms" type="checkbox" label="Yes" value="true" required/>
                     </Form.Group>
                 </section>
                 <section className="my-4 d-flex justify-content-between" id="progBtns">

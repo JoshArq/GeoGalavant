@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Header from '../../GeoHeader/GeoHeader.js';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
+import { Link } from 'react-router-dom';
 
 export default function Account() {
     return (
@@ -29,7 +30,7 @@ export default function Account() {
                                 <p>Rochester, NY 14623</p>
                             </Col>
                             <Col md={1}>
-                                <Button className="float-end">Edit</Button>
+                                <Button className="float-end" as={Link} to="/account/editProfile">Edit</Button>
                             </Col>
                         </Row>
                     </Card.Body>

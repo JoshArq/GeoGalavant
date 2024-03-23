@@ -16,6 +16,7 @@ import Contact from './components/Pages/Contact/Contact.js';
 import Login from './components/Pages/Login/Login.js';
 import Apply from './components/Pages/Apply/Apply.js';
 import Account from './components/Pages/Account/Account.js';
+import EditProfile from './components/Pages/EditProfile/EditProfile.js';
 import Reserve from './components/Pages/Reserve/Reserve.js';
 import Dashboard from './components/Pages/Dashboard/Dashboard.js';
 import Content from './components/Pages/Content/Content.js';
@@ -103,6 +104,11 @@ function App() {
             <Route path="account" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.customers}>
                 <Account />
+              </ProtectedRoute>
+            }/>
+            <Route path="/account/editProfile" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.customers}>
+                <EditProfile />
               </ProtectedRoute>
             }/>
             <Route path="reserve" element={
