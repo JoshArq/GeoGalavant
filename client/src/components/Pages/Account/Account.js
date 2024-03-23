@@ -68,7 +68,7 @@ export default function Account() {
                                 </Row>
                             </Col>
                             <Col md={1}>
-                                <Button className="float-end">Edit</Button>
+                                <Button className="float-end" as={Link} to="/account/editPayments">Edit</Button>
                             </Col>
                         </Row>
                     </Card.Body>
