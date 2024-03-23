@@ -19,7 +19,7 @@ router.get("/test", (req, res) => {
 
 
 router.get("/testToken", async (req, res) => {
-  const token = req.body.token
+  const token = req.headers['auth-Token']
 
   var data = await decodeToken(token)
 
@@ -378,41 +378,51 @@ async function decodeToken(token){
   var interleavedToken = token.substring(60, token.length)
 
 
-  //analyze checksum to make sure string has not been tampered with
-  await bcrypt.compare(interleavedToken, checksum, (err, result)=>{
-    if(err){
-      apiLog("token decryption error");
-      return;
-    }
-
-    //de-interleave all values
-    var ip = ""
-    var id = ""
-
-    for(let i = 3; i < interleavedToken.length; i += 4){
-      ip += interleavedToken[i]
-    }
-
-    for(let i = interleavedToken.length -2; i > 0; i -= 4){
-      id += interleavedToken[i]
-    }
-
-    ip = ip.toString(16)
-    while(ip.charAt[0] == '0'){
-      ip = ip.substring(1, ip.length)
-    }
-
-    id = parseInt(id, 8)
-
-    apiLog(id);
-    apiLog(ip);
-
-    data.validToken = true
-    data.ip = ip;
-    data.id = id;
-    return;
+  let myPromise = new Promise((myResolve, myReject) => {
+    //analyze checksum to make sure string has not been tampered with
+   bcrypt.compare(interleavedToken, checksum, (err, result)=>{
+      if(err){
+        apiLog("token decryption error");
+        myReject;
+      }
+      else{
+        myResolve()
+      }  
+    });
   });
 
+  await myPromise.then(
+    function(value) {
+      //de-interleave all values
+      var ip = ""
+      var id = ""
+
+      for(let i = 3; i < interleavedToken.length; i += 4){
+        ip += interleavedToken[i]
+      }
+
+      for(let i = interleavedToken.length -2; i > 0; i -= 4){
+        id += interleavedToken[i]
+      }
+
+      ip = ip.toString(16)
+      while(ip.charAt[0] == '0'){
+        ip = ip.substring(1, ip.length)
+      }
+
+      id = parseInt(id, 8)
+
+      apiLog(id);
+      apiLog(ip);
+
+      data.validToken = true
+      data.ip = ip;
+      data.id = id;
+      return;
+
+    },
+    function(error) {}
+  );
 
 
   return data
