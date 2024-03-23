@@ -18,6 +18,7 @@ import Apply from './components/Pages/Apply/Apply.js';
 import Account from './components/Pages/Account/Account.js';
 import EditProfile from './components/Pages/EditProfile/EditProfile.js';
 import Reserve from './components/Pages/Reserve/Reserve.js';
+import EditReservation from './components/Pages/EditReservation/EditReservation.js';
 import Dashboard from './components/Pages/Dashboard/Dashboard.js';
 import Content from './components/Pages/Content/Content.js';
 import Customers from './components/Pages/Customers/Customers.js';
@@ -114,6 +115,11 @@ function App() {
             <Route path="reserve" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.approvedCustomer}> 
                 <Reserve />
+              </ProtectedRoute>
+            }/>
+            <Route path="reserve/edit" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.approvedCustomer}> 
+                <EditReservation />
               </ProtectedRoute>
             }/>
             <Route path="dashboard" element={

@@ -13,10 +13,19 @@ import LocMap from '../../LocMap/LocMap.js';
 
 let form_template = {};
 
-export default function Reserve() {
+export default function EditReservation() {
     const form = form_template;
     const [step, setStep] = useState(0);
     const [isValid, setIsValid] = useState(true);
+    
+    useEffect(() => {
+        let reservation = document.getElementById("reservation");
+        reservation.pickup.value = (new Date).toISOString().slice(0, 19);
+        reservation.dropoff.value = (new Date).toISOString().slice(0, 19);
+        reservation.pickupLoc.value = "test1";
+        reservation.dropoffLoc.value = "test5";
+        reservation.paymentMethod.value = "card2";
+    }, [])
 
     const handleReserveCar = () => {
         // TODO: CHANGE EXAMPLE CODE
@@ -51,7 +60,7 @@ export default function Reserve() {
         let err = document.getElementById("err");
         // Determine which fields to validate
         // switch (step) {
-            // case 0: // THIS IS AN EXAMPLE WITH APPLICATION CODE. 
+            // case 0: // THIS IS AN EXAMPLE 
             // // TODO: CHANGE 
             //     // Applied before
             //     if(reservation.appliedBefore.value !== "") {
@@ -117,7 +126,7 @@ export default function Reserve() {
             prevBtn.removeAttribute("disabled");
         }
         else if (newStep === 3) {
-            nextBtn.textContent = "Reserve";
+            nextBtn.textContent = "Save";
         }
 
         // Hide old step / show new step
@@ -183,8 +192,8 @@ export default function Reserve() {
                     Something is wrong with your submission. Please try again.
                 </Alert> 
                 <section className="" id="step-0">
-                    <h1 className="mb-4 fw-bold">Make a Reservation</h1>
-                    <p className="mt-5 mb-4">Choose a date and time for picking up and dropping off a gyrocar and we’ll find you available locations!</p>
+                    <h1 className="mb-4 fw-bold">Edit Reservation</h1>
+                    <p className="mt-5 mb-4">Review all information and hit "save" at the end.</p>
                     <Card className="grey-section border-0">
                         <Card.Body as={Container}>
                             <Row>
@@ -208,7 +217,7 @@ export default function Reserve() {
                     </div>
                 </section>
                 <section className="d-none" id="step-1">
-                    <h1 className="mb-4 fw-bold">Choose Pick-up Location</h1>
+                    <h1 className="mb-4 fw-bold">Pick-up Location</h1>
                     <p>5 results for Monroe County on ##/##/####</p>
                     <Container>
                         <Row>
@@ -265,7 +274,7 @@ export default function Reserve() {
                     </Container>
                 </section>
                 <section className="d-none" id="step-2">
-                    <h1 className="mb-4 fw-bold">Choose Drop-off Location</h1>
+                    <h1 className="mb-4 fw-bold">Drop-off Location</h1>
                     <p>5 results for Monroe County on ##/##/####</p>
                     <Container>
                         <Row>
@@ -377,11 +386,11 @@ export default function Reserve() {
                     </Container>
                 </section>
                 <section className="d-none" id="done">
-                    <h1 className="mb-4 fw-bold"><i class="bi bi-check-circle-fill me-3"></i> Reservation Successful</h1>
+                    <h1 className="mb-4 fw-bold"><i class="bi bi-check-circle-fill me-3"></i> Reservation Changes Successful</h1>
                     <p>Your reservation number is #####. Use this code to unlock your Gyrocar.</p>
                     <Card className="grey-section border-0 my-4 p-4">
                         <Card.Body as={Container}>
-                            <h3 className="fw-bold fs-5">Reservation Details</h3>
+                            <h3 className="fw-bold fs-5">Resevation Details</h3>
                             <Row>
                                 <Col lg={6}>
                                     <h4 className="fw-bold fs-6 mt-4">Dates & Times</h4>

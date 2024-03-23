@@ -210,7 +210,7 @@ export default function EditProfile() {
             prevBtn.removeAttribute("disabled");
         }
         else if (newStep === 1) {
-            nextBtn.textContent = "Submit";
+            nextBtn.textContent = "Save";
         }
 
         // Hide old step / show new step
@@ -271,7 +271,7 @@ export default function EditProfile() {
     return (
         <Container as={'main'} className="py-5">
             <h1 className="mb-4 fw-bold">Edit your profile</h1>
-            <p className="mb-4">Verify all of the form fields and hit "save" at the end.</p>
+            <p className="mb-4">Review all of the form fields and hit "save" at the end.</p>
             <Form noValidate id="profile">
                 <h2 className="fs-5 fw-bold mb-3" id="step-heading">Step {step + 1} of 2</h2>
                 <ProgressBar className="mb-4" variant="secondary" now={step/2 * 100} label={`${step/2 * 100}%`} id="progress" />
