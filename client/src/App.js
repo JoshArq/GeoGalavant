@@ -124,6 +124,11 @@ function App() {
                 <EditPayments />
               </ProtectedRoute>
             }/>
+            <Route path="/account/editProfile" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.customers}>
+                <EditProfile />
+              </ProtectedRoute>
+            }/>
             <Route path="reserve" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.approvedCustomer}> 
                 <Reserve token={token} />
