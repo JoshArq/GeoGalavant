@@ -1,6 +1,8 @@
 const express = require("express");
 const pg = require('./postGalavant.js')
 require('dotenv').config()
+const bcrypt = require('bcrypt');
+
 
 
 
@@ -15,6 +17,18 @@ router.get("/test", (req, res) => {
     res.json({ result: "All good!" });
 });
 
+
+router.get("/testToken", async (req, res) => {
+  const token = req.body.token
+
+  var data = await decodeToken(token)
+
+  
+  res.json({ data});
+});
+
+
+//TODO needs address fix
 router.post("/createCustomer", async (req, res) => {
 
   var custID = await pg.createUser(req.body)
@@ -29,7 +43,6 @@ router.post("/createCustomer", async (req, res) => {
 
   var unapproved_customer_role_ID = 7
 
-
   var roleID = await pg.addUserRole(custID, unapproved_customer_role_ID)
 
   if(roleID == -1){
@@ -39,7 +52,6 @@ router.post("/createCustomer", async (req, res) => {
     }); 
     return;
   }
-
 
   res.json({ success: true, sessionToken: "to_be_implemented", role: roleID});
 });
@@ -71,16 +83,25 @@ router.post("/login", async (req, res) => {
 });
 
 
-
+//TODO connect to DB
 router.get("/getUserData", (req, res) => {
   res.json({
     username: "hardcoded_user",
-    email: "hardcoded_email"
+    email: "hardcoded_email",
+    driversLicense: {
+      firstName: "hardcoded_fname",
+      lastName: "hardcoded_lname",
+      state: "hardcoded_state",
+      ID: "hardcoded_DL_ID",
+      expirationDate: "hardcoded_exp_date"
+    }
+    
   });
 });
 
 
 
+//TODO connect to backend
 router.post("/editUserData", (req, res) => {
   res.json({
     success: false,
@@ -90,7 +111,169 @@ router.post("/editUserData", (req, res) => {
 
 
 
+//TODO connect to DB
+router.get("/getCreditCards", (req, res) => {
+  res.json({
+    cards: [
+      {
+        cardToken: "11111111",
+        lastNumbers: "Credit card ending in ####",
+        fullname: "hardcoded_cc_name",
+        expirationDate: "hardcoded_exp_date",
+        cvv: "hardcoded_cvv"
+      },
+      {
+        cardToken: "22222222222",
+        lastNumbers: "Credit card ending in ####",
+        fullname: "hardcoded_cc_name",
+        expirationDate: "hardcoded_exp_date",
+        cvv: "hardcoded_cvv"
+      },
+      {
+        cardToken: "333333333",
+        lastNumbers: "Credit card ending in ####",
+        fullname: "hardcoded_cc_name",
+        expirationDate: "hardcoded_exp_date",
+        cvv: "hardcoded_cvv"
+      }
+    ]
+  });
+});
 
+
+//TODO connect to backend
+router.post("/addCreditCard", (req, res) => {
+  res.json({
+    success: false,
+    errorMessage: "Feature to be implemented soon"
+  });
+})
+
+
+
+//TODO connect to backend
+router.delete("/removeCreditCard", (req, res) => {
+  res.json({
+    success: false,
+    errorMessage: "Feature to be implemented soon"
+  });
+})
+
+
+
+//TODO connect to backend
+router.get("/getLocations", (req, res) => {
+  res.json({
+    locations:[
+      {
+        stationID: 1,
+        name: "GyroGoGo Northwest", 
+        address: "The mall at Greece Ridge...",
+        latitude: 111.11,
+        longitude: 111.11
+      },
+      {
+        stationID: 2,
+        name: "GyroGoGo Northeast", 
+        address: "Town Center of Webster...",
+        latitude: 111.11,
+        longitude: 111.11
+      },
+      {
+        stationID: 3,
+        name: "GyroGoGo Center City", 
+        address: "Genesee Crossroads Garage...",
+        latitude: 111.11,
+        longitude: 111.11
+      }
+    ]
+  });
+});
+
+
+
+
+
+//TODO - connect to DB
+router.post("/makeReservation", (req, res) => {
+  //insert DB logic here
+
+  res.json({
+    success: true, 
+    reservationNumber: 1111
+  })
+});
+
+
+
+
+
+
+
+
+//TODO - connect to DB
+router.get("/getUserReservations", (req, res) => {
+  //insert DB logic here
+
+  res.json({
+    reservations: [
+      {
+        reservationNumber: 1111,
+        pickupStationName: "GyroGoGo Northwest",
+        pickupStationAddress: "The mall at Greece Ridge...",
+        dropoffStationName: "GyroGoGo Center City",
+        dropoffStationAddress: "Genesee Crossroads Garage...",
+        pickupDateTime: "2012-04-23T18:25:43.511Z",
+        dropoffDateTime: "2012-04-23T18:25:43.511Z"
+      },
+      {
+        reservationNumber: 2222,
+        pickupStationName: "GyroGoGo Northwest",
+        pickupStationAddress: "The mall at Greece Ridge...",
+        dropoffStationName: "GyroGoGo Center City",
+        dropoffStationAddress: "Genesee Crossroads Garage...",
+        pickupDateTime: "2012-04-23T18:25:43.511Z",
+        dropoffDateTime: "2012-04-23T18:25:43.511Z"
+      },
+      {
+        reservationNumber: 3333,
+        pickupStationName: "GyroGoGo Northwest",
+        pickupStationAddress: "The mall at Greece Ridge...",
+        dropoffStationName: "GyroGoGo Center City",
+        dropoffStationAddress: "Genesee Crossroads Garage...",
+        pickupDateTime: "2012-04-23T18:25:43.511Z",
+        dropoffDateTime: "2012-04-23T18:25:43.511Z"
+      }   
+    ]
+    
+  })
+});
+
+
+
+
+
+
+//TODO - connect to DB
+router.get("/getUserReservationByID", (req, res) => {
+  //insert DB logic here
+
+  res.json({
+    reservationNumber: 3333,
+    pickupStationName: "GyroGoGo Northwest",
+    pickupStationAddress: "The mall at Greece Ridge...",
+    dropoffStationName: "GyroGoGo Center City",
+    dropoffStationAddress: "Genesee Crossroads Garage...",
+    pickupDateTime: "2012-04-23T18:25:43.511Z",
+    dropoffDateTime: "2012-04-23T18:25:43.511Z",
+    cardLastNumbers: "Credit card ending in ####"
+  });
+
+});
+
+
+
+//TODO - connect to DB
 router.post("/submitContactForm", (req, res) => {
   //insert DB logic here
 
@@ -181,4 +364,56 @@ async function generateToken(id, ip = "127.0.0.1"){
   
   apiLog("Generated token:" + tokenstr)
   return tokenstr
+}
+
+
+
+//TODO
+// fix race conditions for return
+// fix IP decoding
+async function decodeToken(token){
+  var data = {validToken: false}
+
+  var checksum = token.substring(0, 60)
+  var interleavedToken = token.substring(60, token.length)
+
+
+  //analyze checksum to make sure string has not been tampered with
+  await bcrypt.compare(interleavedToken, checksum, (err, result)=>{
+    if(err){
+      apiLog("token decryption error");
+      return;
+    }
+
+    //de-interleave all values
+    var ip = ""
+    var id = ""
+
+    for(let i = 3; i < interleavedToken.length; i += 4){
+      ip += interleavedToken[i]
+    }
+
+    for(let i = interleavedToken.length -2; i > 0; i -= 4){
+      id += interleavedToken[i]
+    }
+
+    ip = ip.toString(16)
+    while(ip.charAt[0] == '0'){
+      ip = ip.substring(1, ip.length)
+    }
+
+    id = parseInt(id, 8)
+
+    apiLog(id);
+    apiLog(ip);
+
+    data.validToken = true
+    data.ip = ip;
+    data.id = id;
+    return;
+  });
+
+
+
+  return data
 }
