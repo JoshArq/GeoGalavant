@@ -59,7 +59,7 @@ CREATE TABLE StateProvince(
 );
 
 -- Populates StateProvince table with some sample data --
-INSERT INTO StateProvince (StateProvinceID, StateProvinceName) VALUES (1, 'New York');
+INSERT INTO StateProvince (StateProvinceID, StateProvinceName) VALUES (1, 'NY');
 
 -- Generate AccountStatus lookup table --
 CREATE TABLE AccountStatus(

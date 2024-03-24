@@ -38,7 +38,7 @@ router.get("/testToken", async (req, res) => {
 //TODO needs address fix
 router.post("/createCustomer", async (req, res) => {
 
-  var custID = await pg.createUser(req.body)
+  var custID = await pg.addUser(req.body)
 
   if(custID == -1){
     res.json({
@@ -48,7 +48,7 @@ router.post("/createCustomer", async (req, res) => {
     return;
   }
 
-  var unapproved_customer_role_ID = 7
+  const unapproved_customer_role_ID = 7
 
   var roleID = await pg.addUserRole(custID, unapproved_customer_role_ID)
 
@@ -59,6 +59,16 @@ router.post("/createCustomer", async (req, res) => {
     }); 
     return;
   }
+
+  custSuccess = await pg.addCustomer(custID, req.body)
+  if(custSuccess == 0){
+    res.json({
+      success: false,
+      errorMessage: "Customer Driver's License cannot be stored." 
+    }); 
+    return;
+  }
+
 
   res.json({ success: true, sessionToken: "to_be_implemented", role: roleID});
 });
@@ -101,6 +111,9 @@ router.get("/getUserData", async (req, res) => {
   if(userAuth.validToken){
     
     var userData = await pg.getUserById(userAuth.id)
+    var custData = await pg.getCustomerByUserId(userAuth.id)
+
+    apiLog(custData)
 
     var returnData = {
       username: userData.username,
@@ -165,18 +178,28 @@ router.post("/editUserData", async (req, res) => {
     newUserData.firstName = userData.firstname
     newUserData.lastName = userData.lastname
     newUserData.email = userData.email
-    newUserData.address = "TBD"
-    newUserData.zipcode = "TBD"
-    newUserData.stateProvinceID = "TBD"
+    //TODO get rid of below when DB is fixed
+    newUserData.address = userData.address
+    newUserData.zipcode = userData.zipcode
+    newUserData.city = userData.city
+    newUserData.stateProvinceID = userData.stateprovinceid
+
+    var result = await pg.updateUser(newUserData)
+
+    res.json({result: result})
+
+
+  }
+  else{
+    res.json({
+      success: false,
+      errorMessage: "Feature to be implemented soon"
+    });
 
   }
   
   
   
-  res.json({
-    success: false,
-    errorMessage: "Feature to be implemented soon"
-  });
 })
 
 
