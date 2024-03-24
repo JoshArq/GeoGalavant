@@ -15,9 +15,9 @@ DROP TABLE IF EXISTS Permissions;
 DROP TABLE IF EXISTS Roles;
 DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS CarTracking;
-DROP TABLE IF EXISTS Car;
-DROP TABLE IF EXISTS CarStatus;
-DROP TABLE IF EXISTS Station;
+DROP TABLE IF EXISTS Car CASCADE;
+DROP TABLE IF EXISTS CarStatus CASCADE;
+DROP TABLE IF EXISTS Station CASCADE;
 DROP TABLE IF EXISTS PaymentType;
 DROP TABLE IF EXISTS ApplicationStatus;
 DROP TABLE IF EXISTS AccountStatus;
@@ -59,7 +59,7 @@ CREATE TABLE StateProvince(
 );
 
 -- Populates StateProvince table with some sample data --
-INSERT INTO StateProvince (StateProvinceID, StateProvinceName) VALUES (1, 'New York');
+INSERT INTO StateProvince (StateProvinceID, StateProvinceName) VALUES (1, 'NY');
 
 -- Generate AccountStatus lookup table --
 CREATE TABLE AccountStatus(
@@ -325,6 +325,10 @@ CREATE TABLE Customer(
 	FOREIGN KEY (UserID)
 		REFERENCES Users (UserID)
 );
+
+INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID) VALUES ('2222222222', '2026-04-10', 1, 6),
+('33333333', '2028-11-27', 1, 7);
+
 
 -- Generate Application Table --
 CREATE TABLE Application(

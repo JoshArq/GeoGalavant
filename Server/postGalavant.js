@@ -35,7 +35,7 @@ async function pulseCheck(){
 
 
 //returns -1 on failure, return userID on success
-async function createUser(obj){
+async function addUser(obj){
 //create user, customer, usr-role, 
 
   const username = obj.username
@@ -61,14 +61,46 @@ async function createUser(obj){
   catch (err){
     return -1
   }
+}
+
+
+
+async function addCustomer(userID, obj){
+  var licenseID = obj.driversLicense.ID
+  var licenseExpy = obj.driversLicense. expirationDate
+  var state = obj.driversLicense.state
+
+  console.log(state)
+  
+  var query = {
+    text: "SELECT * from StateProvince WHERE StateProvinceName = $1",
+    values: [state]
+  };
+
+  const res = await pool.query(query);
+  const stateCode = res.rows[0].stateprovinceid
+
+  //TODO format date & insert properly
+
+  query = {
+    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID) VALUES ($1, $2, $3, $4)",
+    values: [licenseID, "2025-07-23", stateCode, userID]
+  };
+
+  const res2 = await pool.query(query);
+
+  return res2.rowCount
 
 
 }
 
+
+
+
 async function updateUser(obj){
   const query = {
     text: "UPDATE Users SET Username = $1, Password = $2, FirstName = $3, LastName = $4, Email = $5, Address = $6, ZipCode = $7, City = $8, StateProvinceID = $9 WHERE UserID = $10",
-    values: [obj.username, obj.password, obj.firstName, obj.lastName, obj.email, obj.address, obj.zipcode, obj.stateProvinceID, obj.userId]
+    values: [obj.username, obj.password, obj.firstName, obj.lastName, obj.email, obj.address, obj.zipcode, obj.city, obj.stateProvinceID, obj.userId]
   };
 
   const res = await pool.query(query);
@@ -103,6 +135,39 @@ async function getUserById(userId){
 
   const res = await pool.query(query);
   return res.rows[0];
+}
+
+
+
+async function getCustomerByUserId(userID){
+  const query = {
+    text: "SELECT Customer.*, StateProvince.StateProvinceName FROM Customer LEFT JOIN Users ON Users.UserID = Customer.UserID LEFT JOIN StateProvince ON Customer.StateProvinceID = StateProvince.StateProvinceID WHERE Users.UserID = $1",
+    values: [userID]
+  };
+
+  const res = await pool.query(query);
+  return res.rows[0];
+
+}
+
+
+async function updateCustomer(obj){
+  var query = {
+    text: "SELECT * from StateProvince WHERE StateProvinceName = $1",
+    values: [obj.state]
+  };
+
+  const res = await pool.query(query);
+  const stateCode = res.rows[0].stateprovinceid
+  
+  query = {
+    text: "UPDATE Customer SET LicenseNumber = $1, LicenseExpires = $2, StateProvinceID = $3 WHERE UserID = $4",
+    values: [obj.licenseNumber, obj.licenseExpy, stateCode, obj.userId]
+  };
+
+  const res2 = await pool.query(query);
+  return res2.rowCount;
+
 }
 
 async function getAllUsers(){
@@ -196,4 +261,4 @@ async function login(username, password){
   }
 }
 
-module.exports = {pulseCheck, createUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login}
+module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer}
