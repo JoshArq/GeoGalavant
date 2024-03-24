@@ -104,13 +104,13 @@ router.post("/login", async (req, res) => {
 router.get("/getUserData", async (req, res) => {
   
   const token = req.headers['auth-token']
-  const inputData = req.body;
 
   var userAuth = await decodeToken(token)
   
   if(userAuth.validToken){
     
     var userData = await pg.getUserById(userAuth.id)
+
     var custData = await pg.getCustomerByUserId(userAuth.id)
 
     apiLog(custData)
@@ -121,16 +121,16 @@ router.get("/getUserData", async (req, res) => {
       driversLicense: {
         firstName: userData.firstname,
         lastName: userData.lastname,
-        state: "?",
-        ID: "?",
-        expirationDate: "?"
-
+        state: custData.stateprovincename,
+        ID: custData.licensenumber,
+        expirationDate: custData.licenseexpires
       }
     }
 
+    
     res.json(returnData)
   } else {
-    //TODO replace default values with error message
+    //TODO replace default values with error message after GR#2
     res.json({
       username: "hardcoded_user",
       email: "hardcoded_email",
