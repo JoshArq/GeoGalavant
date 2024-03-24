@@ -157,6 +157,7 @@ router.post("/editUserData", async (req, res) => {
 
   var userAuth = await decodeToken(token)
 
+  //validate user
   if(userAuth.validToken){
     var userData = await pg.getUserById(userAuth.id)
 
@@ -166,6 +167,7 @@ router.post("/editUserData", async (req, res) => {
 
     newUserData.userId = userData.userid
 
+    //check for username
     if(inputData.hasOwnProperty('username')){
       newUserData.username = inputData.username
     }
@@ -173,18 +175,76 @@ router.post("/editUserData", async (req, res) => {
       newUserData.username = userData.username
     }
 
+    //check for password
+    if(inputData.hasOwnProperty('password')){
+      newUserData.password = inputData.password
+    }
+    else{
+      newUserData.password = userData.password
+    }
 
-    newUserData.password = userData.password
-    newUserData.firstName = userData.firstname
-    newUserData.lastName = userData.lastname
-    newUserData.email = userData.email
-    //TODO get rid of below when DB is fixed
+    //check for email
+    if(inputData.hasOwnProperty('email')){
+      newUserData.email = inputData.email
+    }
+    else{
+      newUserData.email = userData.email
+    }
+
+    //TODO figure out what is happening to these values after GR#2
     newUserData.address = userData.address
     newUserData.zipcode = userData.zipcode
     newUserData.city = userData.city
     newUserData.stateProvinceID = userData.stateprovinceid
 
+    //check for Driver License Values
+    if(inputData.hasOwnProperty('driversLicense')){
+      newUserData.email = inputData.email
+
+      //check for firstName
+      if(inputData.driversLicense.hasOwnProperty('firstName')){
+        newUserData.firstName = inputData.driversLicense.firstName
+      }
+      else{
+        newUserData.firstName = userData.firstName
+      }
+      
+      //check for lastName
+      if(inputData.driversLicense.hasOwnProperty('lastName')){
+        newUserData.lastName = inputData.driversLicense.lastName
+      }
+      else{
+        newUserData.lastName = userData.lastName
+      }
+
+      //check for state
+      if(inputData.driversLicense.hasOwnProperty('state')){
+        newUserData.state = inputData.driversLicense.state
+      }
+      else{
+        newUserData.state = userData.state
+      }
+
+    }
+    else{ // if no DriversLicense info at all
+      newUserData.firstName = userData.firstname
+      newUserData.lastName = userData.lastname
+    }    
+
     var result = await pg.updateUser(newUserData)
+
+    if(result == 1){
+
+    }
+    else{
+      res.json({
+        success: false,
+        errorMessage: "Could not update user data"
+      });
+    }
+
+
+
 
     res.json({result: result})
 
@@ -197,8 +257,6 @@ router.post("/editUserData", async (req, res) => {
     });
 
   }
-  
-  
   
 })
 
