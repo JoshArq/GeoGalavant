@@ -90,26 +90,89 @@ router.post("/login", async (req, res) => {
 });
 
 
-//TODO connect to DB
-router.get("/getUserData", (req, res) => {
-  res.json({
-    username: "hardcoded_user",
-    email: "hardcoded_email",
-    driversLicense: {
-      firstName: "hardcoded_fname",
-      lastName: "hardcoded_lname",
-      state: "hardcoded_state",
-      ID: "hardcoded_DL_ID",
-      expirationDate: "hardcoded_exp_date"
-    }
+//TODO add DL info
+router.get("/getUserData", async (req, res) => {
+  
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+  
+  if(userAuth.validToken){
     
-  });
+    var userData = await pg.getUserById(userAuth.id)
+
+    var returnData = {
+      username: userData.username,
+      email: userData.email,
+      driversLicense: {
+        firstName: userData.firstname,
+        lastName: userData.lastname,
+        state: "?",
+        ID: "?",
+        expirationDate: "?"
+
+      }
+    }
+
+    res.json(returnData)
+  } else {
+    //TODO replace default values with error message
+    res.json({
+      username: "hardcoded_user",
+      email: "hardcoded_email",
+      driversLicense: {
+        firstName: "hardcoded_fname",
+        lastName: "hardcoded_lname",
+        state: "hardcoded_state",
+        ID: "hardcoded_DL_ID",
+        expirationDate: "hardcoded_exp_date"
+      }
+      
+    });
+  }
+  
+  
 });
 
 
 
 //TODO connect to backend
-router.post("/editUserData", (req, res) => {
+router.post("/editUserData", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+
+  if(userAuth.validToken){
+    var userData = await pg.getUserById(userAuth.id)
+
+    apiLog(userData)
+
+    var newUserData = {}
+
+    newUserData.userId = userData.userid
+
+    if(inputData.hasOwnProperty('username')){
+      newUserData.username = inputData.username
+    }
+    else{
+      newUserData.username = userData.username
+    }
+
+
+    newUserData.password = userData.password
+    newUserData.firstName = userData.firstname
+    newUserData.lastName = userData.lastname
+    newUserData.email = userData.email
+    newUserData.address = "TBD"
+    newUserData.zipcode = "TBD"
+    newUserData.stateProvinceID = "TBD"
+
+  }
+  
+  
+  
   res.json({
     success: false,
     errorMessage: "Feature to be implemented soon"
