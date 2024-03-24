@@ -12,6 +12,14 @@ async function main(){
     // console.log(await pg.login("bbb", "bbb"))
     // console.log(await pg.login("max123", "password"))
 
+    //Testing adding and removing user role
+    //console.log(await pg.deleteUserRole(1,1));
+    //console.log(await pg.addUserRole(1,1));
+
+    //testing adding and removing user status
+    console.log(await pg.removeUserStatus("Testing", 1));
+    console.log(await pg.addUserStatus(1,1,"Testing"));
+
     //Customer Creation Tests
     var custObj = {
         "username": "max123",

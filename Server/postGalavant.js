@@ -107,7 +107,7 @@ async function getUserById(userId){
 
 async function getAllUsers(){
   const query = {
-    text: "SELECT * FROM Users WHERE UserID = $1",
+    text: "SELECT * FROM Users",
     values: [userId]
   };
 
@@ -119,31 +119,67 @@ async function addUserRole(userID, userRole){
 
   query = {
     name: 'insertUserRole',
-    text: "INSERT INTO User_Role (UserID, RoleID) VALUES ($1, $2) RETURNING RoleID",
+    text: "INSERT INTO User_Role (UserID, RoleID) VALUES ($1, $2)",
     values: [userID, userRole]
   }
 
   try{
-    var roleID = (await pool.query(query)).rows[0].roleid
+    var roleID = (await pool.query(query))
     console.log(roleID)
     return roleID;
   }
   catch (err){
+    console.log(err);
     return -1
   }
 
 }
 
-async function deleteUserRole(){
+async function deleteUserRole(userID, roleID){
+  query = {
+    text: "DELETE FROM User_Role WHERE UserID = $1 AND RoleID = $2",
+    values: [userID, roleID]
+  }
 
+  try{
+    var rowsEffected = (await pool.query(query))
+    return rowsEffected;
+  }
+  catch(err){
+    return -1;
+  }
 }
 
-async function addUserStatus(){
+async function addUserStatus(userId, statusId, reasonApplied){
+  query = {
+    text: "INSERT INTO User_Status (UserID, StatusID, ReasonApplied) VALUES ($1, $2, $3) RETURNING UserStatusID",
+    values: [userId, statusId, reasonApplied]
+  }
 
+  try{
+    var userStatusId= (await pool.query(query))
+    console.log(userStatusId)
+    return userStatusId;
+  }
+  catch (err){
+    return -1
+  }
 }
 
-async function removeUserStatus(){
+async function removeUserStatus(reasonRemoved, userStatusID){
+  query = {
+    text: `UPDATE User_Status SET CurrentStatus = FALSE, StatusChange = (to_timestamp(${Date.now()} / 1000.0)), ReasonRemoved = $1 WHERE UserStatusID = $2`,
+    values: [reasonRemoved, userStatusID]
+  }
 
+  try{
+    var rowsEffected = (await pool.query(query))
+    return rowsEffected;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
 }
 
 async function getUserPerms(userId){
