@@ -22,7 +22,7 @@ export default function GeoNav({role, roles, clearData}) {
                 { role ? '' : <Button as={Link} to="/apply" className="d-none d-sm-block d-md-none" variant="primary">Apply</Button> }
                 { role ? <Button as={Link} to="/reserve" className="d-none d-sm-block d-md-none" variant="primary">Reserve</Button> : '' }
                 <Navbar.Collapse className="justify-content-end">
-                    <Nav>
+                    <Nav className="align-items-center">
                         { roles.employees.includes(role) ? '' : <Nav.Link as={Link} to="/about" className="text-center mx-md-4 my-xs-4 my-md-0">About</Nav.Link> }
                         { roles.employees.includes(role) ? '' : <Nav.Link as={Link} to="/contact" className="text-center mx-md-4 my-xs-4 my-md-0">Contact</Nav.Link> }
                         { roles.customers.includes(role) ? <Nav.Link as={Link} to="/account" className="text-center mx-md-4 my-xs-4 my-md-0">My Account</Nav.Link> : '' }
