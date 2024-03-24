@@ -122,7 +122,7 @@ router.get("/getUserData", async (req, res) => {
         firstName: userData.firstname,
         lastName: userData.lastname,
         state: custData.stateprovincename,
-        ID: custData.licensenumber,
+        ID: custData.licenseexpries,
         expirationDate: custData.licenseexpires
       }
     }
@@ -161,7 +161,9 @@ router.post("/editUserData", async (req, res) => {
   if(userAuth.validToken){
     var userData = await pg.getUserById(userAuth.id)
 
-    apiLog(userData)
+    var custData = await pg.getCustomerByUserId(userAuth.id)
+
+    apiLog(custData)
 
     var newUserData = {}
 
@@ -222,7 +224,24 @@ router.post("/editUserData", async (req, res) => {
         newUserData.state = inputData.driversLicense.state
       }
       else{
-        newUserData.state = userData.state
+        newUserData.state = custData.stateprovincename
+      }
+
+      //check for DL number
+      if(inputData.driversLicense.hasOwnProperty('ID')){
+        newUserData.licenseNumber = inputData.driversLicense.ID
+      }
+      else{
+        newUserData.licenseNumber = userData.licenseNumber
+      }
+
+      //check for DL expy
+      //TODO check date formats later
+      if(inputData.driversLicense.hasOwnProperty('ID')){
+        newUserData.licenseExpy = inputData.driversLicense.expirationDate
+      }
+      else{
+        newUserData.licenseExpy = userData.licenseexpires
       }
 
     }
@@ -235,6 +254,18 @@ router.post("/editUserData", async (req, res) => {
 
     if(result == 1){
 
+      var result2 = await pg.updateCustomer(newUserData)
+
+      if(result2 == 1){
+        res.json({success: true})
+      }
+      else{
+        res.json({
+          success: false,
+          errorMessage: "Could not update user data"
+        });
+      }
+
     }
     else{
       res.json({
@@ -243,17 +274,11 @@ router.post("/editUserData", async (req, res) => {
       });
     }
 
-
-
-
-    res.json({result: result})
-
-
   }
   else{
     res.json({
       success: false,
-      errorMessage: "Feature to be implemented soon"
+      errorMessage: "Could not identify user"
     });
 
   }

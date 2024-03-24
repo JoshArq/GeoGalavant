@@ -80,9 +80,7 @@ async function addCustomer(userID, obj){
   const res = await pool.query(query);
   const stateCode = res.rows[0].stateprovinceid
 
-  //TODO format date
-
-
+  //TODO format date & insert properly
 
   query = {
     text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID) VALUES ($1, $2, $3, $4)",
@@ -153,6 +151,24 @@ async function getCustomerByUserId(userID){
 }
 
 
+async function updateCustomer(obj){
+  var query = {
+    text: "SELECT * from StateProvince WHERE StateProvinceName = $1",
+    values: [obj.state]
+  };
+
+  const res = await pool.query(query);
+  const stateCode = res.rows[0].stateprovinceid
+  
+  query = {
+    text: "UPDATE Customer SET LicenseNumber = $1, LicenseExpires = $2, StateProvinceID = $3 WHERE UserID = $4",
+    values: [obj.licenseNumber, obj.licenseExpy, stateCode, obj.userId]
+  };
+
+  const res2 = await pool.query(query);
+  return res2.rowCount;
+
+}
 
 async function getAllUsers(){
   const query = {
@@ -245,4 +261,4 @@ async function login(username, password){
   }
 }
 
-module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId}
+module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer}
