@@ -342,22 +342,22 @@ router.get("/getLocations", (req, res) => {
         stationID: 1,
         name: "GyroGoGo Northwest", 
         address: "The mall at Greece Ridge...",
-        latitude: 111.11,
-        longitude: 111.11
+        latitude: 43.20,
+        longitude: -77.69
       },
       {
         stationID: 2,
         name: "GyroGoGo Northeast", 
         address: "Town Center of Webster...",
-        latitude: 111.11,
-        longitude: 111.11
+        latitude: 43.21,
+        longitude: -77.46
       },
       {
         stationID: 3,
         name: "GyroGoGo Center City", 
         address: "Genesee Crossroads Garage...",
-        latitude: 111.11,
-        longitude: 111.11
+        latitude: 43.16,
+        longitude: -77.61
       }
     ]
   });
