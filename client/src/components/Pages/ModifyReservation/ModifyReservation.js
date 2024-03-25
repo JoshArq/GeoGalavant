@@ -12,7 +12,7 @@ export default function ModifyReservation() {
         <main>
             <Header title="Modify Reservation #1234567" />
             <Container as={'section'}>
-                <p><Link to="/customers/customer">Back to customer</Link></p>
+                {/* <p><Link to="/customers/customer">Back to customer</Link></p> */}
                 <h2 className="mb-3">Upcoming Reservation for Arlene McCoy</h2>
                 <Form>
                 <Form.Group className="mb-3" controlId="datetime">
