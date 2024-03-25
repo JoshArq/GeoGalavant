@@ -2,6 +2,7 @@
 DEALLOCATE ALL;
 DROP INDEX IF EXISTS Username;
 DROP VIEW IF EXISTS User_Permissions;
+DROP TABLE IF EXISTS Maintenance;
 DROP TABLE IF EXISTS Ticket;
 DROP TABLE IF EXISTS User_Status;
 DROP TABLE IF EXISTS TicketStatus;
@@ -161,6 +162,7 @@ CREATE TABLE Users(
 	Address VARCHAR(100) NOT NULL,
 	ZipCode VARCHAR(5) NOT NULL,
 	City VARCHAR(40) NOT NULL,
+	AssociatedCity VARCHAR(40) DEFAULT 'Rochester' NOT NULL,
 	StateProvinceID INT NOT NULL,
 	FOREIGN KEY (StateProvinceID)
 		REFERENCES StateProvince (StateProvinceID)
