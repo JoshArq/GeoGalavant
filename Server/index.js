@@ -37,6 +37,8 @@ router.get("/testToken", async (req, res) => {
 
 //TODO needs address fix
 router.post("/createCustomer", async (req, res) => {
+  
+  apiLog(req)
 
   var custID = await pg.addUser(req.body)
 
@@ -113,7 +115,7 @@ router.get("/getUserData", async (req, res) => {
 
     var custData = await pg.getCustomerByUserId(userAuth.id)
 
-    apiLog(custData)
+    // apiLog(custData)
 
     var returnData = {
       username: userData.username,
@@ -163,7 +165,8 @@ router.post("/editUserData", async (req, res) => {
 
     var custData = await pg.getCustomerByUserId(userAuth.id)
 
-    apiLog(custData)
+    apiLog(req.body)
+
 
     var newUserData = {}
 
@@ -232,7 +235,7 @@ router.post("/editUserData", async (req, res) => {
         newUserData.licenseNumber = inputData.driversLicense.ID
       }
       else{
-        newUserData.licenseNumber = userData.licenseNumber
+        newUserData.licenseNumber = custData.licenseNumber
       }
 
       //check for DL expy
@@ -241,13 +244,18 @@ router.post("/editUserData", async (req, res) => {
         newUserData.licenseExpy = inputData.driversLicense.expirationDate
       }
       else{
-        newUserData.licenseExpy = userData.licenseexpires
+        newUserData.licenseExpy = custData.licenseexpires
       }
 
     }
     else{ // if no DriversLicense info at all
       newUserData.firstName = userData.firstname
       newUserData.lastName = userData.lastname
+      newUserData.licenseNumber = custData.licenseNumber
+      newUserData.licenseExpy = custData.licenseexpires
+      newUserData.state = custData.stateprovincename
+      
+
     }    
 
     var result = await pg.updateUser(newUserData)
