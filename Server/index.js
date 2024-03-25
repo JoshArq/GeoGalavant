@@ -119,10 +119,10 @@ router.get("/getUserData", async (req, res) => {
       username: userData.username,
       email: userData.email,
       driversLicense: {
+        ID: custData.licensenumber,
         firstName: userData.firstname,
         lastName: userData.lastname,
         state: custData.stateprovincename,
-        ID: custData.licenseexpries,
         expirationDate: custData.licenseexpires
       }
     }
