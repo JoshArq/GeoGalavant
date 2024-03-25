@@ -6,16 +6,30 @@
 $primary: #000180;
 $secondary: #33adad;
 $gray-100: #ededed;
+$gray-200: #e4e4e4;
 $gray-300: #dcdcdc;
 $gray-900: #494949;
+$success: #00BB4B;
+$danger: #B80000;
+$warning: #B4A200;
+$info: #494949;
+// $light: #494949;
+// $dark: #858585;
 
 $theme-colors: (
   "primary": $primary,
   "secondary": $secondary,
+  "success": $success,
+  "danger": $danger,
+  "warning": $warning,
+  "info": $info,
+  // "light": $light,
+  // "dark": $dark,
 );
 
 $grays: (
   "100": $gray-100,
+  "200": $gray-200,
   "300": $gray-300,
   "900": $gray-900
 );

@@ -344,7 +344,7 @@ export default function Apply() {
                     <Container>
                         <Row>
                             <Col md={2} className="d-flex justify-content-center align-items-center fs-1">
-                                <i class="bi bi-check2-circle"></i>
+                                <i className="bi bi-check2-circle"></i>
                             </Col>
                             <Col md={10} className="mt-2 mt-md-0">
                                 <p>Your application has been sent! We will email you with a status update when it has been approved.</p>
