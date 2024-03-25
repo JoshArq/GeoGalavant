@@ -32,8 +32,7 @@
   },
   "options": {
     "allowedHosts": [
-      "localhost",
-      ".localhost"
+      "all"
     ],
     "proxy": "http://localhost:5001"
   },
