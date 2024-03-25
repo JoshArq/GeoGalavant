@@ -28,11 +28,11 @@ export default function LocMap({locations}) {
     const onUnmount = React.useCallback(function callback(map) {
         setMap(null)
     }, [])
-    const [markers, setMarkers] = useState([]);
+    const [markers, setMarkers] = useState(locations);
 
     useEffect(() => {
         setMarkers(locations)
-    }, [])
+    })
 
     return (
         <>
@@ -48,7 +48,7 @@ export default function LocMap({locations}) {
                     <MarkerF
                     position={{ lat: marker.latitude, lng: marker.longitude }}
                     key={marker.id}
-                    // title={marker.name}
+                    title={marker.name}
                     />
                 ))}
             </GoogleMap>

@@ -13,7 +13,6 @@ import Alert from 'react-bootstrap/Alert';
 let form_template = {
     username: "",
     email: "",
-	password: "",
     driversLicense: {
         firstName: "",
         lastName: "",
@@ -23,54 +22,69 @@ let form_template = {
     },
 }
 
-export default function EditProfile() {
+export default function EditProfile({token}) {
     const form = form_template;
     const [step, setStep] = useState(0);
+    const [userData, setUserData] = useState({driversLicense:{}});
     const [isValid, setIsValid] = useState(true);
     const [isSent, setIsSent] = useState(false);
 
+    
+    // Get data
     useEffect(() => {
-        document.getElementById("previous").setAttribute("disabled", "disabled")
-        let profile = document.getElementById("profile");
-        profile.username.value = "jdoe1234";
-        profile.email.value="name@example.com";
-        profile.password.value="password";
-        profile.confirmPassword.value="password";
-        profile.firstName.value="John";
-        profile.lastName.value="Doe";
-        profile.state.value="NY";
-        profile.licenseNumber.value = "123456780";
-        profile.licenseExp.value="12/10/2025";
+        // Get user data
+        fetch("/api/getUserData", {
+            headers: {
+                "auth-token": token
+            }
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if(data.error) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setUserData(data);
+                    console.log(data)
+                }
+            }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+        });
     }, [])
 
 
     const handleCreateAcct = () => {
-        // TODO: replace with real 
-        // fetch("/api/createCustomer", {
-        //     method: 'POST',
-        //     body: JSON.stringify(form),
-        // })
-        // .then((res) => res.json())
-        // .then((data) => {
-        //     if (data.success) {
-        //         // Show just success message
+        console.log(form)
+        fetch("/api/editUserData", {
+            headers: {
+                "auth-token": token
+            },
+            method: 'POST',
+            body: JSON.stringify(form),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success) {
+                // Show just success message
                 setIsSent(true);
                 setStep(2);
-                document.getElementById("step-heading").innerText = "Completed"
+                document.getElementById("step-heading").innerText = "Completed";
                 document.getElementById("progBtns").classList.add("d-none");
                 document.getElementById("step-1").classList.add("d-none");
-        //     }
-        //     else {
-        //         document.getElementById("err").innerText = "There was an issue editing your profile. Please try again."
-        //         setIsValid(false);
-        //         setIsSent(false);
-        //     }
-        // }).catch(error => {
-        //     console.log(error)
-        //     document.getElementById("err").innerText = "There was an issue editing your profile. Please try again."
-        //     setIsValid(false);
-        //     setIsSent(false);
-        // });
+            }
+            else {
+                document.getElementById("err").innerText = "There was an issue editing your profile. Please try again."
+                setIsValid(false);
+                setIsSent(false);
+            }
+        }).catch(error => {
+            console.log(error)
+            document.getElementById("err").innerText = "There was an issue editing your profile. Please try again."
+            setIsValid(false);
+            setIsSent(false);
+        });
 
         
     }
@@ -102,7 +116,7 @@ export default function EditProfile() {
                     return false;
                 }
                 // Password
-                if (profile.password.checkValidity() && profile.confirmPassword.checkValidity()) {
+                if (profile.password.value.length > 0) {
                     // Checking confirm password, for the specific feedback
                     if (profile.password.value !== profile.confirmPassword.value) {
                         err.innerText = "Check that your password and confirmation match."
@@ -110,11 +124,6 @@ export default function EditProfile() {
                         return false;
                     }
                     form.password = profile.password.value;
-                }
-                else {
-                    err.innerText = "Enter a password and confirm it."
-                    setIsValid(false);
-                    return false;
                 }
                 // All good
                 setIsValid(true);
@@ -294,95 +303,95 @@ export default function EditProfile() {
                     <h3 className="mb-4 fw-bold">Profile Information</h3>
                     <Form.Group className="mb-3" controlId="username">
                         <Form.Label>Username</Form.Label>
-                        <Form.Control type="text" placeholder="jdoe1234" required />
+                        <Form.Control type="text" placeholder="jdoe1234" required defaultValue={userData.username} />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="email">
                         <Form.Label>Email</Form.Label>
-                        <Form.Control type="email" placeholder="name@example.com" required />
+                        <Form.Control type="email" placeholder="name@example.com" required defaultValue={userData.email}/>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="password">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="password" required />
+                        <Form.Label>New Password</Form.Label>
+                        <Form.Control type="password" placeholder="password" />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="confirmPassword">
-                        <Form.Label>Confirm Password</Form.Label>
-                        <Form.Control type="password" placeholder="password" required />
+                        <Form.Label>Confirm New Password</Form.Label>
+                        <Form.Control type="password" placeholder="password" />
                     </Form.Group>
                 </section>
                 <section className="grey-section p-5 rounded d-none" id="step-1">
                     <h3 className="mb-4 fw-bold">Driver's License Information</h3>
                     <Form.Group className="mb-3" controlId="firstName">
                         <Form.Label>First Name (Same as Driver's License)</Form.Label>
-                        <Form.Control type="text" placeholder="John" required />
+                        <Form.Control type="text" placeholder="John" required defaultValue={userData.driversLicense.firstName} />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="lastName">
                         <Form.Label>Last Name (Same as Driver's License)</Form.Label>
-                        <Form.Control type="text" placeholder="Doe" required />
+                        <Form.Control type="text" placeholder="Doe" required defaultValue={userData.driversLicense.lastName} />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="state">
                         <Form.Label>Driver's License State</Form.Label>
                         <Form.Select name="stateSelect" required>
                             <option value="">Select...</option>
-                            <option value="AL">Alabama</option>
-                            <option value="AK">Alaska</option>
-                            <option value="AZ">Arizona</option>
-                            <option value="AR">Arkansas</option>
-                            <option value="CA">California</option>
-                            <option value="CO">Colorado</option>
-                            <option value="CT">Connecticut</option>
-                            <option value="DE">Delaware</option>
-                            <option value="DC">District Of Columbia</option>
-                            <option value="FL">Florida</option>
-                            <option value="GA">Georgia</option>
-                            <option value="HI">Hawaii</option>
-                            <option value="ID">Idaho</option>
-                            <option value="IL">Illinois</option>
-                            <option value="IN">Indiana</option>
-                            <option value="IA">Iowa</option>
-                            <option value="KS">Kansas</option>
-                            <option value="KY">Kentucky</option>
-                            <option value="LA">Louisiana</option>
-                            <option value="ME">Maine</option>
-                            <option value="MD">Maryland</option>
-                            <option value="MA">Massachusetts</option>
-                            <option value="MI">Michigan</option>
-                            <option value="MN">Minnesota</option>
-                            <option value="MS">Mississippi</option>
-                            <option value="MO">Missouri</option>
-                            <option value="MT">Montana</option>
-                            <option value="NE">Nebraska</option>
-                            <option value="NV">Nevada</option>
-                            <option value="NH">New Hampshire</option>
-                            <option value="NJ">New Jersey</option>
-                            <option value="NM">New Mexico</option>
-                            <option value="NY">New York</option>
-                            <option value="NC">North Carolina</option>
-                            <option value="ND">North Dakota</option>
-                            <option value="OH">Ohio</option>
-                            <option value="OK">Oklahoma</option>
-                            <option value="OR">Oregon</option>
-                            <option value="PA">Pennsylvania</option>
-                            <option value="RI">Rhode Island</option>
-                            <option value="SC">South Carolina</option>
-                            <option value="SD">South Dakota</option>
-                            <option value="TN">Tennessee</option>
-                            <option value="TX">Texas</option>
-                            <option value="UT">Utah</option>
-                            <option value="VT">Vermont</option>
-                            <option value="VA">Virginia</option>
-                            <option value="WA">Washington</option>
-                            <option value="WV">West Virginia</option>
-                            <option value="WI">Wisconsin</option>
-                            <option value="WY">Wyoming</option>
+                            <option value="AL" selected={userData.driversLicense.state == "AL"}>Alabama</option>
+                            <option value="AK" selected={userData.driversLicense.state == "AK"}>Alaska</option>
+                            <option value="AZ" selected={userData.driversLicense.state == "AZ"}>Arizona</option>
+                            <option value="AR" selected={userData.driversLicense.state == "AR"}>Arkansas</option>
+                            <option value="CA" selected={userData.driversLicense.state == "CA"}>California</option>
+                            <option value="CO" selected={userData.driversLicense.state == "CO"}>Colorado</option>
+                            <option value="CT" selected={userData.driversLicense.state == "CT"}>Connecticut</option>
+                            <option value="DE" selected={userData.driversLicense.state == "DE"}>Delaware</option>
+                            <option value="DC" selected={userData.driversLicense.state == "DC"}>District Of Columbia</option>
+                            <option value="FL" selected={userData.driversLicense.state == "FL"}>Florida</option>
+                            <option value="GA" selected={userData.driversLicense.state == "GA"}>Georgia</option>
+                            <option value="HI" selected={userData.driversLicense.state == "HI"}>Hawaii</option>
+                            <option value="ID" selected={userData.driversLicense.state == "ID"}>Idaho</option>
+                            <option value="IL" selected={userData.driversLicense.state == "IL"}>Illinois</option>
+                            <option value="IN" selected={userData.driversLicense.state == "IN"}>Indiana</option>
+                            <option value="IA" selected={userData.driversLicense.state == "IA"}>Iowa</option>
+                            <option value="KS" selected={userData.driversLicense.state == "KS"}>Kansas</option>
+                            <option value="KY" selected={userData.driversLicense.state == "KY"}>Kentucky</option>
+                            <option value="LA" selected={userData.driversLicense.state == "LA"}>Louisiana</option>
+                            <option value="ME" selected={userData.driversLicense.state == "ME"}>Maine</option>
+                            <option value="MD" selected={userData.driversLicense.state == "MD"}>Maryland</option>
+                            <option value="MA" selected={userData.driversLicense.state == "MA"}>Massachusetts</option>
+                            <option value="MI" selected={userData.driversLicense.state == "MI"}>Michigan</option>
+                            <option value="MN" selected={userData.driversLicense.state == "MN"}>Minnesota</option>
+                            <option value="MS" selected={userData.driversLicense.state == "MS"}>Mississippi</option>
+                            <option value="MO" selected={userData.driversLicense.state == "MO"}>Missouri</option>
+                            <option value="MT" selected={userData.driversLicense.state == "MT"}>Montana</option>
+                            <option value="NE" selected={userData.driversLicense.state == "NE"}>Nebraska</option>
+                            <option value="NV" selected={userData.driversLicense.state == "NV"}>Nevada</option>
+                            <option value="NH" selected={userData.driversLicense.state == "NH"}>New Hampshire</option>
+                            <option value="NJ" selected={userData.driversLicense.state == "NJ"}>New Jersey</option>
+                            <option value="NM" selected={userData.driversLicense.state == "NM"}>New Mexico</option>
+                            <option value="NY" selected={userData.driversLicense.state == "NY"}>New York</option>
+                            <option value="NC" selected={userData.driversLicense.state == "NC"}>North Carolina</option>
+                            <option value="ND" selected={userData.driversLicense.state == "ND"}>North Dakota</option>
+                            <option value="OH" selected={userData.driversLicense.state == "OH"}>Ohio</option>
+                            <option value="OK" selected={userData.driversLicense.state == "OK"}>Oklahoma</option>
+                            <option value="OR" selected={userData.driversLicense.state == "OR"}>Oregon</option>
+                            <option value="PA" selected={userData.driversLicense.state == "PA"}>Pennsylvania</option>
+                            <option value="RI" selected={userData.driversLicense.state == "RI"}>Rhode Island</option>
+                            <option value="SC" selected={userData.driversLicense.state == "SC"}>South Carolina</option>
+                            <option value="SD" selected={userData.driversLicense.state == "SD"}>South Dakota</option>
+                            <option value="TN" selected={userData.driversLicense.state == "TN"}>Tennessee</option>
+                            <option value="TX" selected={userData.driversLicense.state == "TX"}>Texas</option>
+                            <option value="UT" selected={userData.driversLicense.state == "UT"}>Utah</option>
+                            <option value="VT" selected={userData.driversLicense.state == "VT"}>Vermont</option>
+                            <option value="VA" selected={userData.driversLicense.state == "VA"}>Virginia</option>
+                            <option value="WA" selected={userData.driversLicense.state == "WA"}>Washington</option>
+                            <option value="WV" selected={userData.driversLicense.state == "WV"}>West Virginia</option>
+                            <option value="WI" selected={userData.driversLicense.state == "WI"}>Wisconsin</option>
+                            <option value="WY" selected={userData.driversLicense.state == "WY"}>Wyoming</option>
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="licenseNumber">
                         <Form.Label>Driver's License ID Number</Form.Label>
-                        <Form.Control type="text" placeholder="1234567890" required />
+                        <Form.Control type="text" placeholder="1234567890" required defaultValue={userData.driversLicense.ID} />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="licenseExp">
                         <Form.Label>Driver's License Expiration Date (MM/DD/YYYY)</Form.Label>
-                        <Form.Control type="text" placeholder="01/02/2025"  pattern="\d{1,2}/\d{1,2}/\d{4}" required />
+                        <Form.Control type="text" placeholder="01/02/2025"  pattern="\d{1,2}/\d{1,2}/\d{4}" required defaultValue={userData.driversLicense.expirationDate} />
                     </Form.Group>
                 </section>
                 <section className="my-4 d-flex justify-content-between" id="progBtns">

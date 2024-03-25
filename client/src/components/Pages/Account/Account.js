@@ -43,12 +43,13 @@ export default function Account({token}) {
           })
           .then((res) => res.json())
           .then((data) => {
-                if(data.error || !data.userData) {
+                if(data.error) {
                     setIsValid(false);
                     console.log(data.error);
+                    console.log(data)
                 }
                 else {
-                    setUserData(data.userData);
+                    setUserData(data);
                 }
           }).catch(error => {
             setIsValid(false);
