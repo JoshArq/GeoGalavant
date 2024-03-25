@@ -191,7 +191,7 @@ CREATE TABLE Car(
 );
 
 -- Populates Car lookup table with some sample data --
-INSERT INTO Car (CarID, CarStatusID, StationID) VALUES (1, 1, 1);
+INSERT INTO Car (CarStatusID, StationID) VALUES (1, 1);
 
 --generate the car tracking table --
 CREATE TABLE CarTracking(

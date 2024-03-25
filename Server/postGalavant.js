@@ -456,4 +456,136 @@ async function addCreditCard(obj){
   }
 }
 
-module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer, getAllStations, getStation, getCustomerReservations, getReservation, updateReservation, addReservation, removeReservation, getCreditCardsByCustomer, getCreditCard, addCreditCard, removeCreditCard, editCreditCard}
+async function getStationCars(stationId){
+  var query = {
+    text: "SELECT * FROM Car WHERE stationId = $1",
+    values: [stationId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCarsByStatus(statusId){
+  var query = {
+    text: "SELECT * FROM Car WHERE CarStatusID = $1",
+    values: [statusId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getAllCars(){
+  var query = {
+    text: "SELECT * FROM Car",
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCar(carId){
+  var query = {
+    text: "SELECT * FROM Car WHERE CarId = $1",
+    values: [carId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function editCar(obj){
+  var query = {
+    text: "UPDATE Car SET StationID=$1, CarStatusID=$2 WHERE CarID=$3",
+    values: [obj.stationId, obj.carStatusId, obj.carId]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function removeCar(carId){
+  var query = {
+    text: "DELETE FROM Car WHERE CarID = $1",
+    values: [carId]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addCar(obj){
+  var query = {
+    text: "INSERT INTO Car (StationID, CarStatusID) VALUES ($1,$2) RETURNING CarID",
+    values: [obj.stationId, obj.carStatusId]
+  }
+  try{
+    return (await pool.query(query)).rows[0].carid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+module.exports = {
+  pulseCheck, 
+  addUser, 
+  updateUser, 
+  getUserByName, 
+  getUserById, 
+  getAllUsers, 
+  deleteUser, addUserRole, 
+  deleteUserRole, 
+  addUserStatus, 
+  removeUserStatus, 
+  getUserPerms, 
+  login, 
+  addCustomer, 
+  getCustomerByUserId, 
+  updateCustomer, 
+  getAllStations, 
+  getStation, 
+  getCustomerReservations, 
+  getReservation, 
+  updateReservation, 
+  addReservation, 
+  removeReservation, 
+  getCreditCardsByCustomer, 
+  getCreditCard, 
+  addCreditCard, 
+  removeCreditCard, 
+  editCreditCard, 
+  getStationCars, 
+  getAllCars, 
+  getCar, 
+  editCar, 
+  removeCar, 
+  addCar, 
+  getCarsByStatus
+}

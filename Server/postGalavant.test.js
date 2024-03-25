@@ -59,34 +59,60 @@ async function main(){
     // console.log(await pg.removeReservation(insertId))
 
     //Testing CRUD operations for credit cards
-    let insertCard = {
-        paymentTypeId: 1,
-        cardName: "Albert Albertson",
-        cardNumber: "1111111",
-        expirationDate: "09/22",
-        cvv: "111",
-        customerId: 1
-    };
+    // let insertCard = {
+    //     paymentTypeId: 1,
+    //     cardName: "Albert Albertson",
+    //     cardNumber: "1111111",
+    //     expirationDate: "09/22",
+    //     cvv: "111",
+    //     customerId: 1
+    // };
     
-    let insertId = await pg.addCreditCard(insertCard);
-    console.log("Testing insert card\n" + insertId)
-    console.log("Testing get cards by customer\n");
-    console.log(await pg.getCreditCardsByCustomer(1))
-    let editCard = {
-        paymentTypeId: 1,
-        cardName: "Albert Albertson",
-        cardNumber: "1111111",
-        expirationDate: "12/25",
-        cvv: "111",
-        customerId: 1,
-        cardId: insertId
+    // let insertId = await pg.addCreditCard(insertCard);
+    // console.log("Testing insert card\n" + insertId)
+    // console.log("Testing get cards by customer\n");
+    // console.log(await pg.getCreditCardsByCustomer(1))
+    // let editCard = {
+    //     paymentTypeId: 1,
+    //     cardName: "Albert Albertson",
+    //     cardNumber: "1111111",
+    //     expirationDate: "12/25",
+    //     cvv: "111",
+    //     customerId: 1,
+    //     cardId: insertId
+    // };
+    // console.log("Testing edit card");
+    // console.log(await pg.editCreditCard(editCard));
+    // console.log("Testing get specific card");
+    // console.log(await pg.getCreditCard(insertId));
+    // console.log("Testing remove card");
+    // console.log(await pg.removeCreditCard(insertId));
+
+    //testing CRUD operations for cars
+    let insertCar = {
+        stationId: 1,
+        carStatusId:1
     };
-    console.log("Testing edit card");
-    console.log(await pg.editCreditCard(editCard));
-    console.log("Testing get specific card");
-    console.log(await pg.getCreditCard(insertId));
-    console.log("Testing remove card");
-    console.log(await pg.removeCreditCard(insertId));
+    let insertId = await pg.addCar(insertCar);
+    console.log("Testing insert car");
+    console.log(insertId);
+    console.log("Testing get car by station");
+    console.log(await pg.getStationCars(1));
+    console.log("testing get car by status");
+    console.log(await pg.getCarsByStatus(1));
+    console.log("testing get all cars");
+    console.log(await pg.getAllCars());
+    let editCar = {
+        stationId: 2,
+        carStatusId:2,
+        carId: insertId
+    };
+    console.log("Testing edit car");
+    console.log(await pg.editCar(editCar));
+    console.log("Testing get specific car");
+    console.log(await pg.getCar(insertId));
+    console.log("Testing remove car");
+    console.log(await pg.removeCar(insertId));
 
     //Customer Creation Tests
     var custObj = {
