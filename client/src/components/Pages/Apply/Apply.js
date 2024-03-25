@@ -156,6 +156,14 @@ export default function Apply() {
                 }
                 // Exp date
                 if(app.licenseExp.checkValidity()) {
+                    let splitDate = app.licenseExp.value.split('/');
+                    let date = new Date();
+                    date.setFullYear(parseInt(splitDate[2]), (parseInt(splitDate[0]) - 1), parseInt(splitDate[1]));
+                    if(date <= Date.now()) {
+                        err.innerText = "Your license must not be expired"
+                        setIsValid(false);
+                        return false;
+                    }
                     form.driversLicense.expirationDate = app.licenseExp.value;
                 }
                 else {
@@ -187,6 +195,14 @@ export default function Apply() {
                 }
                 // Card expiration
                 if(app.cardExp.checkValidity()) {
+                    let splitDate = app.cardExp.value.split('/');
+                    let date = new Date();
+                    date.setFullYear(parseInt("20" + splitDate[1]), (parseInt(splitDate[0]) - 1), 1);
+                    if(date <= Date.now()) {
+                        err.innerText = "Your card must not be expired"
+                        setIsValid(false);
+                        return false;
+                    }
                     form.creditCard.expirationDate = app.cardExp.value;
                 }
                 else {
