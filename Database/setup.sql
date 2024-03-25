@@ -209,8 +209,7 @@ Create Table Roles(
 );
 
 
-INSERT INTO Roles (RoleID, Title) VALUES 
-	(1, 'System Administrator'),
+INSERT INTO Roles (RoleID, Title) VALUES (1, 'System Administrator'),
 	(2, 'Business Administrator'),
 	(3, 'Manager'),
 	(4, 'Mechanic'),
@@ -226,8 +225,7 @@ CREATE TABLE Permissions(
 );
 
 --Populates the Permissions table --
-INSERT INTO Permissions (PermissionID, Description) VALUES 
-	(1, 'Manage Cars'),
+INSERT INTO Permissions (PermissionID, Description) VALUES (1, 'Manage Cars'),
 	(2, 'Car Reports'),
 	(3, 'View Users'),
 	(4, 'Manage Customer Accounts'),
