@@ -25,7 +25,9 @@ import Gyrocars from './components/Pages/Gyrocars/Gyrocars.js';
 import Employees from './components/Pages/Employees/Employees.js';
 import EmpAccount from './components/Pages/EmpAccount/EmpAccount.js';
 import Customer from './components/Pages/Customer/Customer.js';
+import ModifyReservation from "./components/Pages/ModifyReservation/ModifyReservation.js";
 import './App.scss';
+
 
 
 function App() {
@@ -126,6 +128,11 @@ function App() {
             <Route path="/customers/customer" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
                 <Customer />
+              </ProtectedRoute>
+            }/>
+            <Route path="/modifyreservation/modifyreservation" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
+                <ModifyReservation />
               </ProtectedRoute>
             }/>
             <Route path="reports" element={
