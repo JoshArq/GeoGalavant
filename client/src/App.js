@@ -129,7 +129,7 @@ function App() {
             }/>
             <Route path="reserve/edit" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.approvedCustomer}> 
-                <EditReservation />
+                <EditReservation token={token} />
               </ProtectedRoute>
             }/>
             <Route path="dashboard" element={
