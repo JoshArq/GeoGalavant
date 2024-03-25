@@ -46,6 +46,9 @@ export default function Apply() {
     const handleCreateAcct = () => {
         fetch("/api/createCustomer", {
             method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(form),
         })
         .then((res) => res.json())

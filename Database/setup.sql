@@ -60,7 +60,61 @@ CREATE TABLE StateProvince(
 );
 
 -- Populates StateProvince table with some sample data --
-INSERT INTO StateProvince (StateProvinceID, StateProvinceName) VALUES (1, 'NY');
+-- US states & DC in ABC order, except for NY --
+INSERT INTO StateProvince (StateProvinceName) VALUES ('NY'),
+	('AL'),
+	('AK'),
+	('AZ'),
+	('AR'),
+	('CA'),
+	('CO'),
+	('CT'),
+	('DE'),
+	('DC'),
+	('FL'),
+	('GA'),
+	('HI'),
+	('ID'),
+	('IL'),
+	('IN'),
+	('IA'),
+	('KS'),
+	('KY'),
+	('LA'),
+	('ME'),
+	('MD'),
+	('MA'),
+	('MI'),
+	('MN'),
+	('MS'),
+	('MO'),
+	('MT'),
+	('NE'),
+	('NV'),
+	('NH'),
+	('NJ'),
+	('NM'),
+	('NC'),
+	('ND'),
+	('OH'),
+	('OK'),
+	('OR'),
+	('PA'),
+	('RI'),
+	('SC'),
+	('SD'),
+	('TN'),
+	('TX'),
+	('UT'),
+	('VT'),
+	('VA'),
+	('WA'),
+	('WV'),
+	('WI'),
+	('WY');
+
+
+
 
 -- Generate AccountStatus lookup table --
 CREATE TABLE AccountStatus(

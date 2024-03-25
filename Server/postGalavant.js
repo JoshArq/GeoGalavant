@@ -75,11 +75,9 @@ async function addCustomer(userID, obj){
   const res = await pool.query(query);
   const stateCode = res.rows[0].stateprovinceid
 
-  //TODO format date & insert properly
-
   query = {
     text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID) VALUES ($1, $2, $3, $4)",
-    values: [licenseID, "2025-07-23", stateCode, userID]
+    values: [licenseID, licenseExpy, stateCode, userID]
   };
 
   const res2 = await pool.query(query);
@@ -179,12 +177,12 @@ async function addUserRole(userID, userRole){
 
   query = {
     name: 'insertUserRole',
-    text: "INSERT INTO User_Role (UserID, RoleID) VALUES ($1, $2)",
+    text: "INSERT INTO User_Role (UserID, RoleID) VALUES ($1, $2) RETURNING RoleID",
     values: [userID, userRole]
   }
 
   try{
-    var roleID = (await pool.query(query))
+    var roleID = (await pool.query(query)).rows[0].roleid
     console.log(roleID)
     return roleID;
   }

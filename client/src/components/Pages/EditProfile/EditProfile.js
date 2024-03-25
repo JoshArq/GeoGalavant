@@ -59,7 +59,8 @@ export default function EditProfile({token}) {
         console.log(form)
         fetch("/api/editUserData", {
             headers: {
-                "auth-token": token
+                "auth-token": token,
+                "Content-Type": "application/json"
             },
             method: 'POST',
             body: JSON.stringify(form),
