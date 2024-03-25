@@ -167,7 +167,15 @@ export default function EditProfile({token}) {
                 }
                 // Exp date
                 if(profile.licenseExp.checkValidity()) {
-                    form.driversLicense.expirationDate = profile.licenseExp.value;
+                    let splitDate = app.licenseExp.value.split('/');
+                    let date = new Date();
+                    date.setFullYear(parseInt(splitDate[2]), (parseInt(splitDate[0]) - 1), parseInt(splitDate[1]));
+                    if(date <= Date.now()) {
+                        err.innerText = "Your license must not be expired"
+                        setIsValid(false);
+                        return false;
+                    }
+                    form.driversLicense.expirationDate = app.licenseExp.value;
                 }
                 else {
                     err.innerText = "Enter an expiration in the format of MM/DD/YYYY"
