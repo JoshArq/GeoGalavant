@@ -24,14 +24,9 @@ const pool = new Pool({
     port: PGPORT
   })
  
-
-
-
-
 async function pulseCheck(){
   console.log(await pool.query('SELECT NOW()'))
 }
-
 
 
 //returns -1 on failure, return userID on success
@@ -253,7 +248,7 @@ async function getUserPerms(userId){
     values: [userId]
   };
 
-  const res = await pool.query(query);
+  const res = (await pool.query(query));
   return res.rows;
 }
 

@@ -90,7 +90,10 @@ CREATE TABLE PaymentType(
 );
 
 -- Populates PaymentType table with some sample data --
-INSERT INTO PaymentType (PaymentTypeID, PaymentType) VALUES (1, 'Mastercard');
+INSERT INTO PaymentType (PaymentTypeID, PaymentType) VALUES (1, 'Mastercard'),
+(2, 'Visa'),
+(3, 'American Express'),
+(4, 'Discover');
 
 -- Generate Station table --
 CREATE TABLE Station(
