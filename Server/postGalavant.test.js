@@ -17,8 +17,14 @@ async function main(){
     //console.log(await pg.addUserRole(1,1));
 
     //testing adding and removing user status
-    console.log(await pg.removeUserStatus("Testing", 1));
-    console.log(await pg.addUserStatus(1,1,"Testing"));
+    //console.log(await pg.removeUserStatus("Testing", 1));
+    //console.log(await pg.addUserStatus(1,1,"Testing"));
+
+    //testing select stations
+    console.log(await pg.getAllStations());
+    console.log(await pg.getStation(1));
+
+    //Testing CRUD operations for reservations
 
     //Customer Creation Tests
     var custObj = {

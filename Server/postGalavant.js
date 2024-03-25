@@ -297,4 +297,31 @@ async function login(username, password){
   }
 }
 
-module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer}
+async function getAllStations(){
+  var query ={
+    text: "SELECT * FROM Station"
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getStation(id){
+  var query = {
+    text: "SELECT * FROM Station WHERE StationID = $1",
+    values: [id]
+  };
+  try{
+    return (await pool.query(query)).rows[0];
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer, getAllStations, getStation}
