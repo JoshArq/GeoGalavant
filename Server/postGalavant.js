@@ -324,4 +324,75 @@ async function getStation(id){
   }
 }
 
-module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer, getAllStations, getStation}
+
+async function getCustomerReservations(customerId){
+  var query ={
+    text: "SELECT * FROM Rental WHERE CustomerID = $1",
+    values: [customerId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getReservation(rentalId){
+  var query ={
+    text: "SELECT * FROM Rental WHERE RentalID = $1",
+    values: [rentalId]
+  };
+  try{
+    return (await pool.query(query)).rows[0];
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addReservation(obj){
+  var query ={
+    text: "INSERT INTO Rental (CustomerID, PickupStationID, DropoffStationID, ScheduledPickupTime, ScheduledDropoffTime, Rate, Fees, CardID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING RentalID",
+    values: [obj.customerId, obj.pickupStationId, obj.dropoffStationId, obj.scheduledPickupTime, obj.scheduledDropoffTime, obj.rate, obj.fees, obj.cardId]
+  };
+  try{
+    return (await pool.query(query)).rows[0].rentalid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function updateReservation(obj){
+  var query ={
+    text: "UPDATE Rental SET CustomerID = $1, PickupStationID=$2, ScheduledPickupTime=$3, ScheduledDropoffTime=$4, Rate=$5, Fees=$6, CardID=$7, CarID=$8, PickupTime=$9, DropoffTime=$10 WHERE RentalID = $11",
+    values: [obj.customerId, obj.pickupStationId, obj.scheduledPickupTime, obj.scheduledDropoffTime, obj.rate, obj.fees, obj.cardId, obj.carId, obj.pickupTime, obj.dropoffTime, obj.rentalId]
+  };
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function removeReservation(rentalId){
+  var query ={
+    text: "DELETE FROM Rental WHERE RentalID = $1",
+    values: [rentalId]
+  };
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer, getAllStations, getStation, getCustomerReservations, getReservation, updateReservation, addReservation, removeReservation}

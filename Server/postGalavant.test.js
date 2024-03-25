@@ -21,10 +21,41 @@ async function main(){
     //console.log(await pg.addUserStatus(1,1,"Testing"));
 
     //testing select stations
-    console.log(await pg.getAllStations());
-    console.log(await pg.getStation(1));
+    //console.log(await pg.getAllStations());
+    //console.log(await pg.getStation(1));
 
     //Testing CRUD operations for reservations
+    
+    let insertRes = {
+        customerId: 1,
+        pickupStationId:1,
+        dropoffStationId: 1,
+        scheduledPickupTime: "2024-01-26 15:47:44",
+        scheduledDropofftime: "2024-01-26 17:47:44",
+        rate: 20,
+        fees: 5,
+        cardId: 1
+    };
+    let insertId = await pg.addReservation(insertRes)
+    console.log(insertId);
+    console.log(await pg.getCustomerReservations(1))
+    let updateRes = {
+        customerId: 1,
+        pickupStationId:1,
+        dropoffStationId: 1,
+        scheduledPickupTime: "2024-02-16 15:47:44",
+        pickupTime: "2024-02-16 15:47:44",
+        scheduledDropofftime: "2024-02-16 17:47:44",
+        dropoffTime: "2024-02-16 17:47:44",
+        rate: 20,
+        fees: 5,
+        cardId: 1,
+        carId: 1,
+        rentalId: insertId
+    };
+    console.log(await pg.updateReservation(updateRes))
+    console.log(await pg.getReservation(insertId))
+    console.log(await pg.removeReservation(insertId))
 
     //Customer Creation Tests
     var custObj = {
