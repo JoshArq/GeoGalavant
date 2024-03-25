@@ -25,39 +25,68 @@ async function main(){
     //console.log(await pg.getStation(1));
 
     //Testing CRUD operations for reservations
+    // let insertRes = {
+    //     customerId: 1,
+    //     pickupStationId:1,
+    //     dropoffStationId: 1,
+    //     scheduledPickupTime: "2024-01-26 15:47:44",
+    //     scheduledDropofftime: "2024-01-26 17:47:44",
+    //     rate: 20,
+    //     fees: 5,
+    //     cardId: 1,
+    //     confirmationNumber: 1111
+    // };
+    // let insertId = await pg.addReservation(insertRes)
+    // console.log(insertId);
+    // console.log(await pg.getCustomerReservations(1))
+    // let updateRes = {
+    //     customerId: 1,
+    //     pickupStationId:1,
+    //     dropoffStationId: 1,
+    //     scheduledPickupTime: "2024-02-16 15:47:44",
+    //     pickupTime: "2024-02-16 15:47:44",
+    //     scheduledDropofftime: "2024-02-16 17:47:44",
+    //     dropoffTime: "2024-02-16 17:47:44",
+    //     rate: 20,
+    //     fees: 5,
+    //     cardId: 1,
+    //     carId: 1,
+    //     rentalId: insertId,
+    //     confirmationNumber: 1111
+    // };
+    // console.log(await pg.updateReservation(updateRes))
+    // console.log(await pg.getReservation(insertId))
+    // console.log(await pg.removeReservation(insertId))
+
+    //Testing CRUD operations for credit cards
+    let insertCard = {
+        paymentTypeId: 1,
+        cardName: "Albert Albertson",
+        cardNumber: "1111111",
+        expirationDate: "09/22",
+        cvv: "111",
+        customerId: 1
+    };
     
-    let insertRes = {
+    let insertId = await pg.addCreditCard(insertCard);
+    console.log("Testing insert card\n" + insertId)
+    console.log("Testing get cards by customer\n");
+    console.log(await pg.getCreditCardsByCustomer(1))
+    let editCard = {
+        paymentTypeId: 1,
+        cardName: "Albert Albertson",
+        cardNumber: "1111111",
+        expirationDate: "12/25",
+        cvv: "111",
         customerId: 1,
-        pickupStationId:1,
-        dropoffStationId: 1,
-        scheduledPickupTime: "2024-01-26 15:47:44",
-        scheduledDropofftime: "2024-01-26 17:47:44",
-        rate: 20,
-        fees: 5,
-        cardId: 1,
-        confirmationNumber: 1111
+        cardId: insertId
     };
-    let insertId = await pg.addReservation(insertRes)
-    console.log(insertId);
-    console.log(await pg.getCustomerReservations(1))
-    let updateRes = {
-        customerId: 1,
-        pickupStationId:1,
-        dropoffStationId: 1,
-        scheduledPickupTime: "2024-02-16 15:47:44",
-        pickupTime: "2024-02-16 15:47:44",
-        scheduledDropofftime: "2024-02-16 17:47:44",
-        dropoffTime: "2024-02-16 17:47:44",
-        rate: 20,
-        fees: 5,
-        cardId: 1,
-        carId: 1,
-        rentalId: insertId,
-        confirmationNumber: 1111
-    };
-    console.log(await pg.updateReservation(updateRes))
-    console.log(await pg.getReservation(insertId))
-    console.log(await pg.removeReservation(insertId))
+    console.log("Testing edit card");
+    console.log(await pg.editCreditCard(editCard));
+    console.log("Testing get specific card");
+    console.log(await pg.getCreditCard(insertId));
+    console.log("Testing remove card");
+    console.log(await pg.removeCreditCard(insertId));
 
     //Customer Creation Tests
     var custObj = {

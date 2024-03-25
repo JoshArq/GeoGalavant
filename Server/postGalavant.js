@@ -90,8 +90,6 @@ async function addCustomer(userID, obj){
 }
 
 
-
-
 async function updateUser(obj){
   const query = {
     text: "UPDATE Users SET Username = $1, Password = $2, FirstName = $3, LastName = $4, Email = $5, Address = $6, ZipCode = $7, City = $8, StateProvinceID = $9 WHERE UserID = $10",
@@ -390,4 +388,74 @@ async function removeReservation(rentalId){
   }
 }
 
-module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer, getAllStations, getStation, getCustomerReservations, getReservation, updateReservation, addReservation, removeReservation}
+async function getCreditCardsByCustomer(custId){
+  var query = {
+    text: "SELECT * FROM Card WHERE CustomerID = $1",
+    values: [custId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCreditCard(cardId){
+  var query = {
+    text: "SELECT * FROM Card WHERE CardID = $1",
+    values: [cardId]
+  };
+  try{
+    return (await pool.query(query)).rows[0];
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function removeCreditCard(cardId){
+  var query = {
+    text: "DELETE FROM Card WHERE CardID = $1",
+    values: [cardId]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function editCreditCard(obj){
+  var query = {
+    text: "UPDATE Card SET PaymentTypeID=$1, CardName=$2, CardNumber=$3, ExpirationDate=$4, CVV=$5 WHERE CardID=$6",
+    values: [obj.paymentTypeId, obj.cardName, obj.cardNumber, obj.expirationDate, obj.cvv, obj.cardId]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addCreditCard(obj){
+  var query = {
+    text: "INSERT INTO Card (PaymentTypeID, CardName, CardNumber, ExpirationDate, CVV, CustomerID) VALUES ($1,$2,$3,$4,$5,$6) RETURNING CardID",
+    values: [obj.paymentTypeId, obj.cardName, obj.cardNumber, obj.expirationDate, obj.cvv, obj.customerId]
+  }
+  try{
+    return (await pool.query(query)).rows[0].cardid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer, getAllStations, getStation, getCustomerReservations, getReservation, updateReservation, addReservation, removeReservation, getCreditCardsByCustomer, getCreditCard, addCreditCard, removeCreditCard, editCreditCard}
