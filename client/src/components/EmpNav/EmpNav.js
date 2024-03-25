@@ -36,7 +36,7 @@ export default function EmpNav({role, roles, clearData}) {
                 : '' }
                 {roles.mechUp.includes(role) ? 
                     <Nav.Link as={Link} to="/gyrocars" id={location.pathname == "/gryocars" ? "active" : ''} className="d-block text-reset w-100 py-3 blue-hov">
-                        <i className="bi bi-car-front-fill me-2"></i>Gyrocars
+                        <i className="bi bi-car-front-fill me-2"></i>Gryocars
                     </Nav.Link>
                 : '' }
                 {roles.admins.includes(role) ? 

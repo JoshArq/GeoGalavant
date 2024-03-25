@@ -44,11 +44,9 @@ export default function Apply() {
 
 
     const handleCreateAcct = () => {
+        console.log("create");
         fetch("/api/createCustomer", {
             method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
             body: JSON.stringify(form),
         })
         .then((res) => res.json())
@@ -62,6 +60,7 @@ export default function Apply() {
                 document.getElementById("step-3").classList.add("d-none");
             }
             else {
+                console.log('test')
                 document.getElementById("err").innerText = "There was an issue sending your application. Please try again."
                 setIsValid(false);
                 setIsSent(false);
@@ -159,14 +158,6 @@ export default function Apply() {
                 }
                 // Exp date
                 if(app.licenseExp.checkValidity()) {
-                    let splitDate = app.licenseExp.value.split('/');
-                    let date = new Date();
-                    date.setFullYear(parseInt(splitDate[2]), (parseInt(splitDate[0]) - 1), parseInt(splitDate[1]));
-                    if(date <= Date.now()) {
-                        err.innerText = "Your license must not be expired"
-                        setIsValid(false);
-                        return false;
-                    }
                     form.driversLicense.expirationDate = app.licenseExp.value;
                 }
                 else {
@@ -198,14 +189,6 @@ export default function Apply() {
                 }
                 // Card expiration
                 if(app.cardExp.checkValidity()) {
-                    let splitDate = app.cardExp.value.split('/');
-                    let date = new Date();
-                    date.setFullYear(parseInt("20" + splitDate[1]), (parseInt(splitDate[0]) - 1), 1);
-                    if(date <= Date.now()) {
-                        err.innerText = "Your card must not be expired"
-                        setIsValid(false);
-                        return false;
-                    }
                     form.creditCard.expirationDate = app.cardExp.value;
                 }
                 else {
@@ -269,7 +252,7 @@ export default function Apply() {
         if(!validateStep(oldStep)) {
             // Reactivate buttons
             nextBtn.removeAttribute("disabled");
-            if (oldStep !== 0) {
+            if (newStep !== 0) {
                 prevBtn.removeAttribute("disabled");
             }
             return;
@@ -353,7 +336,7 @@ export default function Apply() {
             <p className="mb-4">Fill out all the fields in the form below in order to complete your application for GyroGoGo.</p>
             <Form noValidate id="application">
                 <h2 className="fs-5 fw-bold mb-3" id="step-heading">Step {step + 1} of 4</h2>
-                <ProgressBar className="mb-4" variant="secondary" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
+                <ProgressBar className="mb-4" now={step/4 * 100} label={`${step/4 * 100}%`} id="progress" />
                 <Alert variant="danger" className={'text-danger bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
                     Something is wrong with your submission. Please try again.
                 </Alert> 
