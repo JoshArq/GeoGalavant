@@ -387,6 +387,7 @@ CREATE TABLE Rental(
 	DropoffTime TIMESTAMP,
 	Rate DECIMAL,
 	Fees DECIMAL,
+	ConfirmationNumber VARCHAR(10) NOT NULL,
 	CardID INT NOT NULL,
 	FOREIGN KEY (CustomerID)
 		REFERENCES Customer (CustomerID),

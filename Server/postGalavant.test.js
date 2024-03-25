@@ -34,7 +34,8 @@ async function main(){
         scheduledDropofftime: "2024-01-26 17:47:44",
         rate: 20,
         fees: 5,
-        cardId: 1
+        cardId: 1,
+        confirmationNumber: 1111
     };
     let insertId = await pg.addReservation(insertRes)
     console.log(insertId);
@@ -51,7 +52,8 @@ async function main(){
         fees: 5,
         cardId: 1,
         carId: 1,
-        rentalId: insertId
+        rentalId: insertId,
+        confirmationNumber: 1111
     };
     console.log(await pg.updateReservation(updateRes))
     console.log(await pg.getReservation(insertId))
