@@ -2,7 +2,7 @@
 @import 'customize.scss';
 
 .grey-section {
-    background-color: $gray-100;
+    background-color: $gray-100 !important;
 }
 
 .btn-primary:disabled {

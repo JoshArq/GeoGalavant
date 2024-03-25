@@ -56,14 +56,9 @@ export default function ModifyReservation() {
                             <option value="222222">222222</option>                    
                         </Form.Select>
                     </Form.Group>
-                    <Row>
-                        <Col md={1}>
-                            <Button variant="secondary">Cancel</Button>
-                        </Col>
-                        <Col>
-                            <Button variant="primary">Save Changes</Button>
-                        </Col>
-                    </Row>
+                    <Button variant="danger" className="mx-3 my-2">Cancel Reservation</Button>
+                    <Button variant="secondary" className="mx-3 my-2" as={Link} to="/customers/customer">Cancel Changes</Button>
+                    <Button variant="primary" className="mx-3 my-2">Save Changes</Button>
             </Form>
             </Container> 
 
