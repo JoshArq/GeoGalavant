@@ -14,38 +14,24 @@ const center = {
     lng: -77.6128899
 };
 
-const markers = [
-    {
-        id: 1,
-        lat: 43.1347097,
-        lng: -77.635994
-    },
-    {
-        id: 2,
-        lat: 43.0881822,
-        lng: -77.7050607
-    },
-    {
-        id: 3,
-        lat: 43.1268778,
-        lng: -77.7219486
-    },
-];
-
-export default function LocMap(props) {
-
+export default function LocMap({locations}) {
     // Google maps setup stuff
     const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.REACT_APP_GMAPS
     });  
-    const [map, setMap] = React.useState(null)
+    const [map, setMap] = useState(null)
     const onLoad = React.useCallback(function callback(map) {
         const bounds = new window.google.maps.LatLngBounds(center);
         setMap(map)
     }, [])
     const onUnmount = React.useCallback(function callback(map) {
         setMap(null)
+    }, [])
+    const [markers, setMarkers] = useState([]);
+
+    useEffect(() => {
+        setMarkers(locations)
     }, [])
 
     return (
@@ -60,8 +46,9 @@ export default function LocMap(props) {
             >
             {markers.map(marker => (
                     <MarkerF
-                    position={{ lat: marker.lat, lng: marker.lng }}
+                    position={{ lat: marker.latitude, lng: marker.longitude }}
                     key={marker.id}
+                    // title={marker.name}
                     />
                 ))}
             </GoogleMap>

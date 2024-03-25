@@ -13,10 +13,83 @@ import LocMap from '../../LocMap/LocMap.js';
 
 let form_template = {};
 
-export default function Reserve() {
+export default function Reserve({token}) {
     const form = form_template;
+    const [dropoffLocations, setDropoffLocations] = useState([]);
+    const [pickupLocations, setPickupLocations] = useState([]);
+    const [cards, setCards] = useState([]);
     const [step, setStep] = useState(0);
     const [isValid, setIsValid] = useState(true);
+
+    // Get form setup data
+    useEffect(() => {
+        let err = document.getElementById("err");
+        // Get credit cards
+        fetch("/api/getCreditCards", {
+            headers: {
+              "auth-token": token
+            }
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error || !data.cards) {
+                    err.innerText = "There was an error loading your form. Please refresh to try again.";
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setCards(data.cards);
+                }
+          }).catch(error => {
+            err.innerText = "There was an error loading your form. Please refresh to try again.";
+            setIsValid(false);
+            console.log(error);
+          });
+
+        // Get locations TODO: Edit for date-specificity once api is dones, move to run after pickup/dropoff date is selected
+        // Pickup
+        fetch("/api/getLocations", {
+            headers: {
+              "auth-token": token
+            }
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error || !data.locations) {
+                    err.innerText = "There was an error loading your form. Please refresh to try again.";
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setPickupLocations(data.locations);
+                }
+          }).catch(error => {
+            err.innerText = "There was an error loading your form. Please refresh to try again.";
+            setIsValid(false);
+            console.log(error);
+          });
+          // Dropoff
+          fetch("/api/getLocations", {
+              headers: {
+                "auth-token": token
+              }
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                  if(data.error || !data.locations) {
+                      err.innerText = "There was an error loading your form. Please refresh to try again.";
+                      setIsValid(false);
+                      console.log(data.error);
+                  }
+                  else {
+                      setDropoffLocations(data.locations);
+                  }
+            }).catch(error => {
+              err.innerText = "There was an error loading your form. Please refresh to try again.";
+              setIsValid(false);
+              console.log(error);
+            });
+    }, [])
 
     const handleReserveCar = () => {
         // TODO: CHANGE EXAMPLE CODE
@@ -214,52 +287,25 @@ export default function Reserve() {
                         <Row>
                             <Col md={4} className="pb-4 pb-md-0 pe-md-2">
                                 <Form.Group controlId="pickupLoc">
-                                    <Card className="grey-section border-0" as={Form.Label} for="test1">
-                                        <Card.Body as={Container}>
-                                            <Row>
-                                                <Col xs={9}>
-                                                    <p><strong>1. LOCATION 1</strong></p>
-                                                    <p className="m-0">123 Fake street</p>
-                                                    <p className="m-0">Rochester, NY</p>
-                                                </Col>
-                                                <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                    <Form.Check name="pickupLoc" type="radio" value="test1" id="test1" required/>
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
-                                    <Card className="grey-section border-0" as={Form.Label} for="test2">
-                                        <Card.Body as={Container}>
-                                            <Row>
-                                                <Col xs={9}>
-                                                    <p><strong>2. LOCATION 2</strong></p>
-                                                    <p className="m-0">123 Fake street</p>
-                                                    <p className="m-0">Rochester, NY</p>
-                                                </Col>
-                                                <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                    <Form.Check name="pickupLoc" type="radio" value="test2" id="test2" required/>
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
-                                    <Card className="grey-section border-0" as={Form.Label} for="test3">
-                                        <Card.Body as={Container}>
-                                            <Row>
-                                                <Col xs={9}>
-                                                    <p><strong>3. LOCATION 3</strong></p>
-                                                    <p className="m-0">123 Fake street</p>
-                                                    <p className="m-0">Rochester, NY</p>
-                                                </Col>
-                                                <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                    <Form.Check name="pickupLoc" type="radio" value="test3" id="test3" required/>
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
+                                    {pickupLocations.map((location) => { return (
+                                        <Card className="grey-section border-0" as={Form.Label} for={"pickup-" + location.stationID}>
+                                            <Card.Body as={Container}>
+                                                <Row>
+                                                    <Col xs={9}>
+                                                        <p><strong>{location.stationID + ". " + location.name}</strong></p>
+                                                        <p className="m-0">{location.address}</p>
+                                                    </Col>
+                                                    <Col xs={3} className="d-flex align-items-center justify-content-end">
+                                                        <Form.Check name="pickupLoc" type="radio" value={"pickup-" + location.stationID} id={"pickup-" + location.stationID} required/>
+                                                    </Col>
+                                                </Row>
+                                            </Card.Body>
+                                        </Card>
+                                    )})}
                                 </Form.Group>
                             </Col>
                             <Col md={8}>
-                                <LocMap />
+                                <LocMap locations={pickupLocations} />
                             </Col>
                         </Row>
                     </Container>
@@ -271,52 +317,25 @@ export default function Reserve() {
                         <Row>
                             <Col md={4} className="pb-4 pb-md-0 pe-md-2">
                                 <Form.Group controlId="dropoffLoc">
-                                    <Card className="grey-section border-0" as={Form.Label} for="test4">
-                                        <Card.Body as={Container}>
-                                            <Row>
-                                                <Col xs={9}>
-                                                    <p><strong>1. LOCATION 1</strong></p>
-                                                    <p className="m-0">123 Fake street</p>
-                                                    <p className="m-0">Rochester, NY</p>
-                                                </Col>
-                                                <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                    <Form.Check name="dropoffLoc" type="radio" value="test4" id="test4" required/>
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
-                                    <Card className="grey-section border-0" as={Form.Label} for="test5">
-                                        <Card.Body as={Container}>
-                                            <Row>
-                                                <Col xs={9}>
-                                                    <p><strong>2. LOCATION 2</strong></p>
-                                                    <p className="m-0">123 Fake street</p>
-                                                    <p className="m-0">Rochester, NY</p>
-                                                </Col>
-                                                <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                    <Form.Check name="dropoffLoc" type="radio" value="test5" id="test5" required/>
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
-                                    <Card className="grey-section border-0" as={Form.Label} for="test6">
-                                        <Card.Body as={Container}>
-                                            <Row>
-                                                <Col xs={9}>
-                                                    <p><strong>3. LOCATION 3</strong></p>
-                                                    <p className="m-0">123 Fake street</p>
-                                                    <p className="m-0">Rochester, NY</p>
-                                                </Col>
-                                                <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                    <Form.Check name="dropoffLoc" type="radio" value="test6" id="test6" required/>
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
+                                    {dropoffLocations.map((location) => { return (
+                                        <Card className="grey-section border-0" as={Form.Label} for={"dropoff-" + location.stationID}>
+                                            <Card.Body as={Container}>
+                                                <Row>
+                                                    <Col xs={9}>
+                                                        <p><strong>{location.stationID + ". " + location.name}</strong></p>
+                                                        <p className="m-0">{location.address}</p>
+                                                    </Col>
+                                                    <Col xs={3} className="d-flex align-items-center justify-content-end">
+                                                        <Form.Check name="dropoffLoc" type="radio" value={"dropoff-" + location.stationID} id={"pickup-" + location.stationID} required/>
+                                                    </Col>
+                                                </Row>
+                                            </Card.Body>
+                                        </Card>
+                                    )})}
                                 </Form.Group>
                             </Col>
                             <Col md={8}>
-                                <LocMap />
+                                <LocMap locations={dropoffLocations} />
                             </Col>
                         </Row>
                     </Container>
@@ -367,8 +386,9 @@ export default function Reserve() {
                                         <Form.Group className="mt-4" controlId="paymentMethod">
                                             <Form.Label className="m-0">Payment Method</Form.Label>
                                             <hr className="border-2 opacity-100" />
-                                            <Form.Check name="paymentMethod" type="radio" label="Card 1" value="card1" required/>
-                                            <Form.Check name="paymentMethod" type="radio" label="Card 2" value="card2" required/>
+                                            {cards.map((card) => { return (
+                                                <Form.Check name="paymentMethod" type="radio" label={card.lastNumbers} value={card.cardToken} required/>
+                                            )})}
                                         </Form.Group>
                                     </Card.Body>
                                 </Card>

@@ -109,7 +109,7 @@ function App() {
               </ProtectedRoute>} />
             <Route path="account" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.customers}>
-                <Account />
+                <Account token={token} />
               </ProtectedRoute>
             }/>
             <Route path="/account/editProfile" element={
@@ -124,7 +124,7 @@ function App() {
             }/>
             <Route path="reserve" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.approvedCustomer}> 
-                <Reserve />
+                <Reserve token={token} />
               </ProtectedRoute>
             }/>
             <Route path="reserve/edit" element={

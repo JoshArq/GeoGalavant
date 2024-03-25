@@ -1,33 +1,82 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Header from '../../GeoHeader/GeoHeader.js';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
 import { Link } from 'react-router-dom';
 
-export default function Account() {
+export default function Account({token}) {
+    const [userData, setUserData] = useState({driversLicense:{}});
+    const [cards, setCards] = useState([]);
+    const [isValid, setIsValid] = useState(true);
+
+    // Get data
+    useEffect(() => {
+        // Get credit cards
+        fetch("/api/getCreditCards", {
+            headers: {
+              "auth-token": token
+            }
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error || !data.cards) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setCards(data.cards);
+                }
+          }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+          });
+          // Get user data
+        fetch("/api/getUserData", {
+            headers: {
+              "auth-token": token
+            }
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error || !data.userData) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setUserData(data.userData);
+                }
+          }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+          });
+    }, [])
+
     return (
         <main>
             <Header title="Your Account" />
             <Container as={'section'}>
                 <h2 className="my-4 fw-bold">Profile</h2>
+                <Alert variant="danger" className={'text-danger mb-3 bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
+                    There was an issue retrieving your data. Please refresh to try again.
+                </Alert> 
                 <Card className="grey-section border-0 mb-3 p-4">
                     <Card.Body as={Container}>
                         <Row>
                             <Col md={11}>
                                 <h3 className="mb-3 fs-5 fw-bold">Personal Information</h3>
                                 <p className="fw-bold mb-1">Email</p>
-                                <p>something@something.com</p>
+                                <p>{userData.email}</p>
                                 <p className="fw-bold mb-1">Username</p>
-                                <p>johnsmith</p>
-                                <p className="fw-bold mb-1">Password</p>
-                                <p>**************</p>
+                                <p>{userData.username}</p>
                                 <p className="fw-bold mb-1">Driver's License</p>
-                                <p className="mb-1">Expires ##/##/####</p>
-                                <p className="mb-1">123 Fake Street</p>
-                                <p>Rochester, NY 14623</p>
+                                <p className="mb-1">Name: {userData.driversLicense.firstName ? userData.driversLicense.firstName + " " + userData.driversLicense.lastName : ''}</p>
+                                <p className="mb-1">State: {userData.driversLicense.state}</p>
+                                <p className="mb-1">Expires: {userData.driversLicense.expirationDate}</p>
                             </Col>
                             <Col md={1}>
                                 <Button className="float-end" as={Link} to="/account/editProfile">Edit</Button>
@@ -41,30 +90,13 @@ export default function Account() {
                             <Col md={11}>
                                 <h3 className="mb-3 fs-5 fw-bold">Payment Methods</h3>
                                 <Row>
-                                    <Col sm={6} md={4}>
-                                        <p className="fw-bold mb-1">Default</p>
-                                        <p className="mb-1">Type of card</p>
-                                        <p className="mb-1">Ends in ####</p>
-                                        <p className="mb-1">Expires ##/##</p>
-                                        <p className="mb-1">123 Fake Street</p>
-                                        <p>Rochester, NY 14623</p>
-                                    </Col>
-                                    <Col sm={6} md={4}>
-                                        <p className="fw-bold mb-1"><br/></p>
-                                        <p className="mb-1">Type of card</p>
-                                        <p className="mb-1">Ends in ####</p>
-                                        <p className="mb-1">Expires ##/##</p>
-                                        <p className="mb-1">123 Fake Street</p>
-                                        <p>Rochester, NY 14623</p>
-                                    </Col>
-                                    <Col sm={6} md={4}>
-                                        <p className="fw-bold mb-1"><br/></p>
-                                        <p className="mb-1">Type of card</p>
-                                        <p className="mb-1">Ends in ####</p>
-                                        <p className="mb-1">Expires ##/##</p>
-                                        <p className="mb-1">123 Fake Street</p>
-                                        <p>Rochester, NY 14623</p>
-                                    </Col>
+                                    {cards.map((card) => { return (
+                                        <Col sm={6} md={4}>
+                                            <p className="mb-1 fw-bold">{card.lastNumbers}</p>
+                                            <p className="mb-1">{card.fullname}</p>
+                                            <p className="mb-1">Expires {card.expirationDate}</p>
+                                        </Col>
+                                    )})}
                                 </Row>
                             </Col>
                             <Col md={1}>
