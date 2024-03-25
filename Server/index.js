@@ -35,11 +35,9 @@ router.get("/testToken", async (req, res) => {
 });
 
 
-//TODO needs address fix
+//TODO needs address fix after GR#2
 router.post("/createCustomer", async (req, res) => {
   
-  apiLog(req)
-
   var custID = await pg.addUser(req.body)
 
   if(custID == -1){
@@ -102,7 +100,6 @@ router.post("/login", async (req, res) => {
 });
 
 
-//TODO add DL info
 router.get("/getUserData", async (req, res) => {
   
   const token = req.headers['auth-token']
@@ -115,7 +112,7 @@ router.get("/getUserData", async (req, res) => {
 
     var custData = await pg.getCustomerByUserId(userAuth.id)
 
-    // apiLog(custData)
+    var expy = new Date(custData.licenseexpires).toLocaleDateString()
 
     var returnData = {
       username: userData.username,
@@ -125,7 +122,7 @@ router.get("/getUserData", async (req, res) => {
         firstName: userData.firstname,
         lastName: userData.lastname,
         state: custData.stateprovincename,
-        expirationDate: custData.licenseexpires
+        expirationDate: expy
       }
     }
 
@@ -152,7 +149,6 @@ router.get("/getUserData", async (req, res) => {
 
 
 
-//TODO connect to backend
 router.post("/editUserData", async (req, res) => {
   const token = req.headers['auth-token']
   const inputData = req.body;
@@ -343,32 +339,54 @@ router.delete("/removeCreditCard", (req, res) => {
 
 
 //TODO connect to backend
-router.get("/getLocations", (req, res) => {
-  res.json({
-    locations:[
-      {
-        stationID: 1,
-        name: "GyroGoGo Northwest", 
-        address: "The mall at Greece Ridge...",
-        latitude: 43.20,
-        longitude: -77.69
-      },
-      {
-        stationID: 2,
-        name: "GyroGoGo Northeast", 
-        address: "Town Center of Webster...",
-        latitude: 43.21,
-        longitude: -77.46
-      },
-      {
-        stationID: 3,
-        name: "GyroGoGo Center City", 
-        address: "Genesee Crossroads Garage...",
-        latitude: 43.16,
-        longitude: -77.61
-      }
-    ]
-  });
+router.get("/getLocations", async (req, res) => {
+  var query = await pg.getAllStations();
+  apiLog(query)
+
+  var locations = []
+
+  query.forEach((item) => {
+    var resultItem= {};
+    
+    resultItem.stationID = item.stationid
+    resultItem.name = item.stationname
+    resultItem.address = item.address
+    resultItem.latitude = parseFloat(item.minlatitude)
+    resultItem.longitude = parseFloat(item.minlongitude)
+
+    
+    locations.push(resultItem)
+  })
+
+
+  
+  res.json({locations: locations})
+  
+  // res.json({
+  //   locations:[
+  //     {
+  //       stationID: 1,
+  //       name: "GyroGoGo Northwest", 
+  //       address: "The mall at Greece Ridge...",
+  //       latitude: 43.20,
+  //       longitude: -77.69
+  //     },
+  //     {
+  //       stationID: 2,
+  //       name: "GyroGoGo Northeast", 
+  //       address: "Town Center of Webster...",
+  //       latitude: 43.21,
+  //       longitude: -77.46
+  //     },
+  //     {
+  //       stationID: 3,
+  //       name: "GyroGoGo Center City", 
+  //       address: "Genesee Crossroads Garage...",
+  //       latitude: 43.16,
+  //       longitude: -77.61
+  //     }
+  //   ]
+  // });
 });
 
 
@@ -550,8 +568,8 @@ async function generateToken(id, ip = "127.0.0.1"){
 
 
 //TODO
-// fix race conditions for return
 // fix IP decoding
+// add role encryption?
 async function decodeToken(token){
   var data = {validToken: false}
 

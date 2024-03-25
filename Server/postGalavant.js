@@ -75,11 +75,9 @@ async function addCustomer(userID, obj){
   const res = await pool.query(query);
   const stateCode = res.rows[0].stateprovinceid
 
-  //TODO format date & insert properly
-
   query = {
     text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID) VALUES ($1, $2, $3, $4)",
-    values: [licenseID, "2025-07-23", stateCode, userID]
+    values: [licenseID, licenseExpy, stateCode, userID]
   };
 
   const res2 = await pool.query(query);
