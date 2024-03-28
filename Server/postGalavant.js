@@ -553,6 +553,76 @@ async function addCar(obj){
   }
 }
 
+async function getCarLocations(carId){
+  var query = {
+    text: "SELECT * FROM CarTracking WHERE CarId = $1",
+    values: [carId]
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCurrentCarLocation(carId){
+  var query = {
+    text: "SELECT DISTINCT ON (CarID) * FROM CarTracking WHERE CarID = $1 ORDER BY CarID, Time",
+    values: [carId]
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCurrentLocations(){
+  var query = {
+    text: "SELECT ct.CarID, ct.Time, ct.Latitude, ct.Longitude FROM CarTracking ct, (SELECT CarID, MAX(Time) AS maxTime FROM CarTracking GROUP BY CarID) ct2 WHERE ct.CarID = ct2.CarID AND ct.Time = ct2.maxTime",
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addCarLocation(obj){
+  var query = {
+    name: 'insertCarLocation',
+    text: "INSERT INTO CarTracking (CarID, Time, Latitude, Longitude) VALUES ($1,$2,$3,$4)",
+    values: [obj.carId, obj.time, obj.latitude, obj.longitude]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function removeCarLocationsBefore(time){
+  var query = {
+    text: "DELETE FROM CarTracking WHERE Time < $1",
+    values: [time]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 module.exports = {
   pulseCheck, 
   addUser, 
@@ -560,7 +630,8 @@ module.exports = {
   getUserByName, 
   getUserById, 
   getAllUsers, 
-  deleteUser, addUserRole, 
+  deleteUser, 
+  addUserRole, 
   deleteUserRole, 
   addUserStatus, 
   removeUserStatus, 
@@ -587,5 +658,10 @@ module.exports = {
   editCar, 
   removeCar, 
   addCar, 
-  getCarsByStatus
+  getCarsByStatus,
+  getCurrentCarLocation,
+  getCarLocations,
+  getCurrentLocations,
+  addCarLocation,
+  removeCarLocationsBefore
 }

@@ -89,30 +89,66 @@ async function main(){
     // console.log(await pg.removeCreditCard(insertId));
 
     //testing CRUD operations for cars
-    let insertCar = {
-        stationId: 1,
-        carStatusId:1
+    // let insertCar = {
+    //     stationId: 1,
+    //     carStatusId:1
+    // };
+    // let insertId = await pg.addCar(insertCar);
+    // console.log("Testing insert car");
+    // console.log(insertId);
+    // console.log("Testing get car by station");
+    // console.log(await pg.getStationCars(1));
+    // console.log("testing get car by status");
+    // console.log(await pg.getCarsByStatus(1));
+    // console.log("testing get all cars");
+    // console.log(await pg.getAllCars());
+    // let editCar = {
+    //     stationId: 2,
+    //     carStatusId:2,
+    //     carId: insertId
+    // };
+    // console.log("Testing edit car");
+    // console.log(await pg.editCar(editCar));
+    // console.log("Testing get specific car");
+    // console.log(await pg.getCar(insertId));
+    // console.log("Testing remove car");
+    // console.log(await pg.removeCar(insertId));
+
+    //testing data layer methods for car locations
+    let add1 = {
+        carId: 1,
+        time: "2022-02-16 15:47:44",
+        latitude:11.1111,
+        longitude:11.1111
     };
-    let insertId = await pg.addCar(insertCar);
-    console.log("Testing insert car");
-    console.log(insertId);
-    console.log("Testing get car by station");
-    console.log(await pg.getStationCars(1));
-    console.log("testing get car by status");
-    console.log(await pg.getCarsByStatus(1));
-    console.log("testing get all cars");
-    console.log(await pg.getAllCars());
-    let editCar = {
-        stationId: 2,
-        carStatusId:2,
-        carId: insertId
-    };
-    console.log("Testing edit car");
-    console.log(await pg.editCar(editCar));
-    console.log("Testing get specific car");
-    console.log(await pg.getCar(insertId));
-    console.log("Testing remove car");
-    console.log(await pg.removeCar(insertId));
+    let add2 = {
+        carId: 1,
+        time: "2024-02-16 15:47:44",
+        latitude: 11.2222,
+        longitude:11.2222
+    }
+    let add3 = {
+        carId: 2,
+        time: "2024-02-16 15:47:44",
+        latitude: 12.2222,
+        longitude: 12.2222
+    }
+    console.log("testing addCarLocation");
+    console.log( await pg.addCarLocation(add1) );
+    console.log( await pg.addCarLocation(add2) );
+    console.log( await pg.addCarLocation(add3) );
+    console.log("Testing getCarLocations");
+    console.log( await pg.getCarLocations(1) );
+    console.log("Testing getCurrentLocations");
+    console.log( await pg.getCurrentLocations() );
+    console.log("Testing getCurrentCarLocation")
+    console.log( await pg.getCurrentCarLocation(1) );
+    console.log("Testing remove before");
+    console.log(await pg.removeCarLocationsBefore("2023-02-16"));
+    console.log("Retrieving");
+    console.log( await pg.getCarLocations(1) );
+    console.log("Removing all");
+    console.log(await pg.removeCarLocationsBefore("2025-02-16"));
 
     //Customer Creation Tests
     var custObj = {

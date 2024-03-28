@@ -163,7 +163,7 @@ CREATE TABLE Station(
 );
 
 -- Populates Station table with some sample data --
-INSERT INTO Station (StationID, StationName, Address, MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, IsClosed) VALUES ('RIT', '1 Lomb Memorial Dr, Rochester, NY 14623', 43.0813185, 43.081585, -77.677650, -77.678876, FALSE),
+INSERT INTO Station (StationName, Address, MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, IsClosed) VALUES ('RIT', '1 Lomb Memorial Dr, Rochester, NY 14623', 43.0813185, 43.081585, -77.677650, -77.678876, FALSE),
 ('Bryan Street', '9 Bryan St, Rochester, NY 14613', 43.184155, 43.184313, -77.637184, -77.637841,  FALSE),
 ('Clinton', '291 Upper Falls Blvd, Rochester, NY 14605', 43.169961, 43.170105, -77.610052, -77.610736, FALSE);
 
@@ -191,7 +191,9 @@ CREATE TABLE Car(
 );
 
 -- Populates Car lookup table with some sample data --
-INSERT INTO Car (CarStatusID, StationID) VALUES (1, 1);
+INSERT INTO Car (CarStatusID, StationID) VALUES (1, 1),
+	(1,2),
+	(1,3);
 
 --generate the car tracking table --
 CREATE TABLE CarTracking(
