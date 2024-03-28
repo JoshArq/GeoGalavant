@@ -88,8 +88,6 @@ async function addCustomer(userID, obj){
 }
 
 
-
-
 async function updateUser(obj){
   const query = {
     text: "UPDATE Users SET Username = $1, Password = $2, FirstName = $3, LastName = $4, Email = $5, Address = $6, ZipCode = $7, City = $8, StateProvinceID = $9 WHERE UserID = $10",
@@ -388,4 +386,282 @@ async function removeReservation(rentalId){
   }
 }
 
-module.exports = {pulseCheck, addUser, updateUser, getUserByName, getUserById, getAllUsers, deleteUser, addUserRole, deleteUserRole, addUserStatus, removeUserStatus, getUserPerms, login, addCustomer, getCustomerByUserId, updateCustomer, getAllStations, getStation, getCustomerReservations, getReservation, updateReservation, addReservation, removeReservation}
+async function getCreditCardsByCustomer(custId){
+  var query = {
+    text: "SELECT * FROM Card WHERE CustomerID = $1",
+    values: [custId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCreditCard(cardId){
+  var query = {
+    text: "SELECT * FROM Card WHERE CardID = $1",
+    values: [cardId]
+  };
+  try{
+    return (await pool.query(query)).rows[0];
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function removeCreditCard(cardId){
+  var query = {
+    text: "DELETE FROM Card WHERE CardID = $1",
+    values: [cardId]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function editCreditCard(obj){
+  var query = {
+    text: "UPDATE Card SET PaymentTypeID=$1, CardName=$2, CardNumber=$3, ExpirationDate=$4, CVV=$5 WHERE CardID=$6",
+    values: [obj.paymentTypeId, obj.cardName, obj.cardNumber, obj.expirationDate, obj.cvv, obj.cardId]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addCreditCard(obj){
+  var query = {
+    text: "INSERT INTO Card (PaymentTypeID, CardName, CardNumber, ExpirationDate, CVV, CustomerID) VALUES ($1,$2,$3,$4,$5,$6) RETURNING CardID",
+    values: [obj.paymentTypeId, obj.cardName, obj.cardNumber, obj.expirationDate, obj.cvv, obj.customerId]
+  }
+  try{
+    return (await pool.query(query)).rows[0].cardid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getStationCars(stationId){
+  var query = {
+    text: "SELECT * FROM Car WHERE stationId = $1",
+    values: [stationId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCarsByStatus(statusId){
+  var query = {
+    text: "SELECT * FROM Car WHERE CarStatusID = $1",
+    values: [statusId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getAllCars(){
+  var query = {
+    text: "SELECT * FROM Car",
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCar(carId){
+  var query = {
+    text: "SELECT * FROM Car WHERE CarId = $1",
+    values: [carId]
+  };
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function editCar(obj){
+  var query = {
+    text: "UPDATE Car SET StationID=$1, CarStatusID=$2 WHERE CarID=$3",
+    values: [obj.stationId, obj.carStatusId, obj.carId]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function removeCar(carId){
+  var query = {
+    text: "DELETE FROM Car WHERE CarID = $1",
+    values: [carId]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addCar(obj){
+  var query = {
+    text: "INSERT INTO Car (StationID, CarStatusID) VALUES ($1,$2) RETURNING CarID",
+    values: [obj.stationId, obj.carStatusId]
+  }
+  try{
+    return (await pool.query(query)).rows[0].carid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCarLocations(carId){
+  var query = {
+    text: "SELECT * FROM CarTracking WHERE CarId = $1",
+    values: [carId]
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCurrentCarLocation(carId){
+  var query = {
+    text: "SELECT DISTINCT ON (CarID) * FROM CarTracking WHERE CarID = $1 ORDER BY CarID, Time",
+    values: [carId]
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCurrentLocations(){
+  var query = {
+    text: "SELECT ct.CarID, ct.Time, ct.Latitude, ct.Longitude FROM CarTracking ct, (SELECT CarID, MAX(Time) AS maxTime FROM CarTracking GROUP BY CarID) ct2 WHERE ct.CarID = ct2.CarID AND ct.Time = ct2.maxTime",
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addCarLocation(obj){
+  var query = {
+    name: 'insertCarLocation',
+    text: "INSERT INTO CarTracking (CarID, Time, Latitude, Longitude) VALUES ($1,$2,$3,$4)",
+    values: [obj.carId, obj.time, obj.latitude, obj.longitude]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function removeCarLocationsBefore(time){
+  var query = {
+    text: "DELETE FROM CarTracking WHERE Time < $1",
+    values: [time]
+  }
+  try{
+    return (await pool.query(query)).rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+module.exports = {
+  pulseCheck, 
+  addUser, 
+  updateUser, 
+  getUserByName, 
+  getUserById, 
+  getAllUsers, 
+  deleteUser, 
+  addUserRole, 
+  deleteUserRole, 
+  addUserStatus, 
+  removeUserStatus, 
+  getUserPerms, 
+  login, 
+  addCustomer, 
+  getCustomerByUserId, 
+  updateCustomer, 
+  getAllStations, 
+  getStation, 
+  getCustomerReservations, 
+  getReservation, 
+  updateReservation, 
+  addReservation, 
+  removeReservation, 
+  getCreditCardsByCustomer, 
+  getCreditCard, 
+  addCreditCard, 
+  removeCreditCard, 
+  editCreditCard, 
+  getStationCars, 
+  getAllCars, 
+  getCar, 
+  editCar, 
+  removeCar, 
+  addCar, 
+  getCarsByStatus,
+  getCurrentCarLocation,
+  getCarLocations,
+  getCurrentLocations,
+  addCarLocation,
+  removeCarLocationsBefore
+}
