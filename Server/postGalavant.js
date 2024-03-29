@@ -623,6 +623,22 @@ async function removeCarLocationsBefore(time){
   }
 }
 
+
+async function getFeesByCity(city){
+  var query = {
+    text: "SELECT * FROM Fee WHERE City = $1",
+    values: [city]
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+
 module.exports = {
   pulseCheck, 
   addUser, 
@@ -663,5 +679,6 @@ module.exports = {
   getCarLocations,
   getCurrentLocations,
   addCarLocation,
-  removeCarLocationsBefore
+  removeCarLocationsBefore,
+  getFeesByCity
 }
