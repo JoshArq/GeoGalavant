@@ -1,6 +1,13 @@
 const pg = require('./postGalavant.js');
 require('dotenv').config()
 
+var stripe_pk = process.env.STRIPE_PUBLIC_KEY;
+var stripe_sk = process.env.STRIPE_SECRET_KEY;
+
+const Stripe = require('stripe');
+const stripe = Stripe(stripe_sk)
+
+
 async function sampleFunction(id, startDate, endDate, obj){
     //check that a variable is present
     if(id==null || id==undefined){
@@ -30,4 +37,59 @@ async function sampleFunction(id, startDate, endDate, obj){
     //updateObject.status = obj.status;
     //repeat for other fields
     //await pg.updateCar(updateObject);    
+}
+
+
+async function addStripeCustomer(name, email){
+    
+    const customer = await stripe.customers.create({
+        name: name,
+        email: email,
+      });
+
+      return customer
+}
+
+
+//must pass in Stripe cust id, not our internal ids
+async function deleteStripeCustomer(custID){
+    const deleted = await stripe.customers.del(custID);
+    return deleted
+}
+
+
+//must pass in Stripe cust id
+async function addPaymentMethod(custID, cardInfo){
+    console.log(cardInfo)
+
+    var date = cardInfo.expirationDate.split("/")
+    var expMonth = date[0]
+    var expYear = "20" + date[1]
+    
+    const paymentMethod = await stripe.paymentMethods.create({
+        type: 'card',
+        card: {
+          number: cardInfo.number,
+          exp_month: expMonth,
+          exp_year: expYear,
+          cvc: cardInfo.ccv,
+        },
+      });
+
+    const result = await stripe.paymentMethods.attach(
+        paymentMethod.id,
+        {
+        customer: custID,
+        }
+    );
+
+    console.log(result)
+}
+
+
+
+module.exports = {
+    addStripeCustomer,
+    deleteStripeCustomer,
+    addPaymentMethod
 }

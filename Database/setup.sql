@@ -394,6 +394,7 @@ CREATE TABLE Customer(
 	LicenseNumber VARCHAR(10),
 	LicenseExpires DATE,
 	StateProvinceID INT NOT NULL,
+	StripeID VARCHAR (40),
 	UserID INT NOT NULL,
 	FOREIGN KEY (UserID)
 		REFERENCES Users (UserID),

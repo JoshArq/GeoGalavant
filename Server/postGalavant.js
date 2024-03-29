@@ -64,9 +64,11 @@ async function addCustomer(userID, obj){
   var licenseID = obj.driversLicense.ID
   var licenseExpy = obj.driversLicense. expirationDate
   var state = obj.driversLicense.state
-
-  console.log(state)
+  var stripeID = obj.stripeCust
   
+
+
+
   var query = {
     text: "SELECT * from StateProvince WHERE StateProvinceName = $1",
     values: [state]
@@ -76,8 +78,8 @@ async function addCustomer(userID, obj){
   const stateCode = res.rows[0].stateprovinceid
 
   query = {
-    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID) VALUES ($1, $2, $3, $4)",
-    values: [licenseID, licenseExpy, stateCode, userID]
+    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, StripeID, UserID) VALUES ($1, $2, $3, $4, $5)",
+    values: [licenseID, licenseExpy, stateCode, stripeID, userID]
   };
 
   const res2 = await pool.query(query);

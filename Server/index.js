@@ -1,5 +1,6 @@
 const express = require("express");
 const pg = require('./postGalavant.js')
+const bl = require('./businessLayer.js')
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 
@@ -38,7 +39,9 @@ router.get("/testToken", async (req, res) => {
 //TODO needs address fix after GR#2
 router.post("/createCustomer", async (req, res) => {
   
-  var custID = await pg.addUser(req.body)
+  var data = req.body;
+
+  var custID = await pg.addUser(data)
 
   if(custID == -1){
     res.json({
@@ -60,7 +63,10 @@ router.post("/createCustomer", async (req, res) => {
     return;
   }
 
-  custSuccess = await pg.addCustomer(custID, req.body)
+  var stripeCust = await bl.addStripeCustomer(data.creditCard.fullName)
+  data.stripeCust = stripeCust.id 
+
+  custSuccess = await pg.addCustomer(custID, data)
   if(custSuccess == 0){
     res.json({
       success: false,
@@ -69,8 +75,10 @@ router.post("/createCustomer", async (req, res) => {
     return;
   }
 
+  // bl.addPaymentMethod(stripeCust, data.creditCard)
 
-  res.json({ success: true, sessionToken: "to_be_implemented", role: roleID});
+
+  res.json({ success: true, role: roleID});
 });
 
 
