@@ -16,6 +16,10 @@ import Contact from './components/Pages/Contact/Contact.js';
 import Login from './components/Pages/Login/Login.js';
 import Apply from './components/Pages/Apply/Apply.js';
 import Account from './components/Pages/Account/Account.js';
+import EditProfile from './components/Pages/EditProfile/EditProfile.js';
+import EditPayments from './components/Pages/EditPayments/EditPayments.js';
+import Reserve from './components/Pages/Reserve/Reserve.js';
+import EditReservation from './components/Pages/EditReservation/EditReservation.js';
 import Dashboard from './components/Pages/Dashboard/Dashboard.js';
 import Content from './components/Pages/Content/Content.js';
 import Customers from './components/Pages/Customers/Customers.js';
@@ -54,6 +58,7 @@ function App() {
     mechUp: [1, 2, 3, 4],
     employees: [1, 2, 3, 4, 5], 
     customers: [6, 7],
+    approvedCustomer: [6],
     unAuthed: [0],
   }
   
@@ -61,11 +66,14 @@ function App() {
   // Test data call to check server connected
   // TODO: delete
   React.useEffect(() => {
-    fetch("/api/test")
+    fetch("/api/test", {
+      headers: {
+        "auth-token": "TEST-TOKEN"
+      }
+    })
     .then((res) => res.json())
     .then((data) => {
         setData(data.result)
-        console.log(data)
     }).catch(error => {
       console.log(error)
       console.log("Error. Server down.")
@@ -103,7 +111,27 @@ function App() {
               </ProtectedRoute>} />
             <Route path="account" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.customers}>
-                <Account />
+                <Account token={token} />
+              </ProtectedRoute>
+            }/>
+            <Route path="/account/editProfile" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.customers}>
+                <EditProfile token={token} />
+              </ProtectedRoute>
+            }/>
+            <Route path="/account/editPayments" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.customers}>
+                <EditPayments />
+              </ProtectedRoute>
+            }/>
+            <Route path="reserve" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.approvedCustomer}> 
+                <Reserve token={token} />
+              </ProtectedRoute>
+            }/>
+            <Route path="reserve/edit" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.approvedCustomer}> 
+                <EditReservation token={token} />
               </ProtectedRoute>
             }/>
             <Route path="dashboard" element={
