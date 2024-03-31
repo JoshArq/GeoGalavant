@@ -108,7 +108,7 @@ async function markMessageResolved(userAuth, inputData){
     }
     //checks that ticket is valid
     const ticket = await pg.getTicket(inputData.ticketId);
-    if(ticket == {}){
+    if(ticket == undefined){
         return { error: "Ticket with that id does not exist" }
     }
     if(ticket == -1){
@@ -116,7 +116,7 @@ async function markMessageResolved(userAuth, inputData){
     }
     //checks that user is valid
     const user = await pg.getUserById(inputData.userId);
-    if(user == {}){
+    if(user == undefined){
         return { error: "User with that id does not exist" }
     }
     if(user == -1){
