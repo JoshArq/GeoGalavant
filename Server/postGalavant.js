@@ -623,6 +623,25 @@ async function removeCarLocationsBefore(time){
   }
 }
 
+async function addTicket(obj){
+  var query = {
+    text: "INSERT INTO TICKET (Name, Phone, Email, Comment) VALUES ($1, $2, $3, $4) RETURNING TicketID",
+    values: [obj.name, obj.phone, obj.email, obj.comment]
+  }
+  try{
+    return (await pool.query(query)).rows[0].ticketid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+
+}
+
+async function updateTicket(obj){
+
+}
+
 module.exports = {
   pulseCheck, 
   addUser, 
@@ -663,5 +682,7 @@ module.exports = {
   getCarLocations,
   getCurrentLocations,
   addCarLocation,
-  removeCarLocationsBefore
+  removeCarLocationsBefore,
+  addTicket,
+  updateTicket
 }

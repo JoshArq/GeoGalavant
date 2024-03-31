@@ -31,3 +31,84 @@ async function sampleFunction(id, startDate, endDate, obj){
     //repeat for other fields
     //await pg.updateCar(updateObject);    
 }
+
+async function getAllUsers(userAuth, inputData){
+
+}
+
+async function getUserDetails(userAuth, inputData){
+
+}
+
+//TODO: Generate email
+async function addMessage(inputData){
+    //check name
+    if(inputData.name == null || inputData.name == undefined){
+        return {error: "name cannot be null"};
+    }
+    if(inputData.name.length > 50){
+        return {error: "name cannot be over 50 characters"};
+    }
+    //check email
+    if(inputData.email == null || inputData.email == undefined){
+        return {error: "email cannot be null"};
+    }
+    if(inputData.email.length > 50){
+        return {error: "email cannot be over 50 characters"};
+    }
+    //check phone
+    if(inputData.phone == null || inputData.phone == undefined){
+        return {error: "phone cannot be null"};
+    }
+    if(inputData.phone.toString().length > 11){
+        return {error: "phone cannot be over 11 characters"};
+    }
+    if(!Number.isInteger(inputData.phone)){
+        return {error: "phone must be a number"};
+    }
+    if(parseInt(inputData.phone)<0){
+        return {error: "phone number cannot be negative"}
+    }
+    //check comment
+    if(inputData.comment == null || inputData.comment == undefined){
+        return {error: "comment cannot be null"};
+    }
+    //call function
+    result = await pg.addTicket(inputData);
+    //returns
+    if(result == -1){
+        //SEND EMAIL HERE
+        return {error: "Failed to insert"};
+    }
+    //SEND EMAIL HERE
+    return {ticketid: result, success: "message added"};
+}
+
+async function getMessages(userAuth, inputData){
+
+}
+
+//TODO: Generate email
+async function markMessageResolved(userAuth, inputData){
+
+}
+
+//TODO: Generate email to customer
+async function changeStatus(userAuth, inputData){
+    
+}
+
+//TODO: Generate email to customer
+async function addStatus(userAuth, inputData){
+    
+}
+
+module.exports = {
+    getAllUsers,
+    getUserDetails,
+    changeStatus,
+    addStatus,
+    getMessages,
+    markMessageResolved,
+    addMessage
+}

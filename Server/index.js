@@ -1,4 +1,5 @@
 const express = require("express");
+const bl = require('./businessLayer.js')
 const pg = require('./postGalavant.js')
 require('dotenv').config()
 const bcrypt = require('bcrypt');
@@ -358,7 +359,7 @@ router.get("/getLocations", async (req, res) => {
     locations.push(resultItem)
   })
 
-
+router. 
   
   res.json({locations: locations})
   
@@ -470,18 +471,16 @@ router.get("/getUserReservationByID", (req, res) => {
 
 });
 
+//get all users for employees
+router.get("/getAllUsers", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
 
+  var userAuth = await decodeToken(token)
 
-//TODO - connect to DB
-router.post("/submitContactForm", (req, res) => {
-  //insert DB logic here
-
-  res.json({
-    success: true
-  })
+  const returnData = await bl.getAllUsers(userAuth, inputData);
+  res.json(returnData)
 });
-
-
 
 app.use("/api", router)
 app.listen(PORT, () => {
@@ -489,7 +488,68 @@ app.listen(PORT, () => {
 });
 
 
+//get user details
+router.get("/getUserDetails", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
 
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.getUserDetails(userAuth, inputData);
+  res.json(returnData);
+});
+
+//change status
+router.post("/addStatus", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.addStatus(userAuth, inputData);
+  res.json(returnData);
+});
+
+//change status
+router.post("/changeStatus", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.changeStatus(userAuth, inputData);
+  res.json(returnData);
+});
+
+//get customer messages
+router.post("/addMessage", async (req, res) => {
+  const inputData = req.body;
+  console.log(req.body);
+  const returnData = await bl.addMessage(inputData);
+  res.json(returnData);
+});
+
+//get customer messages
+router.get("/getMessages", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.getMessages(userAuth, inputData);
+  res.json(returnData);
+});
+
+//markResolved
+router.post("/markMessageResolved", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.markMessageResolved(userAuth, inputData);
+  res.json(returnData);
+});
 
 
 
