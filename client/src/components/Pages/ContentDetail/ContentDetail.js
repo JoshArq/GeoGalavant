@@ -9,7 +9,6 @@ import Badge from '../../Badges/Badge.js';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import './Customer.scss';
 
 function ChangeStatusModal(props) {
     return (
@@ -51,7 +50,7 @@ function ChangeStatusModal(props) {
     );
   }
 
-export default function Customer() {
+export default function ContentDetail() {
 
     const [modalShow, setModalShow] = React.useState(false);
 
