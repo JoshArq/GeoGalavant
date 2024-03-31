@@ -84,8 +84,15 @@ async function addMessage(inputData){
     return {ticketid: result, success: "message added"};
 }
 
-async function getMessages(userAuth, inputData){
-
+async function getMessages(userAuth){
+    if(!userAuth.validToken){
+        return {error: "invalid authorization"}
+    }
+    const returnVals = await pg.getAllTickets();
+    if(returnVals == -1){
+        return {error: "failed to get tickets"}
+    }
+    return returnVals;
 }
 
 //TODO: Generate email

@@ -635,11 +635,23 @@ async function addTicket(obj){
     console.log(err);
     return -1;
   }
-
 }
 
 async function updateTicket(obj){
 
+}
+
+async function getAllTickets(){
+  var query = {
+    text: "SELECT * FROM Ticket"
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
 }
 
 module.exports = {
@@ -684,5 +696,6 @@ module.exports = {
   addCarLocation,
   removeCarLocationsBefore,
   addTicket,
-  updateTicket
+  updateTicket,
+  getAllTickets
 }

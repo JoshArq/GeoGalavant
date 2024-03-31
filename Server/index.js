@@ -531,11 +531,10 @@ router.post("/addMessage", async (req, res) => {
 //get customer messages
 router.get("/getMessages", async (req, res) => {
   const token = req.headers['auth-token']
-  const inputData = req.body;
 
   var userAuth = await decodeToken(token)
 
-  const returnData = await bl.getMessages(userAuth, inputData);
+  const returnData = await bl.getMessages(userAuth);
   res.json(returnData);
 });
 
