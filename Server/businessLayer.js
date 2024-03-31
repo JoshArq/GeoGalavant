@@ -60,10 +60,10 @@ async function addMessage(inputData){
     if(inputData.phone == null || inputData.phone == undefined){
         return {error: "phone cannot be null"};
     }
-    if(inputData.phone.toString().length > 11){
+    if(inputData.phone.length > 11){
         return {error: "phone cannot be over 11 characters"};
     }
-    if(!Number.isInteger(inputData.phone)){
+    if(!/^\d+$/.test(inputData.phone)){
         return {error: "phone must be a number"};
     }
     if(parseInt(inputData.phone)<0){
