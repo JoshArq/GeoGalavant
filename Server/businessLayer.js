@@ -81,16 +81,19 @@ async function addMessage(inputData){
         return {error: "Failed to insert"};
     }
     //SEND EMAIL HERE
-    return {ticketId: result, success: "message added"};
+    return {ticketId: result};
 }
 
 async function getMessages(userAuth){
     if(!userAuth.validToken){
         return {error: "invalid authorization"}
     }
-    const returnVals = await pg.getAllTickets();
+    let returnVals = await pg.getAllTickets();
     if(returnVals == -1){
         return {error: "failed to get tickets"}
+    }
+    for(let i=0 ; i<returnVals.length ; i++){
+        returnVals[i].submitted = new Date(returnVals[i].submitted).valueOf();
     }
     return returnVals;
 }
