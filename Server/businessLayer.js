@@ -81,7 +81,7 @@ async function addMessage(inputData){
         return {error: "Failed to insert"};
     }
     //SEND EMAIL HERE
-    return {ticketid: result, success: "message added"};
+    return {ticketId: result, success: "message added"};
 }
 
 async function getMessages(userAuth){
