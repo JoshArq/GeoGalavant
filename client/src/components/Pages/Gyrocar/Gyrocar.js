@@ -10,7 +10,7 @@ import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
-function ChangeStatusModal(props) {
+function SubmitWorkReport(props) {
     return (
       <Modal
         {...props}
@@ -20,31 +20,46 @@ function ChangeStatusModal(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Change Status
+            New Work Report
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <Form>
-                <Form.Group className="mb-3" controlId="state">
-                    <Form.Label>Status</Form.Label>
-                    <Form.Select name="statusSelect" required>
+                <Form.Group className="mb-3" controlId="gyrocar">
+                    <Form.Label>Gyrocar</Form.Label>
+                    <Form.Select name="gyrocarSelect" required>
                         <option value="">Select...</option>
-                        <option value="active">Active</option>
-                        <option value="needsApproval">Needs Approval</option>
-                        <option value="denied">Denied</option>  
-                        <option value="suspended">Suspended</option> 
-                        <option value="terminated">Terminated</option>                    
+                        <option value="1">Gyrocar #####</option>   
+                        <option value="2">Gyrocar #####</option>               
+                        <option value="3">Gyrocar #####</option>   
                     </Form.Select>
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="reason">
-                    <Form.Label>Reason for Change</Form.Label>
-                    <Form.Control type="text" placeholder="Reason for change" required />
+                <Form.Group className="mb-3" controlId="service">
+                    <Form.Label>Service Performed</Form.Label>
+                    <Form.Control type="text" placeholder="Describe service" required />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="pickup">
+                    <Form.Label>Date Time Performed</Form.Label>
+                    <Form.Control type="datetime-local" required />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="station">
+                    <Form.Label>Station</Form.Label>
+                    <Form.Select name="stationSelect" required>
+                        <option value="">Select...</option>
+                        <option value="Center City">Gyrogogo Center City</option>   
+                        <option value="Airport">Gyrogogo Airport</option> 
+                    </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="damage">
+                    <Form.Label>Was there physical damage?</Form.Label>
+                    <Form.Check name="yesDamage" type="radio" label="Yes" required/>
+                    <Form.Check name="noDamage" type="radio" label="No" required/>
                 </Form.Group>
             </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="" onClick={props.onHide}>Close</Button>
-          <Button onClick={props.onHide}>Save Changes</Button>
+          <Button variant="" onClick={props.onHide}>Cancel</Button>
+          <Button onClick={props.onHide}>Submit</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -56,30 +71,30 @@ export default function Gyrocar() {
 
     return (
         <main>
-             <ChangeStatusModal
+             <SubmitWorkReport
                 show={modalShow}
                 onHide={() => setModalShow(false)}
             />
 
             <Container fluid as={'section'}>
                 {/* <p>ooh customer details</p> */}
-                <p className="mt-3"><Link to="/customers">Back to customers</Link></p>
+                <p className="mt-3"><Link to="/gyrocars">Back to gyrocars</Link></p>
 
                 <Row>
                     <Col md="auto">
-                        <h1>Arlene McCoy</h1>
+                        <h1>Gyrocar ######</h1>
                     </Col>
                     <Col className="d-flex align-items-center">
-                        <Button onClick={() => setModalShow(true)}>Change Status</Button>
+                        <Button variant="danger">Delete Car</Button>
                     </Col>
                 </Row>
-                <Badge status="active"/> 
+                <Badge status="available"/> 
                 <Row className="mt-2">
-                    <Col md="2">
-                        <p><b>Username</b><br/>something</p>
+                    <Col md="4">
+                        <p><b>Location</b><br/>Rochester (Monroe County)</p>
                     </Col>
-                    <Col md="2">
-                        <p><b>Email</b><br/>arlenemccoy@gmail.com</p>
+                    <Col>
+                        <p><b>Station</b><br/>GyroGoGo Center City</p>
                     </Col>
                 </Row>
             </Container> 
@@ -87,65 +102,28 @@ export default function Gyrocar() {
 
                 <Container as={'section'}>
 
-                    <h2 className="pt-3 pb-3">Reservations</h2>
+                    <h2 className="pt-3 pb-3">Work Reports</h2>
+                    <Button className="mb-3" onClick={() => setModalShow(true)}><i class="bi bi-plus"></i> Add New</Button>
 
-                    <h2>Upcoming</h2>
                     <Table responsive="md">
                     <thead>
                         <tr>
-                        <th scope="col">Reservation #</th>
-                        <th scope="col">Pickup</th>
-                        <th scope="col">Dropoff</th>
-                        <th scope="col">Gyrocar #</th>
-                        <th scope="col">Payment</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Date/Time #</th>
+                        <th scope="col">Location</th>
+                        <th scope="col">Service</th>
+                        <th scope="col">Physical Damage</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr className="tr-width">
-                            <td>123456</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>7654321</td>
-                            <td>card ending in ####</td>
-                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
+                            <td>0/12/2024 at 12:00pm</td>
+                            <td>Monroe County <br/>GyroGoGo Center City</td>
+                            <td>Oil Change</td>
+                            <td>No</td>
                         </tr>                   
                     </tbody>
                     </Table>
 
-                    <h2>Past</h2>
-                    <Table responsive="md">
-                    <thead>
-                        <tr>
-                        <th scope="col">Reservation #</th>
-                        <th scope="col">Pickup</th>
-                        <th scope="col">Dropoff</th>
-                        <th scope="col">Gyrocar #</th>
-                        <th scope="col">Payment</th>
-                        <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="tr-width">
-                            <td>123456</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>7654321</td>
-                            <td>card ending in ####</td>
-                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                        </tr>                   
-                    </tbody>
-                    <tbody>
-                        <tr className="tr-width">
-                            <td>123456</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>7654321</td>
-                            <td>card ending in ####</td>
-                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                        </tr>                   
-                    </tbody>
-                    </Table>
                 </Container>
             </div>
         </main>
