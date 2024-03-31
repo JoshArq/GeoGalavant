@@ -638,7 +638,17 @@ async function addTicket(obj){
 }
 
 async function updateTicket(obj){
-
+  var query = {
+    text: "UPDATE Ticket SET Name = $1, Phone = $2, Email = $3, Comment = $4, IsOpen = $5, ClosedBy = $6, Submitted = $7 WHERE TicketID = $8",
+    values: [obj.name, obj.phone, obj.email, obj.comment, obj.isOpen, obj.closedBy, obj.submitted, obj.ticketId]
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
 }
 
 async function getAllTickets(){
@@ -647,6 +657,20 @@ async function getAllTickets(){
   }
   try{
     return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getTicket(ticketId){
+  var query = {
+    text: "SELECT * FROM Ticket WHERE TicketID = $1",
+    values: [ticketId]
+  }
+  try{
+    return (await pool.query(query)).rows[0];
   }
   catch(err){
     console.log(err);
@@ -697,5 +721,6 @@ module.exports = {
   removeCarLocationsBefore,
   addTicket,
   updateTicket,
-  getAllTickets
+  getAllTickets,
+  getTicket
 }

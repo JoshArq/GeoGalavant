@@ -97,7 +97,47 @@ async function getMessages(userAuth){
 
 //TODO: Generate email
 async function markMessageResolved(userAuth, inputData){
-
+    if(!userAuth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(inputData.ticketId == null || inputData.ticketId ==undefined){
+        return { error: "ticket id must exist" }
+    }
+    if(inputData.userId == null || inputData.userId ==undefined){
+        return { error: "user id must exist" }
+    }
+    //checks that ticket is valid
+    const ticket = await pg.getTicket(inputData.ticketId);
+    if(ticket == {}){
+        return { error: "Ticket with that id does not exist" }
+    }
+    if(ticket == -1){
+        return { error: "failed to find ticket"}
+    }
+    //checks that user is valid
+    const user = await pg.getUserById(inputData.userId);
+    if(user == {}){
+        return { error: "User with that id does not exist" }
+    }
+    if(user == -1){
+        return { error: "failed to find user"}
+    }
+    //sets ticket to resolved
+    const updatedTicket = {
+        name: ticket.name,
+        submitted: ticket.submitted,
+        phone: ticket.phone,
+        email: ticket.email,
+        comment: ticket.comment,
+        isOpen: false,
+        closedBy: inputData.userId,
+        ticketId: inputData.ticketId
+    };
+    const result = await pg.updateTicket(updatedTicket);
+    if(result == -1){
+        return {error: "failed to resolve ticket"}
+    }
+    return {success: "resolved ticket"}
 }
 
 //TODO: Generate email to customer
