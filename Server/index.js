@@ -524,7 +524,6 @@ router.post("/changeStatus", async (req, res) => {
 //get customer messages
 router.post("/addMessage", async (req, res) => {
   const inputData = req.body;
-  console.log(req.body);
   const returnData = await bl.addMessage(inputData);
   res.json(returnData);
 });
