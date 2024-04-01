@@ -36,7 +36,6 @@ async function addUser(obj){
   const username = obj.username
   const password = obj.password
   const email = obj.email
-  const appliedBefore = obj.appliedBefore
   const driversLicense = obj.driversLicense
   const firstName = driversLicense.firstName
   const lastName = driversLicense.lastName
@@ -50,10 +49,12 @@ async function addUser(obj){
 
   
   try{
-    var userID = (await pool.query(query)).rows[0].userid
+    var result = await pool.query(query)
+    var userID = result.rows[0].userid
     return userID
   }
   catch (err){
+    console.log(err)
     return -1
   }
 }
@@ -64,6 +65,9 @@ async function addCustomer(userID, obj){
   var licenseID = obj.driversLicense.ID
   var licenseExpy = obj.driversLicense. expirationDate
   var state = obj.driversLicense.state
+  var appliedBefore = false
+  //var appliedBefore = obj.appliedBefore
+  var agreed = obj.tos
 
   console.log(state)
   
@@ -76,8 +80,8 @@ async function addCustomer(userID, obj){
   const stateCode = res.rows[0].stateprovinceid
 
   query = {
-    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID) VALUES ($1, $2, $3, $4)",
-    values: [licenseID, licenseExpy, stateCode, userID]
+    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID, HasAppliedBefore, HasAgreedToTerms) VALUES ($1, $2, $3, $4, $5, $6)",
+    values: [licenseID, licenseExpy, stateCode, userID, appliedBefore, agreed]
   };
 
   const res2 = await pool.query(query);
@@ -180,8 +184,8 @@ async function addUserRole(userID, userRole){
   }
 
   try{
-    var roleID = (await pool.query(query)).rows[0].roleid
-    console.log(roleID)
+    var query = await pool.query(query)
+    var roleID = query.rows[0].roleid
     return roleID;
   }
   catch (err){
@@ -213,8 +217,7 @@ async function addUserStatus(userId, statusId, reasonApplied){
   }
 
   try{
-    var userStatusId= (await pool.query(query))
-    console.log(userStatusId)
+    var userStatusId= (await pool.query(query)).rows[0].userstatusid
     return userStatusId;
   }
   catch (err){
@@ -229,7 +232,7 @@ async function removeUserStatus(reasonRemoved, userStatusID){
   }
 
   try{
-    var rowsEffected = (await pool.query(query))
+    var rowsEffected = (await pool.query(query)).rowCount
     return rowsEffected;
   }
   catch(err){
@@ -623,6 +626,88 @@ async function removeCarLocationsBefore(time){
   }
 }
 
+async function addTicket(obj){
+  var query = {
+    text: "INSERT INTO TICKET (Name, Phone, Email, Comment) VALUES ($1, $2, $3, $4) RETURNING TicketID",
+    values: [obj.name, obj.phone, obj.email, obj.comment]
+  }
+  try{
+    return (await pool.query(query)).rows[0].ticketid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function updateTicket(obj){
+  var query = {
+    text: "UPDATE Ticket SET Name = $1, Phone = $2, Email = $3, Comment = $4, IsOpen = $5, ClosedBy = $6, Submitted = $7 WHERE TicketID = $8",
+    values: [obj.name, obj.phone, obj.email, obj.comment, obj.isOpen, obj.closedBy, obj.submitted, obj.ticketId]
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getAllTickets(){
+  var query = {
+    text: "SELECT * FROM Ticket"
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getTicket(ticketId){
+  var query = {
+    text: "SELECT * FROM Ticket WHERE TicketID = $1",
+    values: [ticketId]
+  }
+  try{
+    return (await pool.query(query)).rows[0];
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getAllCustomers(){
+  var query = {
+    text: "SELECT Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID ORDER BY AccountStatus.StatusID"
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCustomerDetails(id){
+  var query = {
+    text: "SELECT Users.UserID, Users.Username, Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID, Customer.LicenseExpires, Customer.LicenseNumber FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID WHERE CustomerID = $1",
+    values: [id]
+  }
+  try{
+    return (await pool.query(query)).rows[0];
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 module.exports = {
   pulseCheck, 
   addUser, 
@@ -663,5 +748,11 @@ module.exports = {
   getCarLocations,
   getCurrentLocations,
   addCarLocation,
-  removeCarLocationsBefore
+  removeCarLocationsBefore,
+  addTicket,
+  updateTicket,
+  getAllTickets,
+  getTicket,
+  getAllCustomers,
+  getCustomerDetails
 }
