@@ -78,6 +78,10 @@ router.post("/createCustomer", async (req, res) => {
   // bl.addPaymentMethod(stripeCust, data.creditCard)
 
 
+  //TODO more error checking on the above
+  //if all good so far, send email
+  
+
   res.json({ success: true, role: roleID});
 });
 

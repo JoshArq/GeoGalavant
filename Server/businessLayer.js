@@ -1,5 +1,18 @@
 const pg = require('./postGalavant.js');
 require('dotenv').config()
+var nodemailer = require('nodemailer');
+const emailUser = process.env.EMAIL_USER
+const emailPass = process.env.EMAIL_PASSWORD
+
+console.log(emailUser, emailPass)
+
+var transporter = nodemailer.createTransport({
+    service: 'smtp-relay.gmail.com',
+    auth: {
+      user: emailUser,
+      pass: emailPass
+    }
+  });
 
 var stripe_pk = process.env.STRIPE_PUBLIC_KEY;
 var stripe_sk = process.env.STRIPE_SECRET_KEY;
@@ -86,10 +99,39 @@ async function addPaymentMethod(custID, cardInfo){
     console.log(result)
 }
 
+//Cases:
+//AccountCreation
+async function emailCustomer (email, name, reason){
+    var mailOptions
+
+
+    if(reason == "AccountCreation"){
+
+        var text = "Congrats " + name + ", your account was successfully created!"
+
+        mailOptions = {
+            from: 'geogalavant@gmail.com',
+            to: email,
+            subject: 'Geogalavant Account Created',
+            text: text
+          };
+    }
+    
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    
+}
+
 
 
 module.exports = {
     addStripeCustomer,
     deleteStripeCustomer,
-    addPaymentMethod
+    addPaymentMethod,
+    emailCustomer
 }
