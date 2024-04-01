@@ -678,6 +678,19 @@ async function getTicket(ticketId){
   }
 }
 
+async function getAllCustomers(){
+  var query = {
+    text: "SELECT Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID ORDER BY AccountStatus.StatusID"
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 module.exports = {
   pulseCheck, 
   addUser, 
@@ -722,5 +735,6 @@ module.exports = {
   addTicket,
   updateTicket,
   getAllTickets,
-  getTicket
+  getTicket,
+  getAllCustomers
 }

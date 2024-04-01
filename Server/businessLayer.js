@@ -32,11 +32,21 @@ async function sampleFunction(id, startDate, endDate, obj){
     //await pg.updateCar(updateObject);    
 }
 
-async function getAllUsers(userAuth, inputData){
-
+async function getAllCustomers(userAuth){
+    if(!userAuth.validToken){
+        return {error: "invalid authorization"}
+    }
+    let customers = await pg.getAllCustomers();
+    if(customers == -1){
+        return {error: "Failed to get customers"}
+    }
+    return customers;
 }
 
-async function getUserDetails(userAuth, inputData){
+async function getCustomerDetails(userAuth, inputData){
+    if(!userAuth.validToken){
+        return {error: "invalid authorization"}
+    }
 
 }
 
@@ -154,8 +164,8 @@ async function addStatus(userAuth, inputData){
 }
 
 module.exports = {
-    getAllUsers,
-    getUserDetails,
+    getAllCustomers,
+    getCustomerDetails,
     changeStatus,
     addStatus,
     getMessages,

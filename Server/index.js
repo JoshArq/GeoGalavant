@@ -471,14 +471,13 @@ router.get("/getUserReservationByID", (req, res) => {
 
 });
 
-//get all users for employees
-router.get("/getAllUsers", async (req, res) => {
+//get all customers for employees
+router.get("/getAllCustomers", async (req, res) => {
   const token = req.headers['auth-token']
-  const inputData = req.body;
 
   var userAuth = await decodeToken(token)
 
-  const returnData = await bl.getAllUsers(userAuth, inputData);
+  const returnData = await bl.getAllCustomers(userAuth);
   res.json(returnData)
 });
 
@@ -488,14 +487,14 @@ app.listen(PORT, () => {
 });
 
 
-//get user details
-router.get("/getUserDetails", async (req, res) => {
+//get customer details
+router.get("/getCustomerDetails", async (req, res) => {
   const token = req.headers['auth-token']
   const inputData = req.body;
 
   var userAuth = await decodeToken(token)
 
-  const returnData = await bl.getUserDetails(userAuth, inputData);
+  const returnData = await bl.getCustomerDetails(userAuth, inputData);
   res.json(returnData);
 });
 
