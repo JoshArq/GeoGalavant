@@ -1,9 +1,11 @@
-import React from "react";
+import * as React from 'react';
+import {useEffect, useRef} from "react";
 import { 
   Route, 
   Routes,
   Navigate,
-  useNavigate
+  useNavigate,
+  useLocation
 } from 'react-router-dom';
 import GeoNav from './components/GeoNav/GeoNav.js';
 import EmpNav from './components/EmpNav/EmpNav.js';
@@ -40,11 +42,13 @@ import './App.scss';
 
 
 function App() {
-  const [data, setData] = React.useState(null);
   const [token, setToken] = React.useState(null);
   const [role, setRole] = React.useState(0); 
   let navigate = useNavigate();
+  let location = useLocation();
+  const timeoutRef = useRef(null);
 
+  // Roles
   // 1 - sysadmin
   // 2 - biz admin
   // 3 - manager
@@ -66,35 +70,52 @@ function App() {
     approvedCustomer: [6],
     unAuthed: [0],
   }
-  
 
-  // Test data call to check server connected
-  // TODO: delete
-  React.useEffect(() => {
-    fetch("/api/test", {
-      headers: {
-        "auth-token": "TEST-TOKEN"
-      }
-    })
-    .then((res) => res.json())
-    .then((data) => {
-        setData(data.result)
-    }).catch(error => {
-      console.log(error)
-      console.log("Error. Server down.")
-    });
-  }, []);
+  // Routes where you have to be unAuthed (so we don't need to worry abt timeout)
+  const exemptedRoutes = ["/login", "/apply"];
 
+  // Login
   const saveUserData = (data) => {
     setToken(data.sessionToken);
     setRole(data.role);
   }
 
+  // Logout
   const clearUserData = () => {
     setToken(null);
     setRole(0);
     navigate("/");
   }
+  
+  // Handling session timeout
+  useEffect(() => {
+    // If we're not logged in, don't bother w/ session timeout
+    if (role == 0) return;
+    const handleWindowEvents = () => {
+      clearTimeout(timeoutRef.current);
+
+      timeoutRef.current = setTimeout(() => {
+        // Logout
+          clearUserData()
+      }, 120000);
+    };
+
+    // listen for window events to ensure the user is still active
+    window.addEventListener("mousemove", handleWindowEvents);
+    window.addEventListener("keydown", handleWindowEvents);
+    window.addEventListener("click", handleWindowEvents);
+    window.addEventListener("scroll", handleWindowEvents);
+
+    handleWindowEvents();
+
+    // cleanup
+    return () => {
+      window.removeEventListener("mousemove", handleWindowEvents);
+      window.removeEventListener("keydown", handleWindowEvents);
+      window.removeEventListener("click", handleWindowEvents);
+      window.removeEventListener("scroll", handleWindowEvents);
+    };
+  }, [navigate, location.pathname]);
 
   return (
     <div className="App">

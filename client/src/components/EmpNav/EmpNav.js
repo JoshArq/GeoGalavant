@@ -7,7 +7,6 @@ import './EmpNav.scss'
 
 export default function EmpNav({role, roles, clearData}) {
     const location = useLocation();
-    console.log(roles.admins.includes(role))
     return (
         <Col md={2} className="d-none d-md-block px-0 empNav">
             <Nav>
