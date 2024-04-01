@@ -163,19 +163,49 @@ async function markMessageResolved(userAuth, inputData){
 
 //TODO: Generate email to customer
 async function changeStatus(userAuth, inputData){
-    
-}
+    if(!userAuth.validToken){
+        return {error: "invalid authorization"}
+    }
+    //validate
+    if(inputData.reason == null || inputData.reason == undefined){
+        return {error: "reason must exist"}
+    }
+    if(inputData.userId == null || inputData.userId == undefined){
+        return {error: "userId must exist"}
+    }
+    if(inputData.statusId == null || inputData.statusId == undefined){
+        return {error: "statusId must exist"}
+    }
+    if(inputData.userStatusId == null || inputData.userStatusId == undefined){
+        return {error: "userStatusId must exist"}
+    }
 
-//TODO: Generate email to customer
-async function addStatus(userAuth, inputData){
-    
+    //check that user exists
+    let user = await pg.getUserById(inputData.userId);
+    if(user == undefined){
+        return {error: "User does not exist"}
+    }
+
+    //remove old status
+    let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.userStatusId);
+    if(rowsEffected == -1){
+        return {error: "Failed to remove status"};
+    }
+
+    //add new status
+    let statusId = await pg.addUserStatus(inputData.userId, inputData.statusId, inputData.reason);
+    if(statusId == -1){
+        return {error: "Failed to add status"};
+    }
+
+    //return
+    return {statusId: statusId};
 }
 
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
     changeStatus,
-    addStatus,
     getMessages,
     markMessageResolved,
     addMessage

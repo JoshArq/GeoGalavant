@@ -64,6 +64,8 @@ async function addCustomer(userID, obj){
   var licenseID = obj.driversLicense.ID
   var licenseExpy = obj.driversLicense. expirationDate
   var state = obj.driversLicense.state
+  var appliedBefore = obj.appliedBefore
+  var agreed = obj.tos
 
   console.log(state)
   
@@ -76,8 +78,8 @@ async function addCustomer(userID, obj){
   const stateCode = res.rows[0].stateprovinceid
 
   query = {
-    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID) VALUES ($1, $2, $3, $4)",
-    values: [licenseID, licenseExpy, stateCode, userID]
+    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID, HasAppliedBefore, HasAgreedToTerms) VALUES ($1, $2, $3, $4, $5, $6)",
+    values: [licenseID, licenseExpy, stateCode, userID, appliedBefore, agreed]
   };
 
   const res2 = await pool.query(query);
@@ -213,8 +215,7 @@ async function addUserStatus(userId, statusId, reasonApplied){
   }
 
   try{
-    var userStatusId= (await pool.query(query))
-    console.log(userStatusId)
+    var userStatusId= (await pool.query(query).userstatusid)
     return userStatusId;
   }
   catch (err){
@@ -229,7 +230,7 @@ async function removeUserStatus(reasonRemoved, userStatusID){
   }
 
   try{
-    var rowsEffected = (await pool.query(query))
+    var rowsEffected = (await pool.query(query).rowCount)
     return rowsEffected;
   }
   catch(err){
@@ -693,7 +694,7 @@ async function getAllCustomers(){
 
 async function getCustomerDetails(id){
   var query = {
-    text: "SELECT Users.Username, Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID, Customer.LicenseExpires, Customer.LicenseNumber FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID WHERE CustomerID = $1",
+    text: "SELECT Users.UserID, Users.Username, Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID, Customer.LicenseExpires, Customer.LicenseNumber FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID WHERE CustomerID = $1",
     values: [id]
   }
   try{
