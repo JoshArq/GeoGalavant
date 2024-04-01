@@ -38,7 +38,7 @@ router.get("/testToken", async (req, res) => {
 
 //TODO needs address fix after GR#2
 router.post("/createCustomer", async (req, res) => {
-  
+  console.log(req.body);  
   var custID = await pg.addUser(req.body)
 
   if(custID == -1){
@@ -60,6 +60,8 @@ router.post("/createCustomer", async (req, res) => {
     }); 
     return;
   }
+
+  var statusID = await pg.addUserStatus(custID, 1, "Created Account")
 
   custSuccess = await pg.addCustomer(custID, req.body)
   if(custSuccess == 0){
