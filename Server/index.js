@@ -1,7 +1,6 @@
 const express = require("express");
 const bl = require('./businessLayer.js')
 const pg = require('./postGalavant.js')
-const bl = require('./businessLayer.js')
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 

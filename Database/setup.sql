@@ -376,12 +376,9 @@ CREATE TABLE Customer(
 	LicenseNumber VARCHAR(10),
 	LicenseExpires DATE,
 	StateProvinceID INT NOT NULL,
-<<<<<<< HEAD
 	StripeID VARCHAR (40),
-=======
 	HasAppliedBefore BOOLEAN NOT NULL,
 	HasAgreedToTerms BOOLEAN NOT NULL,
->>>>>>> main
 	UserID INT NOT NULL,
 	FOREIGN KEY (UserID)
 		REFERENCES Users (UserID),
