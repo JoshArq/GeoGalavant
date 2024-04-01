@@ -7,7 +7,9 @@ const emailPass = process.env.EMAIL_PASSWORD
 console.log(emailUser, emailPass)
 
 var transporter = nodemailer.createTransport({
-    service: 'smtp-relay.gmail.com',
+  host: "smtp.zoho.com",
+  secure: true,
+  port: 465,
     auth: {
       user: emailUser,
       pass: emailPass
