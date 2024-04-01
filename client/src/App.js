@@ -30,6 +30,11 @@ import Employees from './components/Pages/Employees/Employees.js';
 import EmpAccount from './components/Pages/EmpAccount/EmpAccount.js';
 import Customer from './components/Pages/Customer/Customer.js';
 import ModifyReservation from "./components/Pages/ModifyReservation/ModifyReservation.js";
+import Message from './components/Pages/Message/Message.js';
+import ContentDetail from './components/Pages/ContentDetail/ContentDetail.js';
+import Report from './components/Pages/Report/Report.js';
+import Gyrocar from './components/Pages/Gyrocar/Gyrocar.js';
+import Employee from './components/Pages/Employee/Employee.js';
 import './App.scss';
 
 
@@ -144,6 +149,11 @@ function App() {
                 <Content />
               </ProtectedRoute>
             }/>
+            <Route path="/content/contentdetail" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.sysadmin}>
+                <ContentDetail />
+              </ProtectedRoute>
+            }/>
             <Route path="customers" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
                 <Customers />
@@ -159,7 +169,12 @@ function App() {
                 <ModifyReservation />
               </ProtectedRoute>
             }/>
-            <Route path="reports" element={
+            <Route path="reports/report" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.employees}>
+                <Report />
+              </ProtectedRoute>
+            }/>
+             <Route path="reports" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.employees}>
                 <Reports />
               </ProtectedRoute>
@@ -169,14 +184,29 @@ function App() {
                 <Messages />
               </ProtectedRoute>
             }/>
+             <Route path="/messages/message" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
+                <Message />
+              </ProtectedRoute>
+            }/>
             <Route path="gyrocars" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.mechUp}>
                 <Gyrocars />
               </ProtectedRoute>
             }/>
+            <Route path="/gyrocars/gyrocar" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.mechUp}>
+                <Gyrocar />
+              </ProtectedRoute>
+            }/>
             <Route path="employees" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.admins}>
                 <Employees />
+              </ProtectedRoute>
+            }/>
+            <Route path="/employees/employee" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.admins}>
+                <Employee />
               </ProtectedRoute>
             }/>
             <Route path="/employee/account" element={
