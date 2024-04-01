@@ -1,9 +1,11 @@
-import React from "react";
+import * as React from 'react';
+import {useEffect, useRef} from "react";
 import { 
   Route, 
   Routes,
   Navigate,
-  useNavigate
+  useNavigate,
+  useLocation
 } from 'react-router-dom';
 import GeoNav from './components/GeoNav/GeoNav.js';
 import EmpNav from './components/EmpNav/EmpNav.js';
@@ -30,16 +32,23 @@ import Employees from './components/Pages/Employees/Employees.js';
 import EmpAccount from './components/Pages/EmpAccount/EmpAccount.js';
 import Customer from './components/Pages/Customer/Customer.js';
 import ModifyReservation from "./components/Pages/ModifyReservation/ModifyReservation.js";
+import Message from './components/Pages/Message/Message.js';
+import ContentDetail from './components/Pages/ContentDetail/ContentDetail.js';
+import Report from './components/Pages/Report/Report.js';
+import Gyrocar from './components/Pages/Gyrocar/Gyrocar.js';
+import Employee from './components/Pages/Employee/Employee.js';
 import './App.scss';
 
 
 
 function App() {
-  const [data, setData] = React.useState(null);
   const [token, setToken] = React.useState(null);
   const [role, setRole] = React.useState(0); 
   let navigate = useNavigate();
+  let location = useLocation();
+  const timeoutRef = useRef(null);
 
+  // Roles
   // 1 - sysadmin
   // 2 - biz admin
   // 3 - manager
@@ -61,35 +70,52 @@ function App() {
     approvedCustomer: [6],
     unAuthed: [0],
   }
-  
 
-  // Test data call to check server connected
-  // TODO: delete
-  React.useEffect(() => {
-    fetch("/api/test", {
-      headers: {
-        "auth-token": "TEST-TOKEN"
-      }
-    })
-    .then((res) => res.json())
-    .then((data) => {
-        setData(data.result)
-    }).catch(error => {
-      console.log(error)
-      console.log("Error. Server down.")
-    });
-  }, []);
+  // Routes where you have to be unAuthed (so we don't need to worry abt timeout)
+  const exemptedRoutes = ["/login", "/apply"];
 
+  // Login
   const saveUserData = (data) => {
     setToken(data.sessionToken);
     setRole(data.role);
   }
 
+  // Logout
   const clearUserData = () => {
     setToken(null);
     setRole(0);
     navigate("/");
   }
+  
+  // Handling session timeout
+  useEffect(() => {
+    // If we're not logged in, don't bother w/ session timeout
+    if (role == 0) return;
+    const handleWindowEvents = () => {
+      clearTimeout(timeoutRef.current);
+
+      timeoutRef.current = setTimeout(() => {
+        // Logout
+          clearUserData()
+      }, 120000);
+    };
+
+    // listen for window events to ensure the user is still active
+    window.addEventListener("mousemove", handleWindowEvents);
+    window.addEventListener("keydown", handleWindowEvents);
+    window.addEventListener("click", handleWindowEvents);
+    window.addEventListener("scroll", handleWindowEvents);
+
+    handleWindowEvents();
+
+    // cleanup
+    return () => {
+      window.removeEventListener("mousemove", handleWindowEvents);
+      window.removeEventListener("keydown", handleWindowEvents);
+      window.removeEventListener("click", handleWindowEvents);
+      window.removeEventListener("scroll", handleWindowEvents);
+    };
+  }, [navigate, location.pathname]);
 
   return (
     <div className="App">
@@ -144,6 +170,11 @@ function App() {
                 <Content />
               </ProtectedRoute>
             }/>
+            <Route path="/content/contentdetail" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.sysadmin}>
+                <ContentDetail />
+              </ProtectedRoute>
+            }/>
             <Route path="customers" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
                 <Customers />
@@ -159,7 +190,12 @@ function App() {
                 <ModifyReservation />
               </ProtectedRoute>
             }/>
-            <Route path="reports" element={
+            <Route path="reports/report" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.employees}>
+                <Report />
+              </ProtectedRoute>
+            }/>
+             <Route path="reports" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.employees}>
                 <Reports />
               </ProtectedRoute>
@@ -169,14 +205,29 @@ function App() {
                 <Messages />
               </ProtectedRoute>
             }/>
+             <Route path="/messages/message" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
+                <Message />
+              </ProtectedRoute>
+            }/>
             <Route path="gyrocars" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.mechUp}>
                 <Gyrocars />
               </ProtectedRoute>
             }/>
+            <Route path="/gyrocars/gyrocar" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.mechUp}>
+                <Gyrocar />
+              </ProtectedRoute>
+            }/>
             <Route path="employees" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.admins}>
                 <Employees />
+              </ProtectedRoute>
+            }/>
+            <Route path="/employees/employee" element={
+              <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.admins}>
+                <Employee />
               </ProtectedRoute>
             }/>
             <Route path="/employee/account" element={

@@ -1,4 +1,5 @@
 const express = require("express");
+const bl = require('./businessLayer.js')
 const pg = require('./postGalavant.js')
 const bl = require('./businessLayer.js')
 require('dotenv').config()
@@ -44,6 +45,7 @@ router.post("/createCustomer", async (req, res) => {
   var custID = await pg.addUser(data)
 
   if(custID == -1){
+    console.log("In if custID == -1")
     res.json({
       success: false,
       errorMessage: "Could not create user." 
@@ -67,6 +69,9 @@ router.post("/createCustomer", async (req, res) => {
   data.stripeCust = stripeCust.id 
 
   custSuccess = await pg.addCustomer(custID, data)
+  var statusID = await pg.addUserStatus(custID, 1, "Created Account")
+
+  custSuccess = await pg.addCustomer(custID, req.body)
   if(custSuccess == 0){
     res.json({
       success: false,
@@ -82,7 +87,7 @@ router.post("/createCustomer", async (req, res) => {
   //if all good so far, send email
   
 
-  res.json({ success: true, role: roleID});
+  res.json({ success: true});
 });
 
 
@@ -370,7 +375,7 @@ router.get("/getLocations", async (req, res) => {
     locations.push(resultItem)
   })
 
-
+router. 
   
   res.json({locations: locations})
   
@@ -482,18 +487,15 @@ router.get("/getUserReservationByID", (req, res) => {
 
 });
 
+//get all customers for employees
+router.get("/getAllCustomers", async (req, res) => {
+  const token = req.headers['auth-token']
 
+  var userAuth = await decodeToken(token)
 
-//TODO - connect to DB
-router.post("/submitContactForm", (req, res) => {
-  //insert DB logic here
-
-  res.json({
-    success: true
-  })
+  const returnData = await bl.getAllCustomers(userAuth);
+  res.json(returnData)
 });
-
-
 
 app.use("/api", router)
 app.listen(PORT, () => {
@@ -501,7 +503,66 @@ app.listen(PORT, () => {
 });
 
 
+//get customer details
+router.get("/getCustomerDetails", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
 
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.getCustomerDetails(userAuth, inputData);
+  res.json(returnData);
+});
+
+//change status
+router.post("/addStatus", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.addStatus(userAuth, inputData);
+  res.json(returnData);
+});
+
+//change status
+router.post("/changeStatus", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.changeStatus(userAuth, inputData);
+  res.json(returnData);
+});
+
+//get customer messages
+router.post("/addMessage", async (req, res) => {
+  const inputData = req.body;
+  const returnData = await bl.addMessage(inputData);
+  res.json(returnData);
+});
+
+//get customer messages
+router.get("/getMessages", async (req, res) => {
+  const token = req.headers['auth-token']
+
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.getMessages(userAuth);
+  res.json(returnData);
+});
+
+//markResolved
+router.post("/markMessageResolved", async (req, res) => {
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.markMessageResolved(userAuth, inputData);
+  res.json(returnData);
+});
 
 
 

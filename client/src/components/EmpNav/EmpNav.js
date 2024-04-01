@@ -7,7 +7,6 @@ import './EmpNav.scss'
 
 export default function EmpNav({role, roles, clearData}) {
     const location = useLocation();
-    console.log(roles.admins.includes(role))
     return (
         <Col md={2} className="d-none d-md-block px-0 empNav">
             <Nav>
@@ -35,7 +34,7 @@ export default function EmpNav({role, roles, clearData}) {
                     </Nav.Link>
                 : '' }
                 {roles.mechUp.includes(role) ? 
-                    <Nav.Link as={Link} to="/gyrocars" id={location.pathname == "/gryocars" ? "active" : ''} className="d-block text-reset w-100 py-3 blue-hov">
+                    <Nav.Link as={Link} to="/gyrocars" id={location.pathname == "/gyrocars" ? "active" : ''} className="d-block text-reset w-100 py-3 blue-hov">
                         <i className="bi bi-car-front-fill me-2"></i>Gyrocars
                     </Nav.Link>
                 : '' }

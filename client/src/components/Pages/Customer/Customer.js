@@ -84,68 +84,71 @@ export default function Customer() {
                     </Col>
                 </Row>
             </Container> 
-            <Container as={'section'} className="grey-section">
+            <div className="grey-section">
 
-                <h2 className="pt-3 pb-3">Reservations</h2>
+                <Container as={'section'}>
 
-                <h2>Upcoming</h2>
-                <Table responsive="md" style={{ tableLayout: 'fixed' }}>
-                <thead>
-                    <tr>
-                    <th scope="col">Reservation #</th>
-                    <th scope="col">Pickup</th>
-                    <th scope="col">Dropoff</th>
-                    <th scope="col">Gyrocar #</th>
-                    <th scope="col">Payment</th>
-                    <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr className="tr-width">
-                        <td>123456</td>
-                        <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                        <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                        <td>7654321</td>
-                        <td>card ending in ####</td>
-                        <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                    </tr>                   
-                </tbody>
-                </Table>
+                    <h2 className="pt-3 pb-3">Reservations</h2>
 
-                <h2>Past</h2>
-                <Table responsive="md" style={{ tableLayout: 'fixed' }}>
-                <thead>
-                    <tr>
-                    <th scope="col">Reservation #</th>
-                    <th scope="col">Pickup</th>
-                    <th scope="col">Dropoff</th>
-                    <th scope="col">Gyrocar #</th>
-                    <th scope="col">Payment</th>
-                    <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr className="tr-width">
-                        <td>123456</td>
-                        <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                        <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                        <td>7654321</td>
-                        <td>card ending in ####</td>
-                        <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                    </tr>                   
-                </tbody>
-                <tbody>
-                    <tr className="tr-width">
-                        <td>123456</td>
-                        <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                        <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                        <td>7654321</td>
-                        <td>card ending in ####</td>
-                        <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                    </tr>                   
-                </tbody>
-                </Table>
-            </Container>
+                    <h2>Upcoming</h2>
+                    <Table responsive="md">
+                    <thead>
+                        <tr>
+                        <th scope="col">Reservation #</th>
+                        <th scope="col">Pickup</th>
+                        <th scope="col">Dropoff</th>
+                        <th scope="col">Gyrocar #</th>
+                        <th scope="col">Payment</th>
+                        <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className="tr-width">
+                            <td>123456</td>
+                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                            <td>7654321</td>
+                            <td>card ending in ####</td>
+                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
+                        </tr>                   
+                    </tbody>
+                    </Table>
+
+                    <h2>Past</h2>
+                    <Table responsive="md">
+                    <thead>
+                        <tr>
+                        <th scope="col">Reservation #</th>
+                        <th scope="col">Pickup</th>
+                        <th scope="col">Dropoff</th>
+                        <th scope="col">Gyrocar #</th>
+                        <th scope="col">Payment</th>
+                        <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className="tr-width">
+                            <td>123456</td>
+                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                            <td>7654321</td>
+                            <td>card ending in ####</td>
+                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
+                        </tr>                   
+                    </tbody>
+                    <tbody>
+                        <tr className="tr-width">
+                            <td>123456</td>
+                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                            <td>7654321</td>
+                            <td>card ending in ####</td>
+                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
+                        </tr>                   
+                    </tbody>
+                    </Table>
+                </Container>
+            </div>
         </main>
     )
 }
