@@ -38,10 +38,10 @@ router.get("/testToken", async (req, res) => {
 
 //TODO needs address fix after GR#2
 router.post("/createCustomer", async (req, res) => {
-  console.log(req.body);  
   var custID = await pg.addUser(req.body)
 
   if(custID == -1){
+    console.log("In if custID == -1")
     res.json({
       success: false,
       errorMessage: "Could not create user." 
@@ -71,7 +71,6 @@ router.post("/createCustomer", async (req, res) => {
     }); 
     return;
   }
-
 
   res.json({ success: true, sessionToken: "to_be_implemented", role: roleID});
 });

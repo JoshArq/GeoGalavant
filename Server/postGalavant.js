@@ -36,7 +36,6 @@ async function addUser(obj){
   const username = obj.username
   const password = obj.password
   const email = obj.email
-  const appliedBefore = obj.appliedBefore
   const driversLicense = obj.driversLicense
   const firstName = driversLicense.firstName
   const lastName = driversLicense.lastName
@@ -50,10 +49,12 @@ async function addUser(obj){
 
   
   try{
-    var userID = (await pool.query(query)).rows[0].userid
+    var result = await pool.query(query)
+    var userID = result.rows[0].userid
     return userID
   }
   catch (err){
+    console.log(err)
     return -1
   }
 }
@@ -64,7 +65,8 @@ async function addCustomer(userID, obj){
   var licenseID = obj.driversLicense.ID
   var licenseExpy = obj.driversLicense. expirationDate
   var state = obj.driversLicense.state
-  var appliedBefore = obj.appliedBefore
+  var appliedBefore = false
+  //var appliedBefore = obj.appliedBefore
   var agreed = obj.tos
 
   console.log(state)
@@ -182,8 +184,8 @@ async function addUserRole(userID, userRole){
   }
 
   try{
-    var roleID = (await pool.query(query)).rows[0].roleid
-    console.log(roleID)
+    var query = await pool.query(query)
+    var roleID = query.rows[0].roleid
     return roleID;
   }
   catch (err){
@@ -215,7 +217,7 @@ async function addUserStatus(userId, statusId, reasonApplied){
   }
 
   try{
-    var userStatusId= (await pool.query(query).userstatusid)
+    var userStatusId= (await pool.query(query)).rows[0].userstatusid
     return userStatusId;
   }
   catch (err){
@@ -230,7 +232,7 @@ async function removeUserStatus(reasonRemoved, userStatusID){
   }
 
   try{
-    var rowsEffected = (await pool.query(query).rowCount)
+    var rowsEffected = (await pool.query(query)).rowCount
     return rowsEffected;
   }
   catch(err){
