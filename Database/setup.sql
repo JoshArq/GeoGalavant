@@ -375,6 +375,8 @@ CREATE TABLE Customer(
 	LicenseNumber VARCHAR(10),
 	LicenseExpires DATE,
 	StateProvinceID INT NOT NULL,
+	HasAppliedBefore BOOLEAN NOT NULL,
+	HasAgreedToTerms BOOLEAN NOT NULL,
 	UserID INT NOT NULL,
 	FOREIGN KEY (UserID)
 		REFERENCES Users (UserID),

@@ -47,7 +47,15 @@ async function getCustomerDetails(userAuth, inputData){
     if(!userAuth.validToken){
         return {error: "invalid authorization"}
     }
-
+    let customer = await pg.getCustomerDetails(inputData.customerId);
+    if(customer == -1){
+        return {error: "Failed to get customer"}
+    }
+    if(customer == undefined){
+        return {error: "Customer does not exist"}
+    }
+    customer.licenseexpires =  new Date(customer.licenseexpires).valueOf();
+    return customer;
 }
 
 //TODO: Generate email
