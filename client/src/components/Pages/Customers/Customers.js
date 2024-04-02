@@ -59,7 +59,7 @@ export default function Customers({token}) {
                                     <td className="border-0 col-12 col-md-6 col-lg-4">{cust.firstname + " " + cust.lastname}</td>
                                     <td className="border-0 col-12 col-md-6 col-lg-4">{cust.email}</td>
                                     <td className="border-0 col-12 col-md-6 col-lg-2"><Badge status={cust.statusname.toLowerCase()} /></td>
-                                    <td className="border-0 col-12 col-md-6 col-lg-2"><Link to="/customers/customer">View Customer</Link></td>
+                                    <td className="border-0 col-12 col-md-6 col-lg-2"><Link to="/customers/customer" state={{ custID: cust.customerid }}>View Customer</Link></td>
                                 </tr>
                             )})}
                         </tbody>

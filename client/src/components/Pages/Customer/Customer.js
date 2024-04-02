@@ -1,7 +1,7 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
-import Header from '../../GeoHeader/GeoHeader.js';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -9,6 +9,7 @@ import Badge from '../../Badges/Badge.js';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import Alert from 'react-bootstrap/Alert';
 import './Customer.scss';
 
 function ChangeStatusModal(props) {
@@ -51,9 +52,39 @@ function ChangeStatusModal(props) {
     );
   }
 
-export default function Customer() {
-
+export default function Customer({token}) {
+    const location = useLocation()
+    const { custID } = location.state
     const [modalShow, setModalShow] = React.useState(false);
+    const [details, setDetails] = useState({});
+    const [isValid, setIsValid] = useState(true);
+
+    
+    // Get data
+    useEffect(() => {
+        // Get customers
+        fetch("/api/getAllCustomers", {
+            method: 'POST',
+            headers: {
+              "auth-token": token
+            },
+            body: JSON.stringify({customerId: custID}),
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setDetails(data)
+                    console.log(data)
+                }
+          }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+          });
+    }, [])
 
     return (
         <main>
@@ -63,9 +94,10 @@ export default function Customer() {
             />
 
             <Container fluid as={'section'}>
-                {/* <p>ooh customer details</p> */}
-                <p className="mt-3"><Link to="/customers">Back to customers</Link></p>
-
+                <p className="mt-3"><Link to="/customers" className="link-underline link-underline-opacity-0"><i className="bi bi-chevron-left me-3 color-primary"></i>Back to Customers</Link></p>
+                <Alert variant="danger" className={'text-danger my-3 bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
+                    There was an issue retrieving your data. Please refresh to try again.
+                </Alert> 
                 <Row>
                     <Col md="auto">
                         <h1>Arlene McCoy</h1>
