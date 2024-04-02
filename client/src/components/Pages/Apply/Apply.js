@@ -8,6 +8,19 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import tos from '../../../assets/GyroGoGo Rental Terms and Conditions.pdf';
+import {Elements, PaymentElement} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+// import SetupForm from './SetupForm';
+
+const stripePromise = loadStripe('pk_test_51OzftaITd0Wmp1rf1h3pC9PoSiTe4XqBTJ1CgMUd7cdh8xDO6Amn37Y10QCzxRkCCHffl8jjHnXYw9bGUNKhb7E600tUcKijr4');
+var secret;
+
+(async () => {
+    const response = await fetch('/api/setupNewCustomerCard');
+    const result = await response.json();
+    secret = result.client_secret
+})();
+
 
 // Outline for handling form data storage until we submit
 // Put here so you can see the structure while debugging :)
@@ -37,6 +50,11 @@ export default function Apply() {
     const [step, setStep] = useState(0);
     const [isValid, setIsValid] = useState(true);
     const [isSent, setIsSent] = useState(false);
+
+    const options = {
+        clientSecret: secret,
+        appearance: {/*...*/},
+      };
 
     useEffect(() => {
         document.getElementById("previous").setAttribute("disabled", "disabled")
@@ -178,50 +196,50 @@ export default function Apply() {
                 setIsValid(true);
                 return true;
             case 2: 
-                // Card number
-                if(app.cardNum.checkValidity()) {
-                    form.creditCard.number = app.cardNum.value;
-                }
-                else {
-                    err.innerText = "Enter a card number."
-                    setIsValid(false);
-                    return false;
-                }
-                // Card name
-                if(app.cardName.checkValidity()) {
-                    form.creditCard.fullName = app.cardName.value;
-                }
-                else {
-                    err.innerText = "Enter the name on the card."
-                    setIsValid(false);
-                    return false;
-                }
-                // Card expiration
-                if(app.cardExp.checkValidity()) {
-                    let splitDate = app.cardExp.value.split('/');
-                    let date = new Date();
-                    date.setFullYear(parseInt("20" + splitDate[1]), (parseInt(splitDate[0]) - 1), 1);
-                    if(date <= Date.now()) {
-                        err.innerText = "Your card must not be expired"
-                        setIsValid(false);
-                        return false;
-                    }
-                    form.creditCard.expirationDate = app.cardExp.value;
-                }
-                else {
-                    err.innerText = "Enter an expiration date in the format of MM/YY"
-                    setIsValid(false);
-                    return false;
-                }
-                // CCV
-                if(app.ccvNum.checkValidity() && app.ccvNum.value.length === 3) {
-                    form.creditCard.ccv = app.ccvNum.value;
-                }
-                else {
-                    err.innerText = "Enter a CCV of the correct format"
-                    setIsValid(false);
-                    return false;
-                }
+                // // Card number
+                // if(app.cardNum.checkValidity()) {
+                //     form.creditCard.number = app.cardNum.value;
+                // }
+                // else {
+                //     err.innerText = "Enter a card number."
+                //     setIsValid(false);
+                //     return false;
+                // }
+                // // Card name
+                // if(app.cardName.checkValidity()) {
+                //     form.creditCard.fullName = app.cardName.value;
+                // }
+                // else {
+                //     err.innerText = "Enter the name on the card."
+                //     setIsValid(false);
+                //     return false;
+                // }
+                // // Card expiration
+                // if(app.cardExp.checkValidity()) {
+                //     let splitDate = app.cardExp.value.split('/');
+                //     let date = new Date();
+                //     date.setFullYear(parseInt("20" + splitDate[1]), (parseInt(splitDate[0]) - 1), 1);
+                //     if(date <= Date.now()) {
+                //         err.innerText = "Your card must not be expired"
+                //         setIsValid(false);
+                //         return false;
+                //     }
+                //     form.creditCard.expirationDate = app.cardExp.value;
+                // }
+                // else {
+                //     err.innerText = "Enter an expiration date in the format of MM/YY"
+                //     setIsValid(false);
+                //     return false;
+                // }
+                // // CCV
+                // if(app.ccvNum.checkValidity() && app.ccvNum.value.length === 3) {
+                //     form.creditCard.ccv = app.ccvNum.value;
+                // }
+                // else {
+                //     err.innerText = "Enter a CCV of the correct format"
+                //     setIsValid(false);
+                //     return false;
+                // }
                 // All good
                 setIsValid(true);
                 return true;
@@ -465,6 +483,14 @@ export default function Apply() {
                     </Form.Group>
                 </section>
                 <section className="grey-section p-5 rounded d-none" id="step-2">
+                    <Elements stripe={stripePromise} options={options}>
+                        {/* <SetupForm /> */}
+
+                        <form>
+                        <PaymentElement />
+                        </form>
+                    
+{/*                    
                     <h3 className="mb-4 fw-bold">Credit Card Information</h3>
                     <Form.Group className="mb-3" controlId="cardNum">
                         <Form.Label>Credit Card Number</Form.Label>
@@ -481,7 +507,9 @@ export default function Apply() {
                     <Form.Group className="mb-3" controlId="ccvNum">
                         <Form.Label>CCV</Form.Label>
                         <Form.Control type="password" placeholder="123" required />
-                    </Form.Group>
+                    </Form.Group> */}
+
+</Elements>
                 </section>
                 <section className="grey-section p-5 rounded d-none" id="step-3">
                     <Form.Group className="mb-3" controlId="appliedBefore">

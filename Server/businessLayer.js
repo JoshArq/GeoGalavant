@@ -73,6 +73,21 @@ async function deleteStripeCustomer(custID){
 }
 
 
+async function setupNewCustomerCard(){
+    const customer = await stripe.customers.create();
+
+
+    const setupIntent = await stripe.setupIntents.create({
+        customer: customer.id,
+        payment_method_types: ['card'],
+      });
+
+    return setupIntent.client_secret
+
+
+}
+
+
 //must pass in Stripe cust id
 async function addPaymentMethod(custID, cardInfo){
     console.log(cardInfo)
@@ -310,5 +325,6 @@ module.exports = {
     addStripeCustomer,
     deleteStripeCustomer,
     addPaymentMethod,
-    emailCustomer
+    emailCustomer,
+    setupNewCustomerCard
 }

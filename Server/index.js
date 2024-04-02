@@ -90,6 +90,16 @@ router.post("/createCustomer", async (req, res) => {
 });
 
 
+router.get("/setupNewCustomerCard", async (req,res) => {
+  var client_secret = await bl.setupNewCustomerCard()
+  apiLog(client_secret)
+
+  res.json({client_secret: client_secret});
+
+
+})
+
+
 
 router.post("/login", async (req, res) => {
   const username = req.body.username
@@ -356,6 +366,9 @@ router.delete("/removeCreditCard", (req, res) => {
 
 //TODO connect to backend
 router.get("/getLocations", async (req, res) => {
+  apiLog(req.body)
+  
+  
   var query = await pg.getAllStations();
   apiLog(query)
 
@@ -373,8 +386,6 @@ router.get("/getLocations", async (req, res) => {
     
     locations.push(resultItem)
   })
-
-router. 
   
   res.json({locations: locations})
   
