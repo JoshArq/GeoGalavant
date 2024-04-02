@@ -1,20 +1,19 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
-import Header from '../../GeoHeader/GeoHeader.js';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Badge from '../../Badges/Badge.js';
-import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 export default function Message() {
+    const location = useLocation()
+    const { ticketID } = location.state
 
     return (
         <main>
 
             <Container fluid as={'section'}>
-                {/* <p>ooh customer details</p> */}
                 <p className="mt-3"><Link to="/messages">Back to Messages</Link></p>
 
                 <Row>

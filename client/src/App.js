@@ -202,7 +202,7 @@ function App() {
             }/>
             <Route path="messages" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
-                <Messages />
+                <Messages token={token} />
               </ProtectedRoute>
             }/>
              <Route path="/messages/message" element={
