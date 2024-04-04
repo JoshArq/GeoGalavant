@@ -34,6 +34,13 @@ function ChangeStatusModal(props) {
             return
         }
 
+        console.log({
+            reason: form.reason.value,
+            userId: props.userid,
+            newStatusId: parseInt(form.status.value),
+            userStatusId: props.statusid
+        })
+
         // Send new status
         fetch("/api/changeStatus", {
             method: 'POST',
@@ -50,7 +57,7 @@ function ChangeStatusModal(props) {
         })
         .then((res) => res.json())
         .then((data) => {
-            if (data.success) {
+            if (!data.error) {
                 // Close modal. The page should update to show the new status
                 setIsValid(true)
                 props.onHide()

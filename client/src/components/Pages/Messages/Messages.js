@@ -66,7 +66,7 @@ export default function Messages({token}) {
                                     <td style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} className="border-0 col-12 col-md-6 col-lg-4">{msg.comment}</td>
                                     <td className="border-0 col-12 col-md-6 col-lg-4">{makeTimestamp(new Date(msg.submitted))}</td>
                                     <td className="border-0 col-12 col-md-6 col-lg-2"><Badge status={msg.isopen ? "unresolved" : "resolved"} /></td>
-                                    <td className="border-0 col-12 col-md-6 col-lg-2"><Link to="/messages/message" state={{ ticketID: msg.ticketid }}>View Message</Link></td>
+                                    <td className="border-0 col-12 col-md-6 col-lg-2"><Link to="/messages/message" state={{ ticket: msg, timestamp: makeTimestamp(new Date(msg.submitted)) }}>View Message</Link></td>
                                 </tr>    
                             )})} 
                         </tbody>
