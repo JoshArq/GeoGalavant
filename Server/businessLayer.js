@@ -201,7 +201,6 @@ async function changeStatus(userAuth, inputData){
     }
     //remove old status
     let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.oldStatusId);
-    console.log(rowsEffected);
     if(rowsEffected == -1){
         return {error: "Failed to remove status"};
     }
