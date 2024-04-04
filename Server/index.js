@@ -122,10 +122,9 @@ router.get("/getUserData", async (req, res) => {
         firstName: userData.firstname,
         lastName: userData.lastname,
         state: custData.stateprovincename,
-        expirationDate: custData.licenseexpires
+        expirationDate: new Date(custData.licenseexpires).toLocaleDateString()
       };
     }
-    //var expy = new Date(custData.licenseexpires).toLocaleDateString()
     
     res.json(returnData)
   } else {
