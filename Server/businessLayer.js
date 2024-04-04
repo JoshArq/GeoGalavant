@@ -176,11 +176,11 @@ async function changeStatus(userAuth, inputData){
     if(inputData.userId == null || inputData.userId == undefined){
         return {error: "userId must exist"}
     }
-    if(inputData.statusId == null || inputData.statusId == undefined){
-        return {error: "statusId must exist"}
+    if(inputData.oldStatusId == null || inputData.oldStatusId == undefined){
+        return {error: "oldStatusId must exist"}
     }
-    if(inputData.userStatusId == null || inputData.userStatusId == undefined){
-        return {error: "userStatusId must exist"}
+    if(inputData.newStatusId == null || inputData.newStatusId == undefined){
+        return {error: "newStatusId must exist"}
     }
 
     //check that user exists
@@ -189,14 +189,25 @@ async function changeStatus(userAuth, inputData){
         return {error: "User does not exist"}
     }
 
+    //if changing status to 3, which is active, changes role from 6 to 7
+    if(inputData.newStatusId == 3){
+        await pg.addUserRole(inputData.userId, 6);
+        await pg.deleteUserRole(inputData.userId, 7);
+    }
+    //otherwise, changes to 6 from 7
+    else{
+        await pg.addUserRole(inputData.userId, 7);
+        await pg.deleteUserRole(inputData.userId, 6);
+    }
     //remove old status
-    let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.userStatusId);
+    let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.oldStatusId);
+    console.log(rowsEffected);
     if(rowsEffected == -1){
         return {error: "Failed to remove status"};
     }
 
     //add new status
-    let statusId = await pg.addUserStatus(inputData.userId, inputData.statusId, inputData.reason);
+    let statusId = await pg.addUserStatus(inputData.userId, inputData.newStatusId, inputData.reason);
     if(statusId == -1){
         return {error: "Failed to add status"};
     }

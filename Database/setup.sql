@@ -94,9 +94,6 @@ INSERT INTO StateProvince (StateProvinceName) VALUES ('NY'),
 	('WI'),
 	('WY');
 
-
-
-
 -- Generate AccountStatus lookup table --
 CREATE TABLE AccountStatus(
 	StatusID INT PRIMARY KEY,
