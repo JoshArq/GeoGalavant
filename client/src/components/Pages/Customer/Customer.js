@@ -128,7 +128,7 @@ export default function Customer({token}) {
                             </Col>
                         </Row>
                     </Container> 
-                    <div className="grey-section">
+                    <div className="grey-section pb-4">
 
                         <Container as={'section'}>
 

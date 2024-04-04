@@ -228,6 +228,8 @@ export default function Apply() {
             case 3: 
                 // Applied before
                 if(app.appliedBefore.value !== "") {
+                    console.log(app.appliedBefore)
+                    console.log(app.appliedBefore.value)
                     form.appliedBefore = app.appliedBefore.value;
                 }
                 else {
@@ -486,8 +488,8 @@ export default function Apply() {
                 <section className="grey-section p-5 rounded d-none" id="step-3">
                     <Form.Group className="mb-3" controlId="appliedBefore">
                         <Form.Label>Have you applied to GyroGoGo before?</Form.Label>
-                        <Form.Check name="appliedBefore" type="radio" label="Yes" required/>
-                        <Form.Check name="appliedBefore" type="radio" label="No" required/>
+                        <Form.Check name="appliedBefore" type="radio" label="Yes" value="Yes" required/>
+                        <Form.Check name="appliedBefore" type="radio" label="No" value="No" required/>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="terms">
                         <Form.Label>I agree to the <a href={tos} target="_blank">Terms and Conditions</a></Form.Label>
