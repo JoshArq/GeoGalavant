@@ -497,15 +497,15 @@ router.post("/getCustomerDetails", async (req, res) => {
 });
 
 //change status
-router.post("/addStatus", async (req, res) => {
-  const token = req.headers['auth-token']
-  const inputData = req.body;
+// router.post("/addStatus", async (req, res) => {
+//   const token = req.headers['auth-token']
+//   const inputData = req.body;
 
-  var userAuth = await decodeToken(token)
+//   var userAuth = await decodeToken(token)
 
-  const returnData = await bl.addStatus(userAuth, inputData);
-  res.json(returnData);
-});
+//   const returnData = await bl.addStatus(userAuth, inputData);
+//   res.json(returnData);
+// });
 
 //change status
 router.post("/changeStatus", async (req, res) => {
