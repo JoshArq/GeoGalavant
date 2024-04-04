@@ -487,7 +487,7 @@ app.listen(PORT, () => {
 
 
 //get customer details
-router.get("/getCustomerDetails", async (req, res) => {
+router.post("/getCustomerDetails", async (req, res) => {
   const token = req.headers['auth-token']
   const inputData = req.body;
 
