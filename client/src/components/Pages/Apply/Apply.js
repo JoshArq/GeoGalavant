@@ -228,8 +228,6 @@ export default function Apply() {
             case 3: 
                 // Applied before
                 if(app.appliedBefore.value !== "") {
-                    console.log(app.appliedBefore)
-                    console.log(app.appliedBefore.value)
                     form.appliedBefore = app.appliedBefore.value;
                 }
                 else {

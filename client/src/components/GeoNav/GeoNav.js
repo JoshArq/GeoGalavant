@@ -20,7 +20,7 @@ export default function GeoNav({role, roles, clearData}) {
                     />
                 </Navbar.Brand>
                 { role ? '' : <Button as={Link} to="/apply" className="d-none d-sm-block d-md-none" variant="primary">Apply</Button> }
-                { role ? <Button as={Link} to="/reserve" className="d-none d-sm-block d-md-none" variant="primary">Reserve</Button> : '' }
+                { roles.approvedCustomer.includes(role) ? <Button as={Link} to="/reserve" className="d-none d-sm-block d-md-none" variant="primary">Reserve</Button> : '' }
                 <Navbar.Collapse className="justify-content-end">
                     <Nav className="align-items-center">
                         { roles.employees.includes(role) ? '' : <Nav.Link as={Link} to="/about" className="text-center mx-md-4 my-xs-4 my-md-0">About</Nav.Link> }

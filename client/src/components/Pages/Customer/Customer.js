@@ -13,6 +13,60 @@ import Alert from 'react-bootstrap/Alert';
 import './Customer.scss';
 
 function ChangeStatusModal(props) {
+    const [isValid, setIsValid] = useState(true);
+    
+    function changeStatus() {
+        // Validate
+        let form = document.getElementById("changestatus");
+        let err = document.getElementById("err");
+
+        // Check status is selected and different
+        if (!form.status.checkValidity() || form.status.value.length == 0 || parseInt(form.status.value) == props.statusid) {
+            err.innerText = "Please select a new status"
+            setIsValid(false)
+            return
+        }
+
+        // Check reason is filled out
+        if (!form.reason.checkValidity()) {
+            err.innerText = "Please add a reason"
+            setIsValid(false)
+            return
+        }
+
+        // Send new status
+        fetch("/api/changeStatus", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": props.token
+            },
+            body: JSON.stringify({
+                reason: form.reason.value,
+                userId: props.userid,
+                newStatusId: parseInt(form.status.value),
+                userStatusId: props.statusid
+            }),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success) {
+                // Close modal. The page should update to show the new status
+                setIsValid(true)
+                props.onHide()
+            }
+            else {
+                console.log(data.error)
+                err.innerText = "There was an issue submitting your change request. Please try again."
+                setIsValid(false)
+            }
+        }).catch(error => {
+            console.log(error)
+            err.innerText = "There was an issue submitting your change request. Please try again."
+            setIsValid(false)
+        });
+    }
+
     return (
       <Modal
         {...props}
@@ -26,16 +80,19 @@ function ChangeStatusModal(props) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form>
-                <Form.Group className="mb-3" controlId="state">
+            <Alert variant="danger" className={'text-danger m-3 bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
+                There was an issue retrieving your data. Please refresh to try again.
+            </Alert> 
+            <Form id="changestatus">
+                <Form.Group className="mb-3" controlId="status">
                     <Form.Label>Status</Form.Label>
-                    <Form.Select name="statusSelect" required>
+                    <Form.Select name="statusSelect" required defaultValue={props.statusid}>
                         <option value="">Select...</option>
-                        <option value="active">Active</option>
-                        <option value="needsApproval">Needs Approval</option>
-                        <option value="denied">Denied</option>  
-                        <option value="suspended">Suspended</option> 
-                        <option value="terminated">Terminated</option>                    
+                        <option value="1">Needs Approval</option>
+                        <option value="3">Active</option>
+                        <option value="4">Denied</option>  
+                        <option value="2">Suspended</option> 
+                        <option value="5">Terminated</option>                    
                     </Form.Select>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="reason">
@@ -46,7 +103,7 @@ function ChangeStatusModal(props) {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="" onClick={props.onHide}>Close</Button>
-          <Button onClick={props.onHide}>Save Changes</Button>
+          <Button onClick={() => {changeStatus()}}>Save Changes</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -63,7 +120,6 @@ export default function Customer({token}) {
     
     // Get data
     useEffect(() => {
-        console.log(custID)
         // Get customers
         fetch("/api/getCustomerDetails", {
             method: 'POST',
@@ -82,7 +138,6 @@ export default function Customer({token}) {
                 else {
                     setDetails(data)
                     setExpDate(new Date(data.licenseexpires))
-                    console.log(data)
                 }
           }).catch(error => {
             setIsValid(false);
@@ -95,9 +150,12 @@ export default function Customer({token}) {
              <ChangeStatusModal
                 show={modalShow}
                 onHide={() => setModalShow(false)}
+                statusid={details.statusid ? details.statusid : "0"}
+                userid={details.userid ? details.userid : "-1"}
+                token={token}
             />
 
-            <Alert variant="danger" className={'text-danger m-3 bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
+            <Alert variant="danger" className={'text-danger m-3 bg-danger-subtle' + (isValid ? ' d-none' : '')}>
                 There was an issue retrieving your data. Please refresh to try again.
             </Alert> 
 
