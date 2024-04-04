@@ -54,7 +54,7 @@ async function getCustomerDetails(userAuth, inputData){
     if(customer == undefined){
         return {error: "Customer does not exist"}
     }
-    customer.licenseexpires =  new Date(customer.licenseexpires).valueOf();
+    // customer.licenseexpires =  new Date(customer.licenseexpires).valueOf();
     return customer;
 }
 
@@ -110,9 +110,12 @@ async function getMessages(userAuth){
     if(returnVals == -1){
         return {error: "failed to get tickets"}
     }
-    for(let i=0 ; i<returnVals.length ; i++){
-        returnVals[i].submitted = new Date(returnVals[i].submitted).valueOf();
-    }
+    // for(let i=0 ; i<returnVals.length ; i++){
+    //     console.log(returnVals[i].submitted);
+    //     const newDate = new Date(returnVals[i].submitted).toLocaleString();
+    //     console.log(newDate)
+    //     returnVals[i].submitted = newDate;
+    // }
     return returnVals;
 }
 
@@ -173,11 +176,11 @@ async function changeStatus(userAuth, inputData){
     if(inputData.userId == null || inputData.userId == undefined){
         return {error: "userId must exist"}
     }
-    if(inputData.statusId == null || inputData.statusId == undefined){
-        return {error: "statusId must exist"}
-    }
     if(inputData.userStatusId == null || inputData.userStatusId == undefined){
-        return {error: "userStatusId must exist"}
+        return {error: "oldStatusId must exist"}
+    }
+    if(inputData.newStatusId == null || inputData.newStatusId == undefined){
+        return {error: "newStatusId must exist"}
     }
 
     //check that user exists
@@ -186,10 +189,51 @@ async function changeStatus(userAuth, inputData){
         return {error: "User does not exist"}
     }
 
+    //if changing status to 3, which is active, changes role from 6 to 7
+    if(inputData.newStatusId == 3){
+        await pg.addUserRole(inputData.userId, 6);
+        await pg.deleteUserRole(inputData.userId, 7);
+    }
+    //otherwise, changes to 6 from 7
+    else{
+        await pg.addUserRole(inputData.userId, 7);
+        await pg.deleteUserRole(inputData.userId, 6);
+    }
     //remove old status
     let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.userStatusId);
     if(rowsEffected == -1){
         return {error: "Failed to remove status"};
+    }
+
+    //add new status
+    let statusId = await pg.addUserStatus(inputData.userId, inputData.newStatusId, inputData.reason);
+    if(statusId == -1){
+        return {error: "Failed to add status"};
+    }
+
+    //return
+    return {statusId: statusId};
+}
+
+async function addStatus(userAuth, inputData){
+    if(!userAuth.validToken){
+        return {error: "invalid authorization"}
+    }
+    //validate
+    if(inputData.reason == null || inputData.reason == undefined){
+        return {error: "reason must exist"}
+    }
+    if(inputData.userId == null || inputData.userId == undefined){
+        return {error: "userId must exist"}
+    }
+    if(inputData.statusId == null || inputData.statusId == undefined){
+        return {error: "newStatusId must exist"}
+    }
+
+    //check that user exists
+    let user = await pg.getUserById(inputData.userId);
+    if(user == undefined){
+        return {error: "User does not exist"}
     }
 
     //add new status
@@ -206,6 +250,7 @@ module.exports = {
     getAllCustomers,
     getCustomerDetails,
     changeStatus,
+    addStatus,
     getMessages,
     markMessageResolved,
     addMessage
