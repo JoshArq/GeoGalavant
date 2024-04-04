@@ -244,7 +244,7 @@ INSERT INTO User_Status (UserID, StatusID, ReasonApplied) VALUES (1,3,'Created A
 	(4,3,'Created Account'),
 	(5,3,'Created Account'),
 	(6, 3, 'Created Account'),
-	(7,3,'Created Account');
+	(7,1,'Created Account');
 
 -- Generate Role table --
 Create Table Roles(
