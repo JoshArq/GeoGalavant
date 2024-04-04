@@ -176,7 +176,7 @@ async function changeStatus(userAuth, inputData){
     if(inputData.userId == null || inputData.userId == undefined){
         return {error: "userId must exist"}
     }
-    if(inputData.oldStatusId == null || inputData.oldStatusId == undefined){
+    if(inputData.userStatusId == null || inputData.userStatusId == undefined){
         return {error: "oldStatusId must exist"}
     }
     if(inputData.newStatusId == null || inputData.newStatusId == undefined){
@@ -200,7 +200,7 @@ async function changeStatus(userAuth, inputData){
         await pg.deleteUserRole(inputData.userId, 6);
     }
     //remove old status
-    let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.oldStatusId);
+    let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.userStatusId);
     if(rowsEffected == -1){
         return {error: "Failed to remove status"};
     }
