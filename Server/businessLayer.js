@@ -54,7 +54,7 @@ async function getCustomerDetails(userAuth, inputData){
     if(customer == undefined){
         return {error: "Customer does not exist"}
     }
-    customer.licenseexpires =  new Date(customer.licenseexpires).valueOf();
+    // customer.licenseexpires =  new Date(customer.licenseexpires).valueOf();
     return customer;
 }
 
@@ -110,9 +110,12 @@ async function getMessages(userAuth){
     if(returnVals == -1){
         return {error: "failed to get tickets"}
     }
-    for(let i=0 ; i<returnVals.length ; i++){
-        returnVals[i].submitted = new Date(returnVals[i].submitted).valueOf();
-    }
+    // for(let i=0 ; i<returnVals.length ; i++){
+    //     console.log(returnVals[i].submitted);
+    //     const newDate = new Date(returnVals[i].submitted).toLocaleString();
+    //     console.log(newDate)
+    //     returnVals[i].submitted = newDate;
+    // }
     return returnVals;
 }
 
