@@ -215,10 +215,42 @@ async function changeStatus(userAuth, inputData){
     return {statusId: statusId};
 }
 
+async function addStatus(userAuth, inputData){
+    if(!userAuth.validToken){
+        return {error: "invalid authorization"}
+    }
+    //validate
+    if(inputData.reason == null || inputData.reason == undefined){
+        return {error: "reason must exist"}
+    }
+    if(inputData.userId == null || inputData.userId == undefined){
+        return {error: "userId must exist"}
+    }
+    if(inputData.statusId == null || inputData.statusId == undefined){
+        return {error: "newStatusId must exist"}
+    }
+
+    //check that user exists
+    let user = await pg.getUserById(inputData.userId);
+    if(user == undefined){
+        return {error: "User does not exist"}
+    }
+
+    //add new status
+    let statusId = await pg.addUserStatus(inputData.userId, inputData.statusId, inputData.reason);
+    if(statusId == -1){
+        return {error: "Failed to add status"};
+    }
+
+    //return
+    return {statusId: statusId};
+}
+
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
     changeStatus,
+    addStatus,
     getMessages,
     markMessageResolved,
     addMessage
