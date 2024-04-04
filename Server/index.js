@@ -109,25 +109,23 @@ router.get("/getUserData", async (req, res) => {
   var userAuth = await decodeToken(token)
   
   if(userAuth.validToken){
-    
-    var userData = await pg.getUserById(userAuth.id)
+    var returnData = {};
+    let userData = await pg.getUserById(userAuth.id)
+    returnData.username = userData.username;
+    returnData.email = userData.email;
 
     var custData = await pg.getCustomerByUserId(userAuth.id)
 
-    var expy = new Date(custData.licenseexpires).toLocaleDateString()
-
-    var returnData = {
-      username: userData.username,
-      email: userData.email,
-      driversLicense: {
+    if(custData != undefined){
+      returnData.driversLicense = {
         ID: custData.licensenumber,
         firstName: userData.firstname,
         lastName: userData.lastname,
         state: custData.stateprovincename,
-        expirationDate: expy
-      }
+        expirationDate: custData.licenseexpires
+      };
     }
-
+    //var expy = new Date(custData.licenseexpires).toLocaleDateString()
     
     res.json(returnData)
   } else {
