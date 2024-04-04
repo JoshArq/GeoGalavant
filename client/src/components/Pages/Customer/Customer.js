@@ -58,15 +58,18 @@ export default function Customer({token}) {
     const [modalShow, setModalShow] = React.useState(false);
     const [details, setDetails] = useState({});
     const [isValid, setIsValid] = useState(true);
+    const [expDate, setExpDate] = useState("");
 
     
     // Get data
     useEffect(() => {
+        console.log(custID)
         // Get customers
-        fetch("/api/getAllCustomers", {
+        fetch("/api/getCustomerDetails", {
             method: 'POST',
             headers: {
-              "auth-token": token
+              "auth-token": token,
+              "Content-Type": "application/json"
             },
             body: JSON.stringify({customerId: custID}),
           })
@@ -78,6 +81,7 @@ export default function Customer({token}) {
                 }
                 else {
                     setDetails(data)
+                    setExpDate(new Date(data.licenseexpires))
                     console.log(data)
                 }
           }).catch(error => {
@@ -93,94 +97,104 @@ export default function Customer({token}) {
                 onHide={() => setModalShow(false)}
             />
 
-            <Container fluid as={'section'}>
-                <p className="mt-3"><Link to="/customers" className="link-underline link-underline-opacity-0"><i className="bi bi-chevron-left me-3 color-primary"></i>Back to Customers</Link></p>
-                <Alert variant="danger" className={'text-danger my-3 bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
-                    There was an issue retrieving your data. Please refresh to try again.
-                </Alert> 
-                <Row>
-                    <Col md="auto">
-                        <h1>Arlene McCoy</h1>
-                    </Col>
-                    <Col className="d-flex align-items-center">
-                        <Button onClick={() => setModalShow(true)}>Change Status</Button>
-                    </Col>
-                </Row>
-                <Badge status="active"/> 
-                <Row className="mt-2">
-                    <Col md="2">
-                        <p><b>Username</b><br/>something</p>
-                    </Col>
-                    <Col md="2">
-                        <p><b>Email</b><br/>arlenemccoy@gmail.com</p>
-                    </Col>
-                </Row>
-            </Container> 
-            <div className="grey-section">
+            <Alert variant="danger" className={'text-danger m-3 bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
+                There was an issue retrieving your data. Please refresh to try again.
+            </Alert> 
 
-                <Container as={'section'}>
+            {!details.firstname ? <p className="m-3"><Link to="/customers" className="link-underline link-underline-opacity-0"><i className="bi bi-chevron-left me-3 color-primary"></i>Back to Customers</Link><br/><br/>This customer does not exist.</p> : 
+                <>
+                    <Container fluid as={'section'}>
+                        <p className="mt-3"><Link to="/customers" className="link-underline link-underline-opacity-0"><i className="bi bi-chevron-left me-3 color-primary"></i>Back to Customers</Link></p>
+                        <Row>
+                            <Col md="auto">
+                                <h1>{details.firstname + " " + details.lastname}</h1>
+                            </Col>
+                            <Col className="d-flex align-items-center">
+                                <Button onClick={() => setModalShow(true)}>Change Status</Button>
+                            </Col>
+                        </Row>
+                        <Badge status={details.statusname.toLowerCase()}/> 
+                        <Row className="mt-2">
+                            <Col md="4">
+                                <p><b>Username</b><br/>{details.username}</p>
+                            </Col>
+                            <Col md="4">
+                                <p><b>Email</b><br/>{details.email}</p>
+                            </Col>
+                            <Col md="4">
+                                <p className="fw-bold mb-1">Driver's License</p>
+                                <p className="mb-1">Number: {details.licensenumber}</p>
+                                <p className="mb-1">Expires: {expDate.getMonth() + "/" + expDate.getDate() + "/" + expDate.getFullYear()}</p>
+                            </Col>
+                        </Row>
+                    </Container> 
+                    <div className="grey-section">
 
-                    <h2 className="pt-3 pb-3">Reservations</h2>
+                        <Container as={'section'}>
 
-                    <h2>Upcoming</h2>
-                    <Table responsive="md">
-                    <thead>
-                        <tr>
-                        <th scope="col">Reservation #</th>
-                        <th scope="col">Pickup</th>
-                        <th scope="col">Dropoff</th>
-                        <th scope="col">Gyrocar #</th>
-                        <th scope="col">Payment</th>
-                        <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="tr-width">
-                            <td>123456</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>7654321</td>
-                            <td>card ending in ####</td>
-                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                        </tr>                   
-                    </tbody>
-                    </Table>
+                            <h2 className="pt-3 pb-3">Reservations</h2>
 
-                    <h2>Past</h2>
-                    <Table responsive="md">
-                    <thead>
-                        <tr>
-                        <th scope="col">Reservation #</th>
-                        <th scope="col">Pickup</th>
-                        <th scope="col">Dropoff</th>
-                        <th scope="col">Gyrocar #</th>
-                        <th scope="col">Payment</th>
-                        <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="tr-width">
-                            <td>123456</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>7654321</td>
-                            <td>card ending in ####</td>
-                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                        </tr>                   
-                    </tbody>
-                    <tbody>
-                        <tr className="tr-width">
-                            <td>123456</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                            <td>7654321</td>
-                            <td>card ending in ####</td>
-                            <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                        </tr>                   
-                    </tbody>
-                    </Table>
-                </Container>
-            </div>
+                            <h2>Upcoming</h2>
+                            <Table responsive="md">
+                            <thead>
+                                <tr>
+                                <th scope="col">Reservation #</th>
+                                <th scope="col">Pickup</th>
+                                <th scope="col">Dropoff</th>
+                                <th scope="col">Gyrocar #</th>
+                                <th scope="col">Payment</th>
+                                <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="tr-width">
+                                    <td>123456</td>
+                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                                    <td>7654321</td>
+                                    <td>card ending in ####</td>
+                                    <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
+                                </tr>                   
+                            </tbody>
+                            </Table>
+
+                            <h2>Past</h2>
+                            <Table responsive="md">
+                            <thead>
+                                <tr>
+                                <th scope="col">Reservation #</th>
+                                <th scope="col">Pickup</th>
+                                <th scope="col">Dropoff</th>
+                                <th scope="col">Gyrocar #</th>
+                                <th scope="col">Payment</th>
+                                <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="tr-width">
+                                    <td>123456</td>
+                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                                    <td>7654321</td>
+                                    <td>card ending in ####</td>
+                                    <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
+                                </tr>                   
+                            </tbody>
+                            <tbody>
+                                <tr className="tr-width">
+                                    <td>123456</td>
+                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
+                                    <td>7654321</td>
+                                    <td>card ending in ####</td>
+                                    <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
+                                </tr>                   
+                            </tbody>
+                            </Table>
+                        </Container>
+                    </div>
+                </>
+            }
         </main>
     )
 }

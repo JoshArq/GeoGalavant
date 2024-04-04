@@ -29,6 +29,7 @@ export default function Customers({token}) {
                 }
                 else {
                     setCustomers(data)
+                    console.log(data)
                 }
           }).catch(error => {
             setIsValid(false);

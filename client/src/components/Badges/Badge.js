@@ -10,7 +10,7 @@ export default function Badge({ status }) {
             text = 'Active';
             colorClass = 'text-bg-success';
             break;
-        case 'needs':
+        case 'needs approval':
             text = 'Needs Approval';
             colorClass = 'text-bg-primary';
             break;
@@ -30,7 +30,7 @@ export default function Badge({ status }) {
             text = 'Available';
             colorClass = 'text-bg-success';
             break;
-        case 'inuse':
+        case 'in use':
             text = 'In Use';
             colorClass = 'text-bg-info';
             break;
