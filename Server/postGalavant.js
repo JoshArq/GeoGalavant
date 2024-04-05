@@ -696,7 +696,7 @@ async function getAllCustomers(){
 
 async function getCustomerDetails(id){
   var query = {
-    text: "SELECT Users.UserID, Users.Username, Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID, Customer.LicenseExpires, Customer.LicenseNumber FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID WHERE CustomerID = $1",
+    text: "SELECT Users.UserID, Users.Username, Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, AccountStatus.StatusID, Customer.CustomerID, Customer.LicenseExpires, Customer.LicenseNumber FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID WHERE Customer.CustomerID = $1",
     values: [id]
   }
   try{
