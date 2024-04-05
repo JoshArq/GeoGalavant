@@ -94,8 +94,18 @@ async function addCustomer(userID, obj){
 
 async function updateUser(obj){
   const query = {
-    text: "UPDATE Users SET Username = $1, Password = $2, FirstName = $3, LastName = $4, Email = $5, Address = $6, ZipCode = $7, City = $8, StateProvinceID = $9 WHERE UserID = $10",
-    values: [obj.username, obj.password, obj.firstName, obj.lastName, obj.email, obj.address, obj.zipcode, obj.city, obj.stateProvinceID, obj.userId]
+    text: "UPDATE Users SET Username = $1, Password = $2, FirstName = $3, LastName = $4, Email = $5, Address = $6, ZipCode = $7, City = $8, StateProvinceID = $9, StatusName = $10 WHERE UserID = $11",
+    values: [obj.username, obj.password, obj.firstName, obj.lastName, obj.email, obj.address, obj.zipcode, obj.city, obj.stateProvinceID, obj.statusName, obj.userId]
+  };
+
+  const res = await pool.query(query);
+  return res.rowCount;
+}
+
+async function updateUserStatus(obj){
+  const query = {
+    text: "UPDATE Users SET StatusName = $1 WHERE UserID = $2",
+    values: [obj.statusName, obj.userId]
   };
 
   const res = await pool.query(query);
@@ -206,37 +216,6 @@ async function deleteUserRole(userID, roleID){
     return rowsEffected;
   }
   catch(err){
-    return -1;
-  }
-}
-
-async function addUserStatus(userId, statusId, reasonApplied){
-  query = {
-    text: "INSERT INTO User_Status (UserID, StatusID, ReasonApplied) VALUES ($1, $2, $3) RETURNING UserStatusID",
-    values: [userId, statusId, reasonApplied]
-  }
-
-  try{
-    var userStatusId= (await pool.query(query)).rows[0].userstatusid
-    return userStatusId;
-  }
-  catch (err){
-    return -1
-  }
-}
-
-async function removeUserStatus(reasonRemoved, userStatusID){
-  query = {
-    text: `UPDATE User_Status SET CurrentStatus = FALSE, StatusChange = (to_timestamp(${Date.now()} / 1000.0)), ReasonRemoved = $1 WHERE UserStatusID = $2`,
-    values: [reasonRemoved, userStatusID]
-  }
-
-  try{
-    var rowsEffected = (await pool.query(query)).rowCount
-    return rowsEffected;
-  }
-  catch(err){
-    console.log(err);
     return -1;
   }
 }
@@ -683,7 +662,7 @@ async function getTicket(ticketId){
 
 async function getAllCustomers(){
   var query = {
-    text: "SELECT Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID ORDER BY AccountStatus.StatusID"
+    text: "SELECT Users.FirstName, Users.LastName, Users.Email, Users.StatusName, Customer.CustomerID FROM Customer JOIN Users ON Customer.UserID = Users.UserID ORDER BY Users.StatusName"
   }
   try{
     return (await pool.query(query)).rows;
@@ -696,7 +675,7 @@ async function getAllCustomers(){
 
 async function getCustomerDetails(id){
   var query = {
-    text: "SELECT Users.UserID, Users.Username, Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, AccountStatus.StatusID, Customer.CustomerID, Customer.LicenseExpires, Customer.LicenseNumber FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID WHERE Customer.CustomerID = $1",
+    text: "SELECT Users.UserID, Users.Username, Users.FirstName, Users.LastName, Users.Email, Users.StatusName, AccountStatus.StatusID, Customer.CustomerID, Customer.LicenseExpires, Customer.LicenseNumber FROM Customer JOIN Users ON Customer.UserID = Users.UserID WHERE Customer.CustomerID = $1",
     values: [id]
   }
   try{
@@ -711,15 +690,14 @@ async function getCustomerDetails(id){
 module.exports = {
   pulseCheck, 
   addUser, 
-  updateUser, 
+  updateUser,
+  updateUserStatus,
   getUserByName, 
   getUserById, 
   getAllUsers, 
   deleteUser, 
   addUserRole, 
   deleteUserRole, 
-  addUserStatus, 
-  removeUserStatus, 
   getUserPerms, 
   login, 
   addCustomer, 

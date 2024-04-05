@@ -24,14 +24,12 @@ router.get("/test", (req, res) => {
 
 router.get("/testToken", async (req, res) => {
   
-  
   const token = req.headers['auth-token']
   console.log(token)
   // const token = req.body.token
 
   var data = await decodeToken(token)
 
-  
   res.json({ data});
 });
 
@@ -493,17 +491,6 @@ router.post("/getCustomerDetails", async (req, res) => {
   var userAuth = await decodeToken(token)
 
   const returnData = await bl.getCustomerDetails(userAuth, inputData);
-  res.json(returnData);
-});
-
-//change status
-router.post("/addStatus", async (req, res) => {
-  const token = req.headers['auth-token']
-  const inputData = req.body;
-
-  var userAuth = await decodeToken(token)
-
-  const returnData = await bl.addStatus(userAuth, inputData);
   res.json(returnData);
 });
 
