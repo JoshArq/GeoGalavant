@@ -124,7 +124,7 @@ async function getUserByName(username){
 
 async function getUserById(userId){
   const query = {
-    text: "SELECT * FROM Users WHERE UserID = $1",
+    text: "SELECT * FROM Users JOIN User_Role ON Users.UserID = User_Role.UserID WHERE Users.UserID = $1",
     values: [userId]
   };
 
@@ -210,14 +210,14 @@ async function deleteUserRole(userID, roleID){
   }
 }
 
-async function addUserStatus(userId, statusId, reasonApplied){
+async function addUserStatus(userId, statusId){
   query = {
-    text: "INSERT INTO User_Status (UserID, StatusID, ReasonApplied) VALUES ($1, $2, $3) RETURNING UserStatusID",
-    values: [userId, statusId, reasonApplied]
+    text: "INSERT INTO User_Status (UserID, StatusID) VALUES ($1, $2)",
+    values: [userId, statusId]
   }
 
   try{
-    var userStatusId= (await pool.query(query)).rows[0].userstatusid
+    var userStatusId= (await pool.query(query))
     return userStatusId;
   }
   catch (err){
@@ -225,21 +225,20 @@ async function addUserStatus(userId, statusId, reasonApplied){
   }
 }
 
-async function removeUserStatus(reasonRemoved, userStatusID){
+async function updateUserStatus(userId, statusId){
   query = {
-    text: `UPDATE User_Status SET CurrentStatus = FALSE, StatusChange = (to_timestamp(${Date.now()} / 1000.0)), ReasonRemoved = $1 WHERE UserStatusID = $2`,
-    values: [reasonRemoved, userStatusID]
-  }
-
+    text: "UPDATE User_Status SET StatusID = $1 WHERE UserID = $2",
+    values: [statusId, userId]
+  };
   try{
-    var rowsEffected = (await pool.query(query)).rowCount
+    var rowsEffected= (await pool.query(query)).rowCount
     return rowsEffected;
   }
-  catch(err){
-    console.log(err);
-    return -1;
+  catch (err){
+    return -1
   }
 }
+
 
 async function getUserPerms(userId){
   var query = {
@@ -683,7 +682,7 @@ async function getTicket(ticketId){
 
 async function getAllCustomers(){
   var query = {
-    text: "SELECT Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID ORDER BY AccountStatus.StatusID"
+    text: "SELECT Users.FirstName, Users.LastName, Users.Email, AccountStatus.StatusName, Customer.CustomerID, Customer.UserID FROM Customer JOIN Users ON Customer.UserID = Users.UserID JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID ORDER BY AccountStatus.StatusID"
   }
   try{
     return (await pool.query(query)).rows;
@@ -719,7 +718,7 @@ module.exports = {
   addUserRole, 
   deleteUserRole, 
   addUserStatus, 
-  removeUserStatus, 
+  updateUserStatus,
   getUserPerms, 
   login, 
   addCustomer, 

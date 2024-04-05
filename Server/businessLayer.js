@@ -110,12 +110,6 @@ async function getMessages(userAuth){
     if(returnVals == -1){
         return {error: "failed to get tickets"}
     }
-    // for(let i=0 ; i<returnVals.length ; i++){
-    //     console.log(returnVals[i].submitted);
-    //     const newDate = new Date(returnVals[i].submitted).toLocaleString();
-    //     console.log(newDate)
-    //     returnVals[i].submitted = newDate;
-    // }
     return returnVals;
 }
 
@@ -127,9 +121,6 @@ async function markMessageResolved(userAuth, inputData){
     if(inputData.ticketId == null || inputData.ticketId ==undefined){
         return { error: "ticket id must exist" }
     }
-    if(inputData.userId == null || inputData.userId ==undefined){
-        return { error: "user id must exist" }
-    }
     //checks that ticket is valid
     const ticket = await pg.getTicket(inputData.ticketId);
     if(ticket == undefined){
@@ -137,14 +128,6 @@ async function markMessageResolved(userAuth, inputData){
     }
     if(ticket == -1){
         return { error: "failed to find ticket"}
-    }
-    //checks that user is valid
-    const user = await pg.getUserById(inputData.userId);
-    if(user == undefined){
-        return { error: "User with that id does not exist" }
-    }
-    if(user == -1){
-        return { error: "failed to find user"}
     }
     //sets ticket to resolved
     const updatedTicket = {
@@ -154,7 +137,7 @@ async function markMessageResolved(userAuth, inputData){
         email: ticket.email,
         comment: ticket.comment,
         isOpen: false,
-        closedBy: inputData.userId,
+        closedBy: userAuth.id,
         ticketId: inputData.ticketId
     };
     const result = await pg.updateTicket(updatedTicket);
@@ -176,11 +159,8 @@ async function changeStatus(userAuth, inputData){
     if(inputData.userId == null || inputData.userId == undefined){
         return {error: "userId must exist"}
     }
-    if(inputData.userStatusId == null || inputData.userStatusId == undefined){
-        return {error: "oldStatusId must exist"}
-    }
-    if(inputData.newStatusId == null || inputData.newStatusId == undefined){
-        return {error: "newStatusId must exist"}
+    if(inputData.statusId == null || inputData.statusId == undefined){
+        return {error: "statusId must exist"}
     }
 
     //check that user exists
@@ -189,45 +169,43 @@ async function changeStatus(userAuth, inputData){
         return {error: "User does not exist"}
     }
 
-    //if changing status to 3, which is active, changes role from 6 to 7
-    if(inputData.newStatusId == 3){
-        await pg.addUserRole(inputData.userId, 6);
-        await pg.deleteUserRole(inputData.userId, 7);
+    //if changing status to 3, which is active, changes role from 7 to 6
+    if(inputData.statusId == 3 && user.roleid == 7){
+        try{
+            await pg.addUserRole(inputData.userId, 6);
+            await pg.deleteUserRole(inputData.userId, 7);
+        }
+        catch(err){
+
+        }
     }
     //otherwise, changes to 6 from 7
-    else{
-        await pg.addUserRole(inputData.userId, 7);
-        await pg.deleteUserRole(inputData.userId, 6);
-    }
-    //remove old status
-    let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.userStatusId);
-    if(rowsEffected == -1){
-        return {error: "Failed to remove status"};
+    else if(inputData.statusId != 3 && user.roleid != 7){
+        try{
+            await pg.addUserRole(inputData.userId, 7);
+            await pg.deleteUserRole(inputData.userId, 6);
+        }catch(err){}
     }
 
     //add new status
-    let statusId = await pg.addUserStatus(inputData.userId, inputData.newStatusId, inputData.reason);
+    let statusId = await pg.updateUserStatus(inputData.userId, inputData.statusId);
     if(statusId == -1){
-        return {error: "Failed to add status"};
+        return {error: "Failed to change status"};
     }
 
     //return
-    return {statusId: statusId};
+    return {success: "Updated status"};
 }
 
 async function addStatus(userAuth, inputData){
     if(!userAuth.validToken){
         return {error: "invalid authorization"}
     }
-    //validate
-    if(inputData.reason == null || inputData.reason == undefined){
-        return {error: "reason must exist"}
-    }
     if(inputData.userId == null || inputData.userId == undefined){
         return {error: "userId must exist"}
     }
     if(inputData.statusId == null || inputData.statusId == undefined){
-        return {error: "newStatusId must exist"}
+        return {error: "statusID must exist"}
     }
 
     //check that user exists
@@ -237,13 +215,13 @@ async function addStatus(userAuth, inputData){
     }
 
     //add new status
-    let statusId = await pg.addUserStatus(inputData.userId, inputData.statusId, inputData.reason);
+    let statusId = await pg.addUserStatus(inputData.userId, inputData.statusId);
     if(statusId == -1){
         return {error: "Failed to add status"};
     }
 
     //return
-    return {statusId: statusId};
+    return {success: "Added Status"};
 }
 
 module.exports = {
