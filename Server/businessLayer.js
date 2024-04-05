@@ -110,12 +110,6 @@ async function getMessages(userAuth){
     if(returnVals == -1){
         return {error: "failed to get tickets"}
     }
-    // for(let i=0 ; i<returnVals.length ; i++){
-    //     console.log(returnVals[i].submitted);
-    //     const newDate = new Date(returnVals[i].submitted).toLocaleString();
-    //     console.log(newDate)
-    //     returnVals[i].submitted = newDate;
-    // }
     return returnVals;
 }
 
@@ -127,9 +121,6 @@ async function markMessageResolved(userAuth, inputData){
     if(inputData.ticketId == null || inputData.ticketId ==undefined){
         return { error: "ticket id must exist" }
     }
-    if(inputData.userId == null || inputData.userId ==undefined){
-        return { error: "user id must exist" }
-    }
     //checks that ticket is valid
     const ticket = await pg.getTicket(inputData.ticketId);
     if(ticket == undefined){
@@ -137,14 +128,6 @@ async function markMessageResolved(userAuth, inputData){
     }
     if(ticket == -1){
         return { error: "failed to find ticket"}
-    }
-    //checks that user is valid
-    const user = await pg.getUserById(inputData.userId);
-    if(user == undefined){
-        return { error: "User with that id does not exist" }
-    }
-    if(user == -1){
-        return { error: "failed to find user"}
     }
     //sets ticket to resolved
     const updatedTicket = {
@@ -154,7 +137,7 @@ async function markMessageResolved(userAuth, inputData){
         email: ticket.email,
         comment: ticket.comment,
         isOpen: false,
-        closedBy: inputData.userId,
+        closedBy: userAuth.id,
         ticketId: inputData.ticketId
     };
     const result = await pg.updateTicket(updatedTicket);
