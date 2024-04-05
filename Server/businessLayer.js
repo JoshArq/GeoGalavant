@@ -212,7 +212,7 @@ async function changeStatus(userAuth, inputData){
     }
 
     //return
-    return {statusId: statusId};
+    return {userStatusId: statusId};
 }
 
 async function addStatus(userAuth, inputData){
@@ -243,7 +243,7 @@ async function addStatus(userAuth, inputData){
     }
 
     //return
-    return {statusId: statusId};
+    return {userStatusId: statusId};
 }
 
 module.exports = {
