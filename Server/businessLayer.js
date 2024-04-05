@@ -118,21 +118,18 @@ async function addPaymentMethod(custID, cardInfo){
 
 //Cases:
 //AccountCreation
-async function emailCustomer (email, name, reason){
+async function emailCustomer (email, content){
     var mailOptions
 
 
-    if(reason == "AccountCreation"){
-
-        var text = "Congrats " + name + ", your account was successfully created!"
 
         mailOptions = {
             from: 'geogalavant@gmail.com',
             to: email,
             subject: 'Geogalavant Account Created',
-            text: text
+            text: content
           };
-    }
+    
     
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
