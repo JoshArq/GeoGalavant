@@ -708,6 +708,34 @@ async function getCustomerDetails(id){
   }
 }
 
+async function getMaintenance(){
+  var query = {
+    text: "SELECT * FROM Maintenance"
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addMaintenance(obj){
+  var query = {
+    text: "INSERT INTO Maintenance (MaintenanceStart, HasDamage, ServicePerformed, MaintenanceLocation, Mechanic, Car) VALUES ($1,$2,$3,$4,$5,$6) RETURNING MaintenanceID",
+    values: [obj.maintenanceStart, obj.hasDamage, obj.servicePerformed, obj.stationId, obj.mechanic, obj.carId]
+  }
+  try{
+    return (await pool.query(query)).rows[0].maintenanceid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+
 module.exports = {
   pulseCheck, 
   addUser, 
@@ -754,5 +782,7 @@ module.exports = {
   getAllTickets,
   getTicket,
   getAllCustomers,
-  getCustomerDetails
+  getCustomerDetails,
+  getMaintenance,
+  addMaintenance
 }

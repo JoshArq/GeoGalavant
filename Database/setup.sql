@@ -470,9 +470,12 @@ CREATE TABLE Maintenance(
 	HasDamage BOOLEAN NOT NULL,
 	ServicePerformed TEXT NOT NULL,
 	MaintenanceLocation INT NOT NULL,
+	Mechanic INT NOT NULL,
 	Car INT NOT NULL,
 	FOREIGN KEY (MaintenanceLocation)
 		REFERENCES Station (StationID),
 	FOREIGN KEY (Car)
-		REFERENCES Car (CarID)
+		REFERENCES Car (CarID),
+	FOREIGN KEY (Mechanic)
+		REFERENCES Users (UserID)
 );

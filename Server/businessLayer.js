@@ -374,11 +374,58 @@ async function updateCar(auth,data){
 }
 
 async function getWorkOrders(auth){
-
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    let workOrders = await pg.getMaintenance();
+    if(workOrders == -1){
+        return {error: "Failed to retrieve work orders"};
+    }
+    return workOrders;
 }
 
 async function addWorkOrder(auth,data){
-
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    data.mechanic = auth.id;
+    if(data.stationId == null || data.stationId == undefined){
+        return {error: "stationId must be present"}
+    }
+    if(!Number.isInteger(data.stationId)){
+        return {error: "stationId must be a number"};
+    }
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must be present"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    if(data.hasDamage == null || data.hasDamage == undefined){
+        return {error: "hasDamage must be present"}
+    }
+    if(data.hasDamage!="true" && data.hasDamage!="false"){
+        return {error: "hasDamage must be true or false"}
+    }
+    if(data.servicePerformed == null || data.servicePerformed == undefined){
+        return {error: "servicePerformed must be present"}
+    }
+    if(data.maintenanceStart == null || data.maintenanceStart == undefined){
+        return {error: "maintenanceStart must be present"}
+    }
+    const station = await pg.getStation(data.stationId);
+    if(station == undefined){
+        return {error: "Station does not exist"};
+    }
+    const car = await pg.getCar(data.carId);
+    if(car == undefined){
+        return {error: "Car does not exist"};
+    }
+    var maintenanceId = await pg.addMaintenance(data);
+    console.log(maintenanceId);
+    if(maintenanceId != -1){
+        return {maintenanceId: maintenanceId}
+    }
 }
 
 module.exports = {
