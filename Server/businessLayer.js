@@ -1,6 +1,3 @@
-import { getCar, getAllCustomers as _getAllCustomers, getCustomerDetails as _getCustomerDetails, addTicket, getAllTickets, getTicket, getUserById, updateTicket, addUserRole, deleteUserRole, removeUserStatus, addUserStatus, getAllCars as _getAllCars, getStation, addCar as _addCar, removeCar as _removeCar, editCar, getMaintenance, addMaintenance, addStation as _addStation } from './postGalavant.js';
-require('dotenv').config()
-
 async function sampleFunction(id, startDate, endDate, obj){
     //check that a variable is present
     if(id==null || id==undefined){
