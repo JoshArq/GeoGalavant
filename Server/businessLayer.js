@@ -1,4 +1,4 @@
-const pg = require('./postGalavant.js');
+import { getCar, getAllCustomers as _getAllCustomers, getCustomerDetails as _getCustomerDetails, addTicket, getAllTickets, getTicket, getUserById, updateTicket, addUserRole, deleteUserRole, removeUserStatus, addUserStatus, getAllCars as _getAllCars, getStation, addCar as _addCar, removeCar as _removeCar, editCar, getMaintenance, addMaintenance, addStation as _addStation } from './postGalavant.js';
 require('dotenv').config()
 
 async function sampleFunction(id, startDate, endDate, obj){
@@ -17,7 +17,7 @@ async function sampleFunction(id, startDate, endDate, obj){
     }
 
     //just showing how you'd use this with data layer methods
-    let result = await pg.getCar(1);
+    let result = await getCar(1);
     if(result == -1){
         return {error: "failed to get car"}
     }
@@ -36,7 +36,7 @@ async function getAllCustomers(userAuth){
     if(!userAuth.validToken){
         return {error: "invalid authorization"}
     }
-    let customers = await pg.getAllCustomers();
+    let customers = await _getAllCustomers();
     if(customers == -1){
         return {error: "Failed to get customers"}
     }
@@ -47,7 +47,7 @@ async function getCustomerDetails(userAuth, inputData){
     if(!userAuth.validToken){
         return {error: "invalid authorization"}
     }
-    let customer = await pg.getCustomerDetails(inputData.customerId);
+    let customer = await _getCustomerDetails(inputData.customerId);
     if(customer == -1){
         return {error: "Failed to get customer"}
     }
@@ -92,7 +92,7 @@ async function addMessage(inputData){
         return {error: "comment cannot be null"};
     }
     //call function
-    result = await pg.addTicket(inputData);
+    result = await addTicket(inputData);
     //returns
     if(result == -1){
         //SEND EMAIL HERE
@@ -106,7 +106,7 @@ async function getMessages(userAuth){
     if(!userAuth.validToken){
         return {error: "invalid authorization"}
     }
-    let returnVals = await pg.getAllTickets();
+    let returnVals = await getAllTickets();
     if(returnVals == -1){
         return {error: "failed to get tickets"}
     }
@@ -131,7 +131,7 @@ async function markMessageResolved(userAuth, inputData){
         return { error: "user id must exist" }
     }
     //checks that ticket is valid
-    const ticket = await pg.getTicket(inputData.ticketId);
+    const ticket = await getTicket(inputData.ticketId);
     if(ticket == undefined){
         return { error: "Ticket with that id does not exist" }
     }
@@ -139,7 +139,7 @@ async function markMessageResolved(userAuth, inputData){
         return { error: "failed to find ticket"}
     }
     //checks that user is valid
-    const user = await pg.getUserById(inputData.userId);
+    const user = await getUserById(inputData.userId);
     if(user == undefined){
         return { error: "User with that id does not exist" }
     }
@@ -157,7 +157,7 @@ async function markMessageResolved(userAuth, inputData){
         closedBy: inputData.userId,
         ticketId: inputData.ticketId
     };
-    const result = await pg.updateTicket(updatedTicket);
+    const result = await updateTicket(updatedTicket);
     if(result == -1){
         return {error: "failed to resolve ticket"}
     }
@@ -184,29 +184,29 @@ async function changeStatus(userAuth, inputData){
     }
 
     //check that user exists
-    let user = await pg.getUserById(inputData.userId);
+    let user = await getUserById(inputData.userId);
     if(user == undefined){
         return {error: "User does not exist"}
     }
 
     //if changing status to 3, which is active, changes role from 6 to 7
     if(inputData.newStatusId == 3){
-        await pg.addUserRole(inputData.userId, 6);
-        await pg.deleteUserRole(inputData.userId, 7);
+        await addUserRole(inputData.userId, 6);
+        await deleteUserRole(inputData.userId, 7);
     }
     //otherwise, changes to 6 from 7
     else{
-        await pg.addUserRole(inputData.userId, 7);
-        await pg.deleteUserRole(inputData.userId, 6);
+        await addUserRole(inputData.userId, 7);
+        await deleteUserRole(inputData.userId, 6);
     }
     //remove old status
-    let rowsEffected = await pg.removeUserStatus(inputData.reason, inputData.userStatusId);
+    let rowsEffected = await removeUserStatus(inputData.reason, inputData.userStatusId);
     if(rowsEffected == -1){
         return {error: "Failed to remove status"};
     }
 
     //add new status
-    let statusId = await pg.addUserStatus(inputData.userId, inputData.newStatusId, inputData.reason);
+    let statusId = await addUserStatus(inputData.userId, inputData.newStatusId, inputData.reason);
     if(statusId == -1){
         return {error: "Failed to add status"};
     }
@@ -231,13 +231,13 @@ async function addStatus(userAuth, inputData){
     }
 
     //check that user exists
-    let user = await pg.getUserById(inputData.userId);
+    let user = await getUserById(inputData.userId);
     if(user == undefined){
         return {error: "User does not exist"}
     }
 
     //add new status
-    let statusId = await pg.addUserStatus(inputData.userId, inputData.statusId, inputData.reason);
+    let statusId = await addUserStatus(inputData.userId, inputData.statusId, inputData.reason);
     if(statusId == -1){
         return {error: "Failed to add status"};
     }
@@ -250,7 +250,7 @@ async function getAllCars(auth){
     if(!auth.validToken){
         return {error: "invalid authorization"}
     }
-    let cars = await pg.getAllCars();
+    let cars = await _getAllCars();
     if(cars == -1){
         return {error: "Failed to retrieve cars"};
     }
@@ -267,7 +267,7 @@ async function getCarDetails(auth, data){
     if(!Number.isInteger(data.carId)){
         return {error: "carId must be a number"};
     }
-    let car = await pg.getCar(data.carId);
+    let car = await getCar(data.carId);
     if(car == undefined){
         return {error: "Car with that ID does not exist"}
     }
@@ -293,11 +293,11 @@ async function addCar(auth,data){
     if(!Number.isInteger(data.carStatusId)){
         return {error: "carStatusId must be a number"};
     }
-    const station = await pg.getStation(data.stationId);
+    const station = await getStation(data.stationId);
     if(station == undefined){
         return {error: "Station does not exist"};
     }
-    let carId = await pg.addCar(data);
+    let carId = await _addCar(data);
     if(carId == -1){
         return {error: "Failed to add car"}
     }
@@ -314,11 +314,11 @@ async function removeCar(auth,data){
     if(!Number.isInteger(data.carId)){
         return {error: "carId must be a number"};
     }
-    const car = await pg.getCar(data.carId);
+    const car = await getCar(data.carId);
     if(car == undefined){
         return {error: "Car with that ID does not exist"}
     }
-    const rowCount = await pg.removeCar(data.carId);
+    const rowCount = await _removeCar(data.carId);
     if(rowCount == 1){
         return {success: "removed car"}
     }
@@ -338,12 +338,12 @@ async function updateCar(auth,data){
     if((data.stationId == null || data.stationId==undefined) && (data.carStatusId == null || data.carStatusId == undefined)){
         return {error: "Must include something to update"}
     }
-    var car = await pg.getCar(data.carId);
+    var car = await getCar(data.carId);
     if(data.stationId != null || data.stationId!=undefined){
         if(!Number.isInteger(data.carId)){
             return {error: "stationId must be a number"};
         }
-        const station = await pg.getStation(data.stationId);
+        const station = await getStation(data.stationId);
         if(station == undefined){
             return {error: "Station with that ID doesn't exist"}
         }
@@ -353,7 +353,7 @@ async function updateCar(auth,data){
             return {error: "stationId must be a number"};
         }
     }
-    var car = await pg.getCar(data.carId);
+    var car = await getCar(data.carId);
     //console.log(car);
     let updateObj = data
     if(car == undefined){
@@ -366,7 +366,7 @@ async function updateCar(auth,data){
     if(updateObj.carStatusId == null || updateObj.carStatusId==undefined){
         updateObj.carStatusId = car.statusid
     }
-    var result = await pg.editCar(updateObj);
+    var result = await editCar(updateObj);
     if(result == 1){
         return {success: "Updated Car"}
     }
@@ -377,7 +377,7 @@ async function getWorkOrders(auth){
     if(!auth.validToken){
         return {error: "invalid authorization"}
     }
-    let workOrders = await pg.getMaintenance();
+    let workOrders = await getMaintenance();
     if(workOrders == -1){
         return {error: "Failed to retrieve work orders"};
     }
@@ -413,19 +413,68 @@ async function addWorkOrder(auth,data){
     if(data.maintenanceStart == null || data.maintenanceStart == undefined){
         return {error: "maintenanceStart must be present"}
     }
-    const station = await pg.getStation(data.stationId);
+    const station = await getStation(data.stationId);
     if(station == undefined){
         return {error: "Station does not exist"};
     }
-    const car = await pg.getCar(data.carId);
+    const car = await getCar(data.carId);
     if(car == undefined){
         return {error: "Car does not exist"};
     }
-    var maintenanceId = await pg.addMaintenance(data);
+    var maintenanceId = await addMaintenance(data);
     console.log(maintenanceId);
     if(maintenanceId != -1){
         return {maintenanceId: maintenanceId}
     }
+}
+
+async function addStation(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    //check if latitude exists in proper format
+    if(data.longitude == null || data.longitude == undefined){
+        return {error: "longitude must exist"}
+    }
+    if(Number.isNaN(Number.parseFloat(data.longitude))){
+        return {error: "longitude must be a number"}
+    }
+
+    //check if longitude exists in proper format
+    if(data.latitude == null || data.latitude == undefined){
+        return {error: "latitude must exist"}
+    }
+    if(Number.isNaN(Number.parseFloat(data.latitude))){
+        return {error: "latitude must be a number"}
+    }
+
+    //check if name exists
+    if(data.stationName == null || data.stationName == undefined){
+        return {error: "stationName must exist"}
+    }
+    
+    //check if address exists
+    if(data.address == null || data.address == undefined){
+        return {error: "address must exist"}
+    }
+
+    //check if isClosed exists and is boolean
+    if(data.isClosed == null || data.isClosed == undefined){
+        return {error: "isClosed must exist"}
+    }
+    if(data.isClosed!="true" && data.isClosed!="false"){
+        return {error: "hasDamage must be true or false"}
+    }
+
+    //insert
+    const stationId = await _addStation(data);
+
+    if(stationId == undefined || stationId == -1){
+        return {error: "Failed to add station"}
+    }
+
+    //return stationid
+    return {stationId: stationId}
 }
 
 module.exports = {
@@ -442,5 +491,6 @@ module.exports = {
     removeCar,
     updateCar,
     getWorkOrders,
-    addWorkOrder
+    addWorkOrder,
+    addStation
 }

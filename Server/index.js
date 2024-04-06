@@ -389,7 +389,16 @@ router.
 });
 
 
+//addLocation
+router.post("/addLocation", async (req,res)=>{
+  const token = req.headers['auth-token']
+  const inputData = req.body;
 
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.addStation(userAuth, inputData);
+  res.json(returnData);
+});
 
 
 //TODO - connect to DB
@@ -401,12 +410,6 @@ router.post("/makeReservation", (req, res) => {
     reservationNumber: 1111
   })
 });
-
-
-
-
-
-
 
 
 //TODO - connect to DB
@@ -611,6 +614,12 @@ router.post("/addWorkOrder", async (req,res)=>{
   res.json(returnData);
 });
 
+//Business Admin Endpoints
+
+//getAllEmployees
+//employeeDetails
+//changeEmployeeStatus
+//addEmployee
 
 //UTILITY FUNCTIONS
 

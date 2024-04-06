@@ -318,6 +318,20 @@ async function getStation(id){
   }
 }
 
+async function addStation(obj){
+  var query = {
+    text: "INSERT INTO Station (MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, StationName, Address, IsClosed) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING StationID",
+    values: [obj.latitude, obj.latitude, obj.longitude, obj.longitude, obj.stationName, obj.address, obj.isClosed]
+  }
+  try{
+    return (await pool.query(query)).rows[0].stationid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 
 async function getCustomerReservations(customerId){
   var query ={
@@ -754,7 +768,8 @@ module.exports = {
   getCustomerByUserId, 
   updateCustomer, 
   getAllStations, 
-  getStation, 
+  getStation,
+  addStation,
   getCustomerReservations, 
   getReservation, 
   updateReservation, 
