@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS TicketStatus;
 DROP TABLE IF EXISTS Rental;
 DROP TABLE IF EXISTS Card;
 DROP TABLE IF EXISTS Application;
+DROP TABLE IF EXISTS Employee;
 DROP TABLE IF EXISTS Customer;
 DROP TABLE IF EXISTS Role_Permission;
 DROP TABLE IF EXISTS User_Role;
@@ -24,6 +25,7 @@ DROP TABLE IF EXISTS PaymentType;
 DROP TABLE IF EXISTS ApplicationStatus;
 DROP TABLE IF EXISTS AccountStatus;
 DROP TABLE IF EXISTS StateProvince;
+DROP TYPE IF EXISTS EmployeeStatus;
 
 -- CREATE TABLE TicketStatus(
 -- 	StatusID SERIAL PRIMARY KEY,
@@ -257,6 +259,15 @@ INSERT INTO Roles (RoleID, Title) VALUES (1, 'System Administrator'),
 	(5, 'Customer Service'),
 	(6, 'Customer'),
 	(7, 'User');
+
+CREATE TYPE EmployeeStatus AS ENUM ('Active','Suspended','Terminated');
+
+CREATE TABLE Employee(
+	EmpID INT NOT NULL,
+	Status EmployeeStatus,
+	FOREIGN KEY (EmpID)
+		REFERENCES Users (UserID)
+);
 
 
 -- Generate Permissions table --
