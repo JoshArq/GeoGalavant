@@ -293,7 +293,7 @@ async function addCar(auth,data){
     if(!Number.isInteger(data.carStatusId)){
         return {error: "carStatusId must be a number"};
     }
-    let station = await pg.getStation(data.stationId);
+    const station = await pg.getStation(data.stationId);
     if(station == undefined){
         return {error: "Station does not exist"};
     }
@@ -314,19 +314,63 @@ async function removeCar(auth,data){
     if(!Number.isInteger(data.carId)){
         return {error: "carId must be a number"};
     }
-    let car = await pg.getCar(data.carId);
+    const car = await pg.getCar(data.carId);
     if(car == undefined){
         return {error: "Car with that ID does not exist"}
     }
-    let rowCount = await pg.removeCar(data.carId);
+    const rowCount = await pg.removeCar(data.carId);
     if(rowCount == 1){
         return {success: "removed car"}
     }
     return {error: "Failed to delete car"}
 }
 
-async function updateCarStatus(auth,data){
+async function updateCar(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must be present"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    if((data.stationId == null || data.stationId==undefined) && (data.carStatusId == null || data.carStatusId == undefined)){
+        return {error: "Must include something to update"}
+    }
+    var car = await pg.getCar(data.carId);
+    if(data.stationId != null || data.stationId!=undefined){
+        if(!Number.isInteger(data.carId)){
+            return {error: "stationId must be a number"};
+        }
+        const station = await pg.getStation(data.stationId);
+        if(station == undefined){
+            return {error: "Station with that ID doesn't exist"}
+        }
+    }
+    if(data.carStatusId != null || data.carStatusId!=undefined){
+        if(!Number.isInteger(data.carStatusId)){
+            return {error: "stationId must be a number"};
+        }
+    }
+    var car = await pg.getCar(data.carId);
+    //console.log(car);
+    let updateObj = data
+    if(car == undefined){
+        return {error: "Car with that ID does not exist"}
+    }
 
+    if(updateObj.stationId == null || updateObj.stationId==undefined){
+        updateObj.stationId = car.stationid
+    }
+    if(updateObj.carStatusId == null || updateObj.carStatusId==undefined){
+        updateObj.carStatusId = car.statusid
+    }
+    var result = await pg.editCar(updateObj);
+    if(result == 1){
+        return {success: "Updated Car"}
+    }
+    return {error: "Failed to update car"}
 }
 
 async function getWorkOrders(auth){
@@ -349,7 +393,7 @@ module.exports = {
     getCarDetails,
     addCar,
     removeCar,
-    updateCarStatus,
+    updateCar,
     getWorkOrders,
     addWorkOrder
 }

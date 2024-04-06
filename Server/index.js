@@ -584,11 +584,12 @@ router.delete("/removeCar", async (req,res)=>{
   res.json(returnData);
 });
 
-router.put("/updateCarStatus", async (req,res)=>{
+
+router.put("/updateCar", async (req,res)=>{
   const token = req.headers['auth-token'];
   var userAuth = await decodeToken(token);
   const inputData = req.body;
-  const returnData = await bl.updateCarStatus(userAuth, inputData);
+  const returnData = await bl.updateCar(userAuth, inputData);
   res.json(returnData);
 });
 
