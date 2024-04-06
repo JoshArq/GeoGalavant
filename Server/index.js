@@ -597,7 +597,7 @@ router.put("/updateCar", async (req,res)=>{
 router.get("/getWorkOrders", async (req,res)=>{
   const token = req.headers['auth-token'];
   var userAuth = await decodeToken(token);
-  const returnData = await bl.getAllCars(userAuth);
+  const returnData = await bl.getWorkOrders(userAuth);
   res.json(returnData);
 });
 
