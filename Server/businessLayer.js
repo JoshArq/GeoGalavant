@@ -278,7 +278,30 @@ async function getCarDetails(auth, data){
 }
 
 async function addCar(auth,data){
-
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.stationId == null || data.stationId == undefined){
+        return {error: "stationId must be present"}
+    }
+    if(!Number.isInteger(data.stationId)){
+        return {error: "stationId must be a number"};
+    }
+    if(data.carStatusId == null || data.carStatusId == undefined){
+        return {error: "carStatusId must be present"}
+    }
+    if(!Number.isInteger(data.carStatusId)){
+        return {error: "carStatusId must be a number"};
+    }
+    let station = await pg.getStation(data.stationId);
+    if(station == undefined){
+        return {error: "Station does not exist"};
+    }
+    let carId = await pg.addCar(data);
+    if(carId == -1){
+        return {error: "Failed to add car"}
+    }
+    return {carId: carId}
 }
 
 async function removeCar(auth,data){
