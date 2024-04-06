@@ -547,6 +547,69 @@ router.post("/markMessageResolved", async (req, res) => {
 });
 
 
+//MECHANICS ENDPOINTS
+
+//getAllCars
+router.get("/getAllCars", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const returnData = await bl.getAllCars(userAuth);
+  res.json(returnData);
+});
+
+//getCarDetails
+router.post("/getCarDetails", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.getCarDetails(userAuth, inputData);
+  res.json(returnData);
+});
+
+//addCar
+router.post("/addCar", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.addCar(userAuth, inputData);
+  res.json(returnData);
+});
+
+//removeCar
+router.delete("/removeCar", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.removeCar(userAuth, inputData);
+  res.json(returnData);
+});
+
+router.put("/updateCarStatus", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.updateCarStatus(userAuth, inputData);
+  res.json(returnData);
+});
+
+//getWorkOrders
+router.get("/getWorkOrders", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const returnData = await bl.getAllCars(userAuth);
+  res.json(returnData);
+});
+
+
+//addWorkOrder
+router.post("/addWorkOrder", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.addWorkOrder(userAuth, inputData);
+  res.json(returnData);
+});
+
 
 //UTILITY FUNCTIONS
 

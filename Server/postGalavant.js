@@ -489,7 +489,7 @@ async function getCarsByStatus(statusId){
 
 async function getAllCars(){
   var query = {
-    text: "SELECT * FROM Car",
+    text: "SELECT Car.CarID, CarStatus.Name AS status, Station.StationName FROM Car JOIN Station ON Car.StationID = Station.StationID JOIN CarStatus ON Car.CarStatusID = CarStatus.StatusID",
   };
   try{
     return (await pool.query(query)).rows;
@@ -502,11 +502,11 @@ async function getAllCars(){
 
 async function getCar(carId){
   var query = {
-    text: "SELECT * FROM Car WHERE CarId = $1",
+    text: "SELECT Car.CarID, CarStatus.StatusID, CarStatus.name AS statusname, Station.StationID, Station.StationName, Station.IsClosed AS stationclosed, Station.Address AS stationaddress FROM Car JOIN Station ON Car.StationID = Station.StationID JOIN CarStatus ON Car.CarStatusID = CarStatus.StatusID WHERE CarID = $1",
     values: [carId]
   };
   try{
-    return (await pool.query(query)).rows;
+    return (await pool.query(query)).rows[0];
   }
   catch(err){
     console.log(err);

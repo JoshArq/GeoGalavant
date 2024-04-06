@@ -246,6 +246,57 @@ async function addStatus(userAuth, inputData){
     return {statusId: statusId};
 }
 
+async function getAllCars(auth){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    let cars = await pg.getAllCars();
+    if(cars == -1){
+        return {error: "Failed to retrieve cars"};
+    }
+    return cars;
+}
+
+async function getCarDetails(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must be present"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    let car = await pg.getCar(data.carId);
+    if(car == undefined){
+        return {error: "Car with that ID does not exist"}
+    }
+    if(car == -1){
+        return {error: "Failed to get car"}
+    }
+    return car;
+}
+
+async function addCar(auth,data){
+
+}
+
+async function removeCar(auth,data){
+
+}
+
+async function updateCarStatus(auth,data){
+
+}
+
+async function getWorkOrders(auth){
+
+}
+
+async function addWorkOrder(auth,data){
+
+}
+
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
@@ -253,5 +304,12 @@ module.exports = {
     addStatus,
     getMessages,
     markMessageResolved,
-    addMessage
+    addMessage,
+    getAllCars,
+    getCarDetails,
+    addCar,
+    removeCar,
+    updateCarStatus,
+    getWorkOrders,
+    addWorkOrder
 }
