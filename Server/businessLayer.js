@@ -305,7 +305,24 @@ async function addCar(auth,data){
 }
 
 async function removeCar(auth,data){
-
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must be present"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    let car = await pg.getCar(data.carId);
+    if(car == undefined){
+        return {error: "Car with that ID does not exist"}
+    }
+    let rowCount = await pg.removeCar(data.carId);
+    if(rowCount == 1){
+        return {success: "removed car"}
+    }
+    return {error: "Failed to delete car"}
 }
 
 async function updateCarStatus(auth,data){
