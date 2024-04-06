@@ -27,7 +27,6 @@ export default function Messages({token}) {
                 }
                 else {
                     setMessages(data)
-                    console.log(data)
                 }
           }).catch(error => {
             setIsValid(false);
@@ -36,11 +35,16 @@ export default function Messages({token}) {
     }, [])
 
     function makeTimestamp(date) {
+        let mins = date.getMinutes();
+        if (mins < 10) {
+            mins = "0" + mins;
+        }
+
         return date.getMonth() 
                 + "/" + date.getDate() + "/" 
                 + date.getFullYear() + " at " 
                 + date.getHours() 
-                + ":" + date.getMinutes()
+                + ":" + mins
     }
 
     return (

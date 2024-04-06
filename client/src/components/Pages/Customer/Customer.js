@@ -34,13 +34,6 @@ function ChangeStatusModal(props) {
             return
         }
 
-        console.log({
-            reason: form.reason.value,
-            userId: props.userid,
-            newStatusId: parseInt(form.status.value),
-            userStatusId: props.statusid
-        })
-
         // Send new status
         fetch("/api/changeStatus", {
             method: 'POST',
@@ -51,8 +44,7 @@ function ChangeStatusModal(props) {
             body: JSON.stringify({
                 reason: form.reason.value,
                 userId: props.userid,
-                newStatusId: parseInt(form.status.value),
-                userStatusId: props.statusid
+                statusId: parseInt(form.status.value),
             }),
         })
         .then((res) => res.json())
@@ -150,7 +142,7 @@ export default function Customer({token}) {
             setIsValid(false);
             console.log(error);
           });
-    }, [])
+    }, [modalShow])
 
     return (
         <main>

@@ -1,6 +1,10 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
-import { Link, useLocation } from 'react-router-dom';
+import { 
+    Link,
+    useNavigate,
+    useLocation
+  } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Badge from '../../Badges/Badge.js';
 import Button from 'react-bootstrap/Button';
@@ -12,6 +16,7 @@ export default function Message({token}) {
     const location = useLocation()
     const { ticket, timestamp } = location.state
     const [isValid, setIsValid] = useState(true);
+    let navigate = useNavigate();
 
     function markResolved(id) {
         // Send req
@@ -29,6 +34,7 @@ export default function Message({token}) {
         .then((data) => {
             if (data.success) {
                 setIsValid(true)
+                navigate("/messages");
             }
             else {
                 console.log(data.error)
