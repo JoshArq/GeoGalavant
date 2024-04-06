@@ -412,12 +412,6 @@ router.post("/makeReservation", (req, res) => {
 });
 
 
-
-
-
-
-
-
 //TODO - connect to DB
 router.get("/getUserReservations", (req, res) => {
   //insert DB logic here
