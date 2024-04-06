@@ -389,7 +389,16 @@ router.
 });
 
 
+//addLocation
+router.post("/addLocation", async (req,res)=>{
+  const token = req.headers['auth-token']
+  const inputData = req.body;
 
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.addStation(userAuth, inputData);
+  res.json(returnData);
+});
 
 
 //TODO - connect to DB
@@ -547,6 +556,12 @@ router.post("/markMessageResolved", async (req, res) => {
 });
 
 
+//Business Admin Endpoints
+
+//getAllEmployees
+//employeeDetails
+//changeEmployeeStatus
+//addEmployee
 
 //UTILITY FUNCTIONS
 

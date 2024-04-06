@@ -246,6 +246,55 @@ async function addStatus(userAuth, inputData){
     return {statusId: statusId};
 }
 
+async function addStation(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    //check if latitude exists in proper format
+    if(data.longitude == null || data.longitude == undefined){
+        return {error: "longitude must exist"}
+    }
+    if(Number.isNaN(Number.parseFloat(data.longitude))){
+        return {error: "longitude must be a number"}
+    }
+
+    //check if longitude exists in proper format
+    if(data.latitude == null || data.latitude == undefined){
+        return {error: "latitude must exist"}
+    }
+    if(Number.isNaN(Number.parseFloat(data.latitude))){
+        return {error: "latitude must be a number"}
+    }
+
+    //check if name exists
+    if(data.stationName == null || data.stationName == undefined){
+        return {error: "stationName must exist"}
+    }
+    
+    //check if address exists
+    if(data.address == null || data.address == undefined){
+        return {error: "address must exist"}
+    }
+
+    //check if isClosed exists and is boolean
+    if(data.isClosed == null || data.isClosed == undefined){
+        return {error: "isClosed must exist"}
+    }
+    if(data.isClosed!="true" && data.isClosed!="false"){
+        return {error: "hasDamage must be true or false"}
+    }
+
+    //insert
+    const stationId = await pg.addStation(data);
+
+    if(stationId == undefined || stationId == -1){
+        return {error: "Failed to add station"}
+    }
+
+    //return stationid
+    return {stationId: stationId}
+}
+
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
@@ -253,5 +302,6 @@ module.exports = {
     addStatus,
     getMessages,
     markMessageResolved,
-    addMessage
+    addMessage,
+    addStation
 }
