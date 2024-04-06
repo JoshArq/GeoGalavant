@@ -145,9 +145,11 @@ CREATE TABLE Station(
 );
 
 -- Populates Station table with some sample data --
-INSERT INTO Station (StationName, Address, MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, IsClosed) VALUES ('RIT', '1 Lomb Memorial Dr, Rochester, NY 14623', 43.0813185, 43.081585, -77.677650, -77.678876, FALSE),
-('Bryan Street', '9 Bryan St, Rochester, NY 14613', 43.184155, 43.184313, -77.637184, -77.637841,  FALSE),
-('Clinton', '291 Upper Falls Blvd, Rochester, NY 14605', 43.169961, 43.170105, -77.610052, -77.610736, FALSE);
+INSERT INTO Station (StationName, Address, MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, IsClosed) VALUES ('GyroGoGo Northwest', 'The Mall at Greece Ridge, Somerworth Dr, Rochester, NY', 43.20663, 43.20663, -77.68602, -77.68602, FALSE),
+('GyroGoGo Northeast', 'Town Center of Webster, Webster, NY', 43.21223, 43.21223, -77.45218, -77.45218,  FALSE),
+('GyroGoGo Center City', 'Genesee Crossroads Garage, 69 Andrews St, Rochester, NY', 43.15752, 43.15752, -77.61197, -77.61197, FALSE),
+('GyroGoGo Southeast','Perinton Square Mall, Fairport, NY', 43.06997, 43.06997, -77.44159, -77.44159, FALSE),
+('GyroGoGo Airport','Paul Rd at Scottsville Rd, Rochester, NY', 43.10884, 43.10884, -77.67537, -77.67537, FALSE);
 
 -- Generate CarStatus table --
 CREATE TABLE CarStatus(
