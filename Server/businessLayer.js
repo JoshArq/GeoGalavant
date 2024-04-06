@@ -4,7 +4,7 @@ var nodemailer = require('nodemailer');
 const emailUser = process.env.EMAIL_USER
 const emailPass = process.env.EMAIL_PASSWORD
 
-console.log(emailUser, emailPass)
+// console.log(emailUser, emailPass)
 
 var transporter = nodemailer.createTransport({
   host: "smtp.zoho.com",
@@ -120,8 +120,6 @@ async function addPaymentMethod(custID, cardInfo){
 //AccountCreation
 async function emailCustomer (email, content){
     var mailOptions
-
-
 
         mailOptions = {
             from: 'geogalavant@gmail.com',
@@ -356,6 +354,98 @@ async function addStatus(userAuth, inputData){
     return {statusId: statusId};
 }
 
+
+//TODO finish DB logic
+async function getAvailableLocations(t1, t2){
+    var pickup = new Date(t1)
+    var dropoff = new Date(t2)
+    var today = new Date()
+
+    var locations = []
+
+    //if reservation for today
+    if(pickup.getDate() === today.getDate() &&
+    pickup.getMonth() === today.getMonth() &&
+    pickup.getYear() === today.getYear()) {
+
+        //get available stations today
+        var stations = await pg.getAllStations()
+
+        for(i = 0; i < stations.length; i++){
+            let available = false;
+
+            if(!stations[i].isclosed){
+                cars = await pg.getStationCars(stations[i].stationid)
+
+                
+
+                for(j = 0; j < cars.length; j++){
+                    
+                    if(cars[j].carstatusid == 1){
+                        available = true;
+                        break;
+                    }
+                }
+
+                if(available){
+                    var thisStn = {};
+
+                    thisStn.stationID = stations[i].stationid
+                    thisStn.name = stations[i].stationname
+                    thisStn.address = stations[i].address
+                    thisStn.latitude = parseFloat(stations[i].minlatitude)
+                    thisStn.longitude = parseFloat(stations[i].minlongitude)
+
+                    locations.push(thisStn)
+                  
+
+                }
+            }
+        }
+
+        
+        //need to check if no overlap with future day reservation
+        //most efficient way?
+
+    } else {
+
+        //check for overlap w/ fleet on every day
+        //return all stations
+
+    }
+
+    //SELECT * FROM table WHERE date1 BETWEEN date2 AND date3
+
+    //each car has a station (for "today")
+    //each station has x cars
+
+    //if i reserve today the station must have car already assigned to it
+    // & must have enough cars over the next few days
+
+    //if i reserve a car in the future it may be from any station, so long as the total fleet has enough cars to accomodate that day
+
+    return locations
+}
+
+
+async function makeReservation(){
+    //need to generate specific # code
+
+    //customerID
+    //assign car ID if today
+        //assign car day before/day of if future - TODO?
+    //scheduledPickupTime
+    //scheduledDropoffTime
+    //PickupStationID
+    //DropoffStationID
+    //Rate
+    //Fees
+    //confirmation number diff from rental ID?
+    // cardID make nullable?
+}
+
+
+
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
@@ -368,5 +458,7 @@ module.exports = {
     deleteStripeCustomer,
     addPaymentMethod,
     emailCustomer,
-    setupNewCustomerCard
+    setupNewCustomerCard,
+    getAvailableLocations,
+    makeReservation
 }

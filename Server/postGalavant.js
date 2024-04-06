@@ -723,6 +723,21 @@ async function getCustomerDetails(id){
   }
 }
 
+
+async function canFleetAccomodateDays(d1, d2){
+  var query = {
+    text: "SELECT * FROM Rental WHERE ScheduledPickupTime BETWEEN $1 AND $2",
+    values: [d1, d2]
+  }
+  try{
+    return (await pool.query(query)).rows[0];
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 module.exports = {
   pulseCheck, 
   addUser, 
@@ -770,5 +785,6 @@ module.exports = {
   getAllTickets,
   getTicket,
   getAllCustomers,
-  getCustomerDetails
+  getCustomerDetails,
+  canFleetAccomodateDays
 }

@@ -385,34 +385,18 @@ router.get("/getLocations", async (req, res) => {
   })
   
   res.json({locations: locations})
-  
-  // res.json({
-  //   locations:[
-  //     {
-  //       stationID: 1,
-  //       name: "GyroGoGo Northwest", 
-  //       address: "The mall at Greece Ridge...",
-  //       latitude: 43.20,
-  //       longitude: -77.69
-  //     },
-  //     {
-  //       stationID: 2,
-  //       name: "GyroGoGo Northeast", 
-  //       address: "Town Center of Webster...",
-  //       latitude: 43.21,
-  //       longitude: -77.46
-  //     },
-  //     {
-  //       stationID: 3,
-  //       name: "GyroGoGo Center City", 
-  //       address: "Genesee Crossroads Garage...",
-  //       latitude: 43.16,
-  //       longitude: -77.61
-  //     }
-  //   ]
-  // });
+
 });
 
+
+router.post("/getAvailableLocations", (req, res) => {
+  pickupDateTime = req.body.pickupDateTime
+  dropoffDateTime = req.body.dropoffDateTime
+  
+  bl.getAvailableLocations(pickupDateTime, dropoffDateTime)
+
+
+})
 
 
 
@@ -420,6 +404,8 @@ router.get("/getLocations", async (req, res) => {
 //TODO - connect to DB
 router.post("/makeReservation", (req, res) => {
   //insert DB logic here
+
+  
 
   res.json({
     success: true, 
