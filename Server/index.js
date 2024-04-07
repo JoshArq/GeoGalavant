@@ -699,8 +699,8 @@ async function generateToken(id, ip = "127.0.0.1"){
 // fix IP decoding
 // add role encryption?
 async function decodeToken(token){
-  var data = {validToken: false}
-
+  let data = {validToken: false}
+  
   try{
     var checksum = token.substring(0, 60)
     var interleavedToken = token.substring(60, token.length)
@@ -751,6 +751,7 @@ async function decodeToken(token){
       },
       function(error) {}
     );
+    return data
   }
   catch(ex){
     return data
