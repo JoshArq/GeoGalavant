@@ -829,7 +829,46 @@ async function addReservation(userID, data){
    
     //assign car ID if today
         //assign car day before/day of if future - TODO?
- 
+}
+
+
+async function getCustomerReservations(userID){
+    var result = []
+    
+    custID = (await pg.getCustomerByUserId(userID)).customerid
+
+    reservations = await pg.getCustomerReservations(custID)
+
+    for(i = 0; i < reservations.length; i++){
+        var thisRes ={}
+
+        thisRes.reservationNumber = reservations[i].rentalid
+        thisRes.pickupDateTime = reservations[i].scheduledpickuptime
+        thisRes.dropoffDateTime = reservations[i].scheduleddropofftime
+
+        var pickupStn = await pg.getStation(reservations[i].pickupstationid)
+
+        thisRes.pickupStationName = pickupStn.stationname
+        thisRes.pickupStationAddress = pickupStn.address
+
+        var dropoffStn = await pg.getStation(reservations[i].dropoffstationid)
+
+        thisRes.dropoffStationName = dropoffStn.stationname
+        thisRes.dropoffStationAddress = dropoffStn.address
+
+        result.push(thisRes)
+
+    }
+
+    return result
+
+
+// pickupStationName: String,
+// pickupStationAddress: String,
+// dropoffStationName: String,
+// dropoffStationAddress: String,
+
+
 }
 
 
@@ -861,5 +900,6 @@ module.exports = {
     emailCustomer,
     setupNewCustomerCard,
     getAvailableLocations,
-    addReservation
+    addReservation,
+    getCustomerReservations
 }

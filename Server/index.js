@@ -420,60 +420,54 @@ router.post("/addLocation", async (req,res)=>{
 
 //TODO - connect to DB
 router.post("/addReservation", async (req, res) => {
+  const token = req.headers['auth-token']
+
   var userAuth = await decodeToken(token)
 
   //validate user
   if(userAuth.validToken){
-    bl.addReservation(userAuth.id, req.body)
+    var conf = bl.addReservation(userAuth.id, req.body)
+
+    res.json({
+      success: true, 
+      confirmationNumber: conf
+    })
 
   } else {
-    //return error message
+    res.json({
+      success: false, 
+      errorMessage: "User could not be validated"
+    })
   }
   
 
-  res.json({
-    success: true, 
-    reservationNumber: 1111
-  })
+  
 });
 
 
-//TODO - connect to DB
-router.get("/getUserReservations", (req, res) => {
-  //insert DB logic here
+router.get("/getUserReservations", async (req, res) => {
+  const token = req.headers['auth-token']
 
-  res.json({
-    reservations: [
-      {
-        reservationNumber: 1111,
-        pickupStationName: "GyroGoGo Northwest",
-        pickupStationAddress: "The mall at Greece Ridge...",
-        dropoffStationName: "GyroGoGo Center City",
-        dropoffStationAddress: "Genesee Crossroads Garage...",
-        pickupDateTime: "2012-04-23T18:25:43.511Z",
-        dropoffDateTime: "2012-04-23T18:25:43.511Z"
-      },
-      {
-        reservationNumber: 2222,
-        pickupStationName: "GyroGoGo Northwest",
-        pickupStationAddress: "The mall at Greece Ridge...",
-        dropoffStationName: "GyroGoGo Center City",
-        dropoffStationAddress: "Genesee Crossroads Garage...",
-        pickupDateTime: "2012-04-23T18:25:43.511Z",
-        dropoffDateTime: "2012-04-23T18:25:43.511Z"
-      },
-      {
-        reservationNumber: 3333,
-        pickupStationName: "GyroGoGo Northwest",
-        pickupStationAddress: "The mall at Greece Ridge...",
-        dropoffStationName: "GyroGoGo Center City",
-        dropoffStationAddress: "Genesee Crossroads Garage...",
-        pickupDateTime: "2012-04-23T18:25:43.511Z",
-        dropoffDateTime: "2012-04-23T18:25:43.511Z"
-      }   
-    ]
+
+  var userAuth = await decodeToken(token)
+
+  //validate user
+  if(userAuth.validToken){
+    var reservations = await bl.getCustomerReservations(userAuth.id)
+
+    res.json({
+      reservations: reservations
+    })
     
-  })
+  } else {
+    res.json({
+      success: false, 
+      errorMessage: "User could not be validated"
+    })
+  }
+
+
+  
 });
 
 

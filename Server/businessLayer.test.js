@@ -14,7 +14,9 @@ async function main(){
     reserveInfo.dropoffStation = 2;
     reserveInfo.dropoffDateTime = new Date(2024, 3, 7, 20, 30, 0);
 
-    console.log(await bl.addReservation(6, reserveInfo))
+    // console.log(await bl.addReservation(6, reserveInfo))
+
+    console.log(await bl.getCustomerReservations(6))
 }
 
 main()
