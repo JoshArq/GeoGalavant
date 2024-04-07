@@ -749,6 +749,19 @@ async function addMaintenance(obj){
   }
 }
 
+async function getAllEmployees(){
+  var query = {
+    text: "SELECT Employee.EmpID, Employee.Status, Users.FirstName, Users.LastName, FIRST_VALUE(Roles.Title) OVER w FROM Employee JOIN Users ON Users.UserID = Employee.EmpID JOIN User_Role ON Users.UserID = User_Role.UserID JOIN Roles ON User_Role.RoleID = Roles.RoleID WINDOW w AS (PARTITION BY EmpID ORDER BY Roles.RoleID DESC)"
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 
 module.exports = {
   pulseCheck, 
@@ -799,5 +812,6 @@ module.exports = {
   getAllCustomers,
   getCustomerDetails,
   getMaintenance,
-  addMaintenance
+  addMaintenance,
+  getAllEmployees
 }

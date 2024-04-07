@@ -262,16 +262,6 @@ INSERT INTO Roles (RoleID, Title) VALUES (1, 'System Administrator'),
 	(6, 'Customer'),
 	(7, 'User');
 
-CREATE TYPE EmployeeStatus AS ENUM ('Active','Suspended','Terminated');
-
-CREATE TABLE Employee(
-	EmpID INT NOT NULL,
-	Status EmployeeStatus,
-	FOREIGN KEY (EmpID)
-		REFERENCES Users (UserID)
-);
-
-
 -- Generate Permissions table --
 CREATE TABLE Permissions(
 	PermissionID INT PRIMARY KEY,
@@ -357,7 +347,6 @@ INSERT INTO Role_Permission (RoleID, PermissionID) VALUES (1,1),
 	(1,9),
 	(1,12);
 
-
 -- Creates view with a user's permissions
 CREATE VIEW User_Permissions AS SELECT u.UserID AS id,
 		u.Username as Name,
@@ -379,6 +368,21 @@ PREPARE User_Perms (TEXT) AS
 	FROM User_Permissions
 	WHERE Name = $1
 	GROUP BY Description;
+
+CREATE TYPE EmployeeStatus AS ENUM ('Active','Suspended','Terminated');
+
+CREATE TABLE Employee(
+	EmpID INT NOT NULL,
+	Status EmployeeStatus,
+	FOREIGN KEY (EmpID)
+		REFERENCES Users (UserID)
+);
+
+INSERT INTO Employee (EmpID, Status) VALUES (1,'Active'),
+(2,'Active'),
+(3,'Active'),
+(4,'Active'),
+(5,'Active');
 
 -- Generate Customer table --
 CREATE TABLE Customer(

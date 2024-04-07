@@ -477,6 +477,35 @@ async function addStation(auth,data){
     return {stationId: stationId}
 }
 
+async function addEmployee(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+}
+
+async function getAllEmployees(auth){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    const employees = await pg.getAllEmployees();
+    if(employees == -1){
+        return {error: "Failed to get employees"}
+    }
+    return employees;
+}
+
+async function changeEmployeeStatus(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+}
+
+async function getEmployeeDetails(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+}
+
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
@@ -492,5 +521,9 @@ module.exports = {
     updateCar,
     getWorkOrders,
     addWorkOrder,
-    addStation
+    addStation,
+    addEmployee,
+    getAllEmployees,
+    changeEmployeeStatus,
+    getEmployeeDetails
 }
