@@ -403,7 +403,7 @@ async function getAvailableLocations(t1, t2){
             }
         }
 
-        
+
         //need to check if no overlap with future day reservation
         //most efficient way?
 
@@ -428,20 +428,27 @@ async function getAvailableLocations(t1, t2){
 }
 
 
-async function makeReservation(){
-    //need to generate specific # code
+async function addReservation(userID, data){
+    custID = (await pg.getCustomerByUserId(userID)).customerid
 
-    //customerID
+    data.customerId = custID;
+    
+    var conf = "" + (Math.floor(Math.random() * 10000));
+    while(conf.length < 4){
+        conf = "0" + conf
+    }
+
+    data.confirmationNumber = conf
+
+    pg.addReservation(data)
+
+
+    return data.confirmationNumber
+   
+   
     //assign car ID if today
         //assign car day before/day of if future - TODO?
-    //scheduledPickupTime
-    //scheduledDropoffTime
-    //PickupStationID
-    //DropoffStationID
-    //Rate
-    //Fees
-    //confirmation number diff from rental ID?
-    // cardID make nullable?
+ 
 }
 
 
@@ -460,5 +467,5 @@ module.exports = {
     emailCustomer,
     setupNewCustomerCard,
     getAvailableLocations,
-    makeReservation
+    addReservation
 }

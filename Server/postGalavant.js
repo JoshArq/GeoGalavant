@@ -353,8 +353,8 @@ async function getReservation(rentalId){
 
 async function addReservation(obj){
   var query ={
-    text: "INSERT INTO Rental (CustomerID, PickupStationID, ConfirmationNumber, DropoffStationID, ScheduledPickupTime, ScheduledDropoffTime, Rate, Fees, CardID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING RentalID",
-    values: [obj.customerId, obj.pickupStationId, obj.confirmationNumber, obj.dropoffStationId, obj.scheduledPickupTime, obj.scheduledDropoffTime, obj.rate, obj.fees, obj.cardId]
+    text: "INSERT INTO Rental (CustomerID, PickupStationID, ConfirmationNumber, DropoffStationID, ScheduledPickupTime, ScheduledDropoffTime, FeeID)VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING RentalID",
+    values: [obj.customerId, obj.pickupStation, obj.confirmationNumber, obj.dropoffStation, obj.pickupDateTime, obj.dropoffDateTime, 1]
   };
   try{
     return (await pool.query(query)).rows[0].rentalid;

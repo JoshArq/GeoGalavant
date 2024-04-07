@@ -172,11 +172,14 @@ async function main(){
         }
     }
     
+   
+
+
     // userID = await pg.createUser(custObj);
     // await pg.addUserRole(userID, 2)
     var d1 = new Date()
     var d2 = new Date("09/04/2024")
-    console.log(await pg.canFleetAccomodateDays(d1, d2))
+    // console.log(await pg.canFleetAccomodateDays(d1, d2))
 
 
 }

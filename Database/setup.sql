@@ -449,10 +449,10 @@ CREATE TABLE Rental(
 	DropoffStationID INT NOT NULL,
 	ScheduledDropoffTime TIMESTAMPTZ,
 	DropoffTime TIMESTAMPTZ,
-	Rate DECIMAL,
-	Fees DECIMAL,
+	FeeID INT NOT NULL,
+	TotalFees DECIMAL,
 	ConfirmationNumber VARCHAR(10) NOT NULL,
-	CardID INT NOT NULL,
+	CardID INT,
 	FOREIGN KEY (CustomerID)
 		REFERENCES Customer (CustomerID),
 	FOREIGN KEY (CarID)

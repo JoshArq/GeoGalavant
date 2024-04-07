@@ -402,9 +402,16 @@ router.post("/getAvailableLocations", (req, res) => {
 
 
 //TODO - connect to DB
-router.post("/makeReservation", (req, res) => {
-  //insert DB logic here
+router.post("/addReservation", async (req, res) => {
+  var userAuth = await decodeToken(token)
 
+  //validate user
+  if(userAuth.validToken){
+    bl.addReservation(userAuth.id, req.body)
+
+  } else {
+    //return error message
+  }
   
 
   res.json({
