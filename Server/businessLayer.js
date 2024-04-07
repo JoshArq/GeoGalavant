@@ -615,6 +615,18 @@ async function getEmployeeDetails(auth,data){
     return emp;
 }
 
+async function getStateProvince(auth){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    const sp = await pg.getStateProvince();
+    console.log(sp);
+    if(sp != -1){
+        return sp;
+    }
+    return{error: "failed to get states and provinces"}
+}
+
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
@@ -634,5 +646,6 @@ module.exports = {
     addEmployee,
     getAllEmployees,
     changeEmployeeStatus,
-    getEmployeeDetails
+    getEmployeeDetails,
+    getStateProvince
 }

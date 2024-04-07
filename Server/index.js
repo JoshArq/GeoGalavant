@@ -36,6 +36,14 @@ router.get("/testToken", async (req, res) => {
 });
 
 
+router.get("/getStateProvince", async (req,res)=>{
+  const token = req.headers['auth-token']
+
+  var userAuth = await decodeToken(token)
+  const returnData = await bl.getStateProvince(userAuth);
+  res.json(returnData);
+});
+
 //TODO needs address fix after GR#2
 router.post("/createCustomer", async (req, res) => {
   var custID = await pg.addUser(req.body)

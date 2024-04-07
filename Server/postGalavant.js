@@ -806,6 +806,20 @@ async function addEmployee(status, empId){
   }
 }
 
+async function getStateProvince(){
+  var query = {
+    text: "SELECT * FROM StateProvince"  
+  }
+  try{
+    const returnVal = await pool.query(query);
+    return returnVal.rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 
 module.exports = {
   pulseCheck, 
@@ -860,5 +874,6 @@ module.exports = {
   getAllEmployees,
   getEmployee,
   updateEmployeeStatus,
-  addEmployee
+  addEmployee,
+  getStateProvince
 }
