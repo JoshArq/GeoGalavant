@@ -504,6 +504,17 @@ async function getEmployeeDetails(auth,data){
     if(!auth.validToken){
         return {error: "invalid authorization"}
     }
+    if(data.empId == null || data.empId == undefined){
+        return {error: "empId must be present"}
+    }
+    if(!Number.isInteger(data.empId)){
+        return {error: "empId must be a number"};
+    }
+    const emp = await pg.getEmployee(data);
+    if(emp == -1 || emp == undefined){
+        return {error: "failed to get employee"};
+    }
+    return emp;
 }
 
 module.exports = {

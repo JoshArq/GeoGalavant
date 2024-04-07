@@ -761,6 +761,20 @@ async function getAllEmployees(){
     return -1;
   }
 }
+async function getEmployee(obj){
+  var query = {
+    text: "SELECT Employee.EmpID, Employee.Status, Users.FirstName, Users.LastName, Roles.Title FROM Employee JOIN Users ON Users.UserID = Employee.EmpID JOIN User_Role ON Users.UserID = User_Role.UserID JOIN Roles ON User_Role.RoleID = Roles.RoleID WHERE Employee.EmpID = $1",
+    values: [obj.empId]
+  }
+  try{
+    const returnVal = await pool.query(query);
+    return returnVal.rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
 
 
 module.exports = {
@@ -813,5 +827,6 @@ module.exports = {
   getCustomerDetails,
   getMaintenance,
   addMaintenance,
-  getAllEmployees
+  getAllEmployees,
+  getEmployee
 }
