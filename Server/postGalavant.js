@@ -322,6 +322,20 @@ async function getStation(id){
   }
 }
 
+async function addStation(obj){
+  var query = {
+    text: "INSERT INTO Station (MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, StationName, Address, IsClosed) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING StationID",
+    values: [obj.latitude, obj.latitude, obj.longitude, obj.longitude, obj.stationName, obj.address, obj.isClosed]
+  }
+  try{
+    return (await pool.query(query)).rows[0].stationid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 
 async function getCustomerReservations(customerId){
   var query ={
@@ -493,7 +507,7 @@ async function getCarsByStatus(statusId){
 
 async function getAllCars(){
   var query = {
-    text: "SELECT * FROM Car",
+    text: "SELECT Car.CarID, CarStatus.Name AS status, Station.StationName FROM Car JOIN Station ON Car.StationID = Station.StationID JOIN CarStatus ON Car.CarStatusID = CarStatus.StatusID",
   };
   try{
     return (await pool.query(query)).rows;
@@ -506,11 +520,11 @@ async function getAllCars(){
 
 async function getCar(carId){
   var query = {
-    text: "SELECT * FROM Car WHERE CarId = $1",
+    text: "SELECT Car.CarID, CarStatus.StatusID, CarStatus.name AS statusname, Station.StationID, Station.StationName, Station.IsClosed AS stationclosed, Station.Address AS stationaddress FROM Car JOIN Station ON Car.StationID = Station.StationID JOIN CarStatus ON Car.CarStatusID = CarStatus.StatusID WHERE CarID = $1",
     values: [carId]
   };
   try{
-    return (await pool.query(query)).rows;
+    return (await pool.query(query)).rows[0];
   }
   catch(err){
     console.log(err);
@@ -723,6 +737,105 @@ async function getCustomerDetails(id){
   }
 }
 
+async function getMaintenance(){
+  var query = {
+    text: "SELECT * FROM Maintenance"
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addMaintenance(obj){
+  var query = {
+    text: "INSERT INTO Maintenance (MaintenanceStart, HasDamage, ServicePerformed, MaintenanceLocation, Mechanic, Car) VALUES ($1,$2,$3,$4,$5,$6) RETURNING MaintenanceID",
+    values: [obj.maintenanceStart, obj.hasDamage, obj.servicePerformed, obj.stationId, obj.mechanic, obj.carId]
+  }
+  try{
+    return (await pool.query(query)).rows[0].maintenanceid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getAllEmployees(){
+  var query = {
+    text: "SELECT Employee.EmpID, Employee.Status, Users.FirstName, Users.LastName, FIRST_VALUE(Roles.Title) OVER w AS title FROM Employee JOIN Users ON Users.UserID = Employee.EmpID JOIN User_Role ON Users.UserID = User_Role.UserID JOIN Roles ON User_Role.RoleID = Roles.RoleID WINDOW w AS (PARTITION BY EmpID ORDER BY Roles.RoleID DESC)"
+  }
+  try{
+    return (await pool.query(query)).rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+async function getEmployee(obj){
+  var query = {
+    text: "SELECT Employee.EmpID, Employee.Status, Users.FirstName, Users.LastName, Roles.Title, Roles.RoleID FROM Employee JOIN Users ON Users.UserID = Employee.EmpID JOIN User_Role ON Users.UserID = User_Role.UserID JOIN Roles ON User_Role.RoleID = Roles.RoleID WHERE Employee.EmpID = $1",
+    values: [obj.empId]
+  }
+  try{
+    const returnVal = await pool.query(query);
+    return returnVal.rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function updateEmployeeStatus(obj){
+  var query = {
+    text: "UPDATE Employee SET Status = $1 WHERE EmpID = $2",
+    values: [obj.status, obj.empId]
+  }
+  try{
+    const returnVal = await pool.query(query);
+    return returnVal.rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function addEmployee(status, empId){
+  var query = {
+    text: "INSERT INTO Employee (EmpID, Status) Values ($1,$2)",
+    values: [empId, status]
+  }
+  try{
+    const returnVal = await pool.query(query);
+    return returnVal.rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getStateProvince(){
+  var query = {
+    text: "SELECT * FROM StateProvince"  
+  }
+  try{
+    const returnVal = await pool.query(query);
+    return returnVal.rows;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+
 
 async function canFleetAccomodateDays(d1, d2){
   var query = {
@@ -756,7 +869,8 @@ module.exports = {
   getCustomerByUserId, 
   updateCustomer, 
   getAllStations, 
-  getStation, 
+  getStation,
+  addStation,
   getCustomerReservations, 
   getReservation, 
   updateReservation, 
@@ -786,5 +900,12 @@ module.exports = {
   getTicket,
   getAllCustomers,
   getCustomerDetails,
-  canFleetAccomodateDays
+  canFleetAccomodateDays,
+  getMaintenance,
+  addMaintenance,
+  getAllEmployees,
+  getEmployee,
+  updateEmployeeStatus,
+  addEmployee,
+  getStateProvince
 }

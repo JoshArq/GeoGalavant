@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS TicketStatus;
 DROP TABLE IF EXISTS Rental;
 DROP TABLE IF EXISTS Card;
 DROP TABLE IF EXISTS Application;
+DROP TABLE IF EXISTS Employee;
 DROP TABLE IF EXISTS Customer;
 DROP TABLE IF EXISTS Role_Permission;
 DROP TABLE IF EXISTS User_Role;
@@ -25,6 +26,7 @@ DROP TABLE IF EXISTS ApplicationStatus;
 DROP TABLE IF EXISTS AccountStatus;
 DROP TABLE IF EXISTS StateProvince;
 DROP TABLE IF EXISTS Fee;
+DROP TYPE IF EXISTS EmployeeStatus;
 
 -- CREATE TABLE TicketStatus(
 -- 	StatusID SERIAL PRIMARY KEY,
@@ -144,9 +146,11 @@ CREATE TABLE Station(
 );
 
 -- Populates Station table with some sample data --
-INSERT INTO Station (StationName, Address, MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, IsClosed) VALUES ('RIT', '1 Lomb Memorial Dr, Rochester, NY 14623', 43.0813185, 43.081585, -77.677650, -77.678876, FALSE),
-('Bryan Street', '9 Bryan St, Rochester, NY 14613', 43.184155, 43.184313, -77.637184, -77.637841,  FALSE),
-('Clinton', '291 Upper Falls Blvd, Rochester, NY 14605', 43.169961, 43.170105, -77.610052, -77.610736, FALSE);
+INSERT INTO Station (StationName, Address, MinLatitude, MaxLatitude, MinLongitude, MaxLongitude, IsClosed) VALUES ('GyroGoGo Northwest', 'The Mall at Greece Ridge, Somerworth Dr, Rochester, NY', 43.20663, 43.20663, -77.68602, -77.68602, FALSE),
+('GyroGoGo Northeast', 'Town Center of Webster, Webster, NY', 43.21223, 43.21223, -77.45218, -77.45218,  FALSE),
+('GyroGoGo Center City', 'Genesee Crossroads Garage, 69 Andrews St, Rochester, NY', 43.15752, 43.15752, -77.61197, -77.61197, FALSE),
+('GyroGoGo Southeast','Perinton Square Mall, Fairport, NY', 43.06997, 43.06997, -77.44159, -77.44159, FALSE),
+('GyroGoGo Airport','Paul Rd at Scottsville Rd, Rochester, NY', 43.10884, 43.10884, -77.67537, -77.67537, FALSE);
 
 -- Generate CarStatus table --
 CREATE TABLE CarStatus(
@@ -259,7 +263,6 @@ INSERT INTO Roles (RoleID, Title) VALUES (1, 'System Administrator'),
 	(6, 'Customer'),
 	(7, 'User');
 
-
 -- Generate Permissions table --
 CREATE TABLE Permissions(
 	PermissionID INT PRIMARY KEY,
@@ -345,7 +348,6 @@ INSERT INTO Role_Permission (RoleID, PermissionID) VALUES (1,1),
 	(1,9),
 	(1,12);
 
-
 -- Creates view with a user's permissions
 CREATE VIEW User_Permissions AS SELECT u.UserID AS id,
 		u.Username as Name,
@@ -367,6 +369,21 @@ PREPARE User_Perms (TEXT) AS
 	FROM User_Permissions
 	WHERE Name = $1
 	GROUP BY Description;
+
+CREATE TYPE EmployeeStatus AS ENUM ('Active','Suspended','Terminated');
+
+CREATE TABLE Employee(
+	EmpID INT NOT NULL,
+	Status EmployeeStatus,
+	FOREIGN KEY (EmpID)
+		REFERENCES Users (UserID)
+);
+
+INSERT INTO Employee (EmpID, Status) VALUES (1,'Active'),
+(2,'Active'),
+(3,'Active'),
+(4,'Active'),
+(5,'Active');
 
 -- Generate Customer table --
 CREATE TABLE Customer(
@@ -472,11 +489,14 @@ CREATE TABLE Maintenance(
 	HasDamage BOOLEAN NOT NULL,
 	ServicePerformed TEXT NOT NULL,
 	MaintenanceLocation INT NOT NULL,
+	Mechanic INT NOT NULL,
 	Car INT NOT NULL,
 	FOREIGN KEY (MaintenanceLocation)
 		REFERENCES Station (StationID),
 	FOREIGN KEY (Car)
-		REFERENCES Car (CarID)
+		REFERENCES Car (CarID),
+	FOREIGN KEY (Mechanic)
+		REFERENCES Users (UserID)
 );
 
 
