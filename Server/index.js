@@ -617,9 +617,40 @@ router.post("/addWorkOrder", async (req,res)=>{
 //Business Admin Endpoints
 
 //getAllEmployees
+router.get("/getAllEmployees", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const returnData = await bl.getAllEmployees(userAuth);
+  res.json(returnData);
+});
+
 //employeeDetails
+router.post("/getEmployeeDetails", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.getEmployeeDetails(userAuth, inputData);
+  res.json(returnData);
+});
+
+
 //changeEmployeeStatus
+router.put("/changeEmployeeStatus", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.changeEmployeeStatus(userAuth, inputData);
+  res.json(returnData);
+});
+
 //addEmployee
+router.post("/addEmployee", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.addEmployee(userAuth, inputData);
+  res.json(returnData);
+});
 
 //UTILITY FUNCTIONS
 
