@@ -776,6 +776,21 @@ async function getEmployee(obj){
   }
 }
 
+async function updateEmployeeStatus(obj){
+  var query = {
+    text: "UPDATE Employee SET Status = $1 WHERE EmpID = $2",
+    values: [obj.status, obj.empId]
+  }
+  try{
+    const returnVal = await pool.query(query);
+    return returnVal.rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 
 module.exports = {
   pulseCheck, 
@@ -828,5 +843,6 @@ module.exports = {
   getMaintenance,
   addMaintenance,
   getAllEmployees,
-  getEmployee
+  getEmployee,
+  updateEmployeeStatus
 }

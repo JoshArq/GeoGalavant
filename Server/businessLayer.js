@@ -498,6 +498,24 @@ async function changeEmployeeStatus(auth,data){
     if(!auth.validToken){
         return {error: "invalid authorization"}
     }
+    if(data.status == null || data.status == undefined){
+        return {error: "status must be present"}
+    }
+    const validStatuses = ["Active", "Suspended", "Terminated"];
+    if(!validStatuses.includes(data.status)){
+        return {error: "invalid status"}
+    }
+    if(data.empId == null || data.empId == undefined){
+        return {error: "empId must be present"}
+    }
+    if(!Number.isInteger(data.empId)){
+        return {error: "empId must be a number"};
+    }
+    const rowCount = await pg.updateEmployeeStatus(data);
+    if(rowCount != 1){
+        return {error: "Failed to update status"}
+    }
+    return {success:"updated status"}
 }
 
 async function getEmployeeDetails(auth,data){
