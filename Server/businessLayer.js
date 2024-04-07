@@ -481,6 +481,86 @@ async function addEmployee(auth, data){
     if(!auth.validToken){
         return {error: "invalid authorization"}
     }
+
+    //check username
+    if(data.username == null || data.username == undefined){
+       return {error: "username must exist"}
+    }
+    
+    //check password
+    if(data.password == null || data.password == undefined){
+        return {error: "password must exist"}
+    }
+
+    //check firstName
+    if(data.firstName == null || data.firstName == undefined){
+        return {error: "firstName must exist"}
+    }
+
+    //check lastName
+    if(data.lastName == null || data.lastName == undefined){
+        return {error: "lastName must exist"}
+    }
+
+    //check email
+    if(data.email == null || data.email == undefined){
+        return {error: "email must exist"}
+    }
+
+    //check address
+    if(data.address == null || data.address == undefined){
+        return {error: "address must exist"}
+    }
+
+    //check zipcode
+    if(data.zipcode == null || data.zipcode == undefined){
+        return {error: "zipcode must exist"}
+    }
+
+    //check associatedCity
+    if(data.associatedCity == null || data.associatedCity == undefined){
+        return {error: "associatedCity must exist"}
+    }
+
+    //check stateProvinceId
+    if(data.stateProvinceId == null || data.stateProvinceId == undefined){
+        return {error: "stateProvinceId must exist"}
+    }
+
+    //check role
+    if(data.role == null || data.role == undefined){
+        return {error: "role must exist"}
+    }
+    if(!Number.isInteger(data.role)){
+        return {error: "role must be a number"};
+    }
+    //check status
+    if(data.status == null || data.status == undefined){
+        return {error: "status must exist"}
+    }
+    const validStatuses = ["Active", "Suspended", "Terminated"];
+    if(!validStatuses.includes(data.status)){
+        return {error: "invalid status"}
+    }
+    data.driversLicense = {firstName: data.firstName, lastName:data.lastName}
+    // data.driversLicense.firstName = data.firstName;
+    // data.driversLicense.lastName = data.lastName;
+    // console.log(data);
+    //insert user
+    const empId = await pg.addUser(data);
+
+    //insert role
+    var roleId = await pg.addUserRole(empId, data.role)
+
+    //insert employee
+    var res = await pg.addEmployee(data.status, empId)
+
+    //return
+    if(res != -1){
+        return {empId: empId}
+    }
+
+    return {error: "Failed to add employee"}
 }
 
 async function getAllEmployees(auth){

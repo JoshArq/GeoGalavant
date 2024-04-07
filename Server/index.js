@@ -61,7 +61,7 @@ router.post("/createCustomer", async (req, res) => {
     return;
   }
 
-  var statusID = await pg.addUserStatus(custID, 1, "Created Account")
+  var statusID = await pg.addUserStatus(custID, 1)
 
   custSuccess = await pg.addCustomer(custID, req.body)
   if(custSuccess == 0){

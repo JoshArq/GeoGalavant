@@ -791,6 +791,21 @@ async function updateEmployeeStatus(obj){
   }
 }
 
+async function addEmployee(status, empId){
+  var query = {
+    text: "INSERT INTO Employee (EmpID, Status) Values ($1,$2)",
+    values: [empId, status]
+  }
+  try{
+    const returnVal = await pool.query(query);
+    return returnVal.rowCount;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 
 module.exports = {
   pulseCheck, 
@@ -844,5 +859,6 @@ module.exports = {
   addMaintenance,
   getAllEmployees,
   getEmployee,
-  updateEmployeeStatus
+  updateEmployeeStatus,
+  addEmployee
 }
