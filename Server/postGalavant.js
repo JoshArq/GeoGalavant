@@ -751,7 +751,7 @@ async function addMaintenance(obj){
 
 async function getAllEmployees(){
   var query = {
-    text: "SELECT Employee.EmpID, Employee.Status, Users.FirstName, Users.LastName, FIRST_VALUE(Roles.Title) OVER w FROM Employee JOIN Users ON Users.UserID = Employee.EmpID JOIN User_Role ON Users.UserID = User_Role.UserID JOIN Roles ON User_Role.RoleID = Roles.RoleID WINDOW w AS (PARTITION BY EmpID ORDER BY Roles.RoleID DESC)"
+    text: "SELECT Employee.EmpID, Employee.Status, Users.FirstName, Users.LastName, FIRST_VALUE(Roles.Title) OVER w AS title FROM Employee JOIN Users ON Users.UserID = Employee.EmpID JOIN User_Role ON Users.UserID = User_Role.UserID JOIN Roles ON User_Role.RoleID = Roles.RoleID WINDOW w AS (PARTITION BY EmpID ORDER BY Roles.RoleID DESC)"
   }
   try{
     return (await pool.query(query)).rows;
@@ -763,7 +763,7 @@ async function getAllEmployees(){
 }
 async function getEmployee(obj){
   var query = {
-    text: "SELECT Employee.EmpID, Employee.Status, Users.FirstName, Users.LastName, Roles.Title FROM Employee JOIN Users ON Users.UserID = Employee.EmpID JOIN User_Role ON Users.UserID = User_Role.UserID JOIN Roles ON User_Role.RoleID = Roles.RoleID WHERE Employee.EmpID = $1",
+    text: "SELECT Employee.EmpID, Employee.Status, Users.FirstName, Users.LastName, Roles.Title, Roles.RoleID FROM Employee JOIN Users ON Users.UserID = Employee.EmpID JOIN User_Role ON Users.UserID = User_Role.UserID JOIN Roles ON User_Role.RoleID = Roles.RoleID WHERE Employee.EmpID = $1",
     values: [obj.empId]
   }
   try{
