@@ -36,6 +36,14 @@ router.get("/testToken", async (req, res) => {
 });
 
 
+router.get("/getStateProvince", async (req,res)=>{
+  const token = req.headers['auth-token']
+
+  var userAuth = await decodeToken(token)
+  const returnData = await bl.getStateProvince(userAuth);
+  res.json(returnData);
+});
+
 //TODO needs address fix after GR#2
 router.post("/createCustomer", async (req, res) => {
   var custID = await pg.addUser(req.body)
@@ -61,7 +69,7 @@ router.post("/createCustomer", async (req, res) => {
     return;
   }
 
-  var statusID = await pg.addUserStatus(custID, 1, "Created Account")
+  var statusID = await pg.addUserStatus(custID, 1)
 
   custSuccess = await pg.addCustomer(custID, req.body)
   if(custSuccess == 0){
@@ -389,7 +397,16 @@ router.
 });
 
 
+//addLocation
+router.post("/addLocation", async (req,res)=>{
+  const token = req.headers['auth-token']
+  const inputData = req.body;
 
+  var userAuth = await decodeToken(token)
+
+  const returnData = await bl.addStation(userAuth, inputData);
+  res.json(returnData);
+});
 
 
 //TODO - connect to DB
@@ -401,12 +418,6 @@ router.post("/makeReservation", (req, res) => {
     reservationNumber: 1111
   })
 });
-
-
-
-
-
-
 
 
 //TODO - connect to DB
@@ -547,6 +558,107 @@ router.post("/markMessageResolved", async (req, res) => {
 });
 
 
+//MECHANICS ENDPOINTS
+
+//getAllCars
+router.get("/getAllCars", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const returnData = await bl.getAllCars(userAuth);
+  res.json(returnData);
+});
+
+//getCarDetails
+router.post("/getCarDetails", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.getCarDetails(userAuth, inputData);
+  res.json(returnData);
+});
+
+//addCar
+router.post("/addCar", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.addCar(userAuth, inputData);
+  res.json(returnData);
+});
+
+//removeCar
+router.delete("/removeCar", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.removeCar(userAuth, inputData);
+  res.json(returnData);
+});
+
+
+router.put("/updateCar", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.updateCar(userAuth, inputData);
+  res.json(returnData);
+});
+
+//getWorkOrders
+router.get("/getWorkOrders", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const returnData = await bl.getWorkOrders(userAuth);
+  res.json(returnData);
+});
+
+
+//addWorkOrder
+router.post("/addWorkOrder", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.addWorkOrder(userAuth, inputData);
+  res.json(returnData);
+});
+
+//Business Admin Endpoints
+
+//getAllEmployees
+router.get("/getAllEmployees", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const returnData = await bl.getAllEmployees(userAuth);
+  res.json(returnData);
+});
+
+//employeeDetails
+router.post("/getEmployeeDetails", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.getEmployeeDetails(userAuth, inputData);
+  res.json(returnData);
+});
+
+
+//changeEmployeeStatus
+router.put("/changeEmployeeStatus", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.changeEmployeeStatus(userAuth, inputData);
+  res.json(returnData);
+});
+
+//addEmployee
+router.post("/addEmployee", async (req,res)=>{
+  const token = req.headers['auth-token'];
+  var userAuth = await decodeToken(token);
+  const inputData = req.body;
+  const returnData = await bl.addEmployee(userAuth, inputData);
+  res.json(returnData);
+});
 
 //UTILITY FUNCTIONS
 
@@ -626,58 +738,61 @@ async function generateToken(id, ip = "127.0.0.1"){
 // fix IP decoding
 // add role encryption?
 async function decodeToken(token){
-  var data = {validToken: false}
+  let data = {validToken: false}
+  
+  try{
+    var checksum = token.substring(0, 60)
+    var interleavedToken = token.substring(60, token.length)
 
-  var checksum = token.substring(0, 60)
-  var interleavedToken = token.substring(60, token.length)
 
-
-  let myPromise = new Promise((myResolve, myReject) => {
-    //analyze checksum to make sure string has not been tampered with
-   bcrypt.compare(interleavedToken, checksum, (err, result)=>{
-      if(err){
-        apiLog("token decryption error");
-        myReject;
-      }
-      else{
-        myResolve()
-      }  
+    let myPromise = new Promise((myResolve, myReject) => {
+      //analyze checksum to make sure string has not been tampered with
+    bcrypt.compare(interleavedToken, checksum, (err, result)=>{
+        if(err){
+          apiLog("token decryption error");
+          myReject;
+        }
+        else{
+          myResolve()
+        }  
+      });
     });
-  });
 
-  await myPromise.then(
-    function(value) {
-      //de-interleave all values
-      var ip = ""
-      var id = ""
+    await myPromise.then(
+      function(value) {
+        //de-interleave all values
+        var ip = ""
+        var id = ""
 
-      for(let i = 3; i < interleavedToken.length; i += 4){
-        ip += interleavedToken[i]
-      }
+        for(let i = 3; i < interleavedToken.length; i += 4){
+          ip += interleavedToken[i]
+        }
 
-      for(let i = interleavedToken.length -2; i > 0; i -= 4){
-        id += interleavedToken[i]
-      }
+        for(let i = interleavedToken.length -2; i > 0; i -= 4){
+          id += interleavedToken[i]
+        }
 
-      ip = ip.toString(16)
-      while(ip.charAt[0] == '0'){
-        ip = ip.substring(1, ip.length)
-      }
+        ip = ip.toString(16)
+        while(ip.charAt[0] == '0'){
+          ip = ip.substring(1, ip.length)
+        }
 
-      id = parseInt(id, 8)
+        id = parseInt(id, 8)
 
-      apiLog(id);
-      apiLog(ip);
+        apiLog(id);
+        apiLog(ip);
 
-      data.validToken = true
-      data.ip = ip;
-      data.id = id;
-      return;
+        data.validToken = true
+        data.ip = ip;
+        data.id = id;
+        return;
 
-    },
-    function(error) {}
-  );
-
-
-  return data
+      },
+      function(error) {}
+    );
+    return data
+  }
+  catch(ex){
+    return data
+  }
 }
