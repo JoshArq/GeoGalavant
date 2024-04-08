@@ -457,8 +457,10 @@ router.delete("/deleteReservation", async (req, res) => {
 })
 
 
-router.post("/getReservePrice", async (req, res) => {
-
+router.get("/getReservePrice", async (req, res) => {
+  var result = await bl.getReservePrice(req.body.pickupDateTime, req.body.dropoffDateTime )
+ 
+  res.json(result)
 
 });
 

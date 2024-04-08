@@ -922,6 +922,28 @@ async function editReservation(data){
 async function getReservePrice(d1, d2){
     pickup = new Date(d1)
     dropoff = new Date (d2)
+
+    if(pickup.getDate() != dropoff.getDate() || pickup.getMonth() != dropoff.getMonth() || pickup.getYear() != dropoff.getYear()){
+        return {success: false, errorMessage: "Reservation pickup & dropoff must be on the same day."}
+    }
+    else if(dropoff.valueOf() - pickup.valueOf() > 21600000){
+        return {success: false, errorMessage: "Reservation pickup & dropoff must be within 6 hours of eachother."}
+    }
+    else {
+
+        var hours = (dropoff.valueOf() - pickup.valueOf()) / 3600000
+
+        var fees = await pg.getFeesByCity("Rochester")
+
+        var total = hours * fees.hourlyrate
+
+        if(total > fees.dailymaximum){
+            total = parseFloat(fees.dailymaximum)
+        }
+
+        return {cost: total.toFixed(2)}
+    }
+
 }
 
 
