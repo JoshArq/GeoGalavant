@@ -16,7 +16,9 @@ async function main(){
 
     // console.log(await bl.addReservation(6, reserveInfo))
 
-    console.log(await bl.getCustomerReservations(6))
+    // console.log(await bl.getCustomerReservations(6))
+
+    console.log(await bl.getReservationByID(4))
 }
 
 main()

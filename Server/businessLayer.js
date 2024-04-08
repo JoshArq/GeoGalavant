@@ -862,14 +862,30 @@ async function getCustomerReservations(userID){
 
     return result
 
-
-// pickupStationName: String,
-// pickupStationAddress: String,
-// dropoffStationName: String,
-// dropoffStationAddress: String,
-
-
 }
+
+
+async function getReservationByID(resID){
+    var reservation = await pg.getReservation(resID)
+    var result = {}
+
+    result.pickupDateTime = reservation.scheduledpickuptime
+    result.dropoffDateTime = reservation.scheduleddropofftime
+    result.confirmationNumber = reservation.confirmationnumber
+
+    var pickupStn = await pg.getStation(reservation.pickupstationid)
+
+    result.pickupStationName = pickupStn.stationname
+    result.pickupStationAddress = pickupStn.address
+
+    var dropoffStn = await pg.getStation(reservation.dropoffstationid)
+
+    result.dropoffStationName = dropoffStn.stationname
+    result.dropoffStationAddress = dropoffStn.address
+
+    return result
+}
+
 
 
 
@@ -901,5 +917,6 @@ module.exports = {
     setupNewCustomerCard,
     getAvailableLocations,
     addReservation,
-    getCustomerReservations
+    getCustomerReservations,
+    getReservationByID
 }

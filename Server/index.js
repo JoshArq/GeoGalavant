@@ -448,7 +448,6 @@ router.post("/addReservation", async (req, res) => {
 router.get("/getUserReservations", async (req, res) => {
   const token = req.headers['auth-token']
 
-
   var userAuth = await decodeToken(token)
 
   //validate user
@@ -472,23 +471,25 @@ router.get("/getUserReservations", async (req, res) => {
 
 
 
+router.get("/getReservationsByUserID", async (req, res) => {
+  var user = req.body.userID
 
+  var reservations = await bl.getCustomerReservations(user)
+
+  res.json({
+    reservations: reservations
+  })
+
+});
 
 
 //TODO - connect to DB
-router.get("/getUserReservationByID", (req, res) => {
+router.get("/getReservationByID", async (req, res) => {
   //insert DB logic here
 
-  res.json({
-    reservationNumber: 3333,
-    pickupStationName: "GyroGoGo Northwest",
-    pickupStationAddress: "The mall at Greece Ridge...",
-    dropoffStationName: "GyroGoGo Center City",
-    dropoffStationAddress: "Genesee Crossroads Garage...",
-    pickupDateTime: "2012-04-23T18:25:43.511Z",
-    dropoffDateTime: "2012-04-23T18:25:43.511Z",
-    cardLastNumbers: "Credit card ending in ####"
-  });
+  var result = await bl.getReservationByID(req.body.reservationID)
+
+  res.json({result});
 
 });
 
