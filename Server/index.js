@@ -439,10 +439,23 @@ router.post("/addReservation", async (req, res) => {
       errorMessage: "User could not be validated"
     })
   }
-  
 
-  
 });
+
+
+router.delete("/deleteReservation", async (req, res) => {
+  var conf = await bl.deleteReservation(req.body.reservationID)
+
+
+  if(conf == 1){
+    res.json({success: true})
+  } else {
+    res.json({success: false,
+    errorMessage: "Could not find reservation."})
+  }
+
+})
+
 
 
 router.get("/getUserReservations", async (req, res) => {

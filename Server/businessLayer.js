@@ -886,6 +886,13 @@ async function getReservationByID(resID){
     return result
 }
 
+async function deleteReservation(resID){
+    return await pg.removeReservation(resID)
+
+    
+}
+
+
 
 
 
@@ -918,5 +925,6 @@ module.exports = {
     getAvailableLocations,
     addReservation,
     getCustomerReservations,
-    getReservationByID
+    getReservationByID,
+    deleteReservation
 }
