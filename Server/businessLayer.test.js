@@ -18,7 +18,15 @@ async function main(){
 
     // console.log(await bl.getCustomerReservations(6))
 
-    console.log(await bl.getReservationByID(4))
+    // console.log(await bl.getReservationByID(4))
+
+    console.log(await bl.editReservation({
+        reservationID: 2,
+        pickupStation: 3,
+        dropoffStation: 1,
+        pickupDateTime: "04/09/2024",
+        dropoffDateTime: "04/09/2024"
+    }))
 }
 
 main()

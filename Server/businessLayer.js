@@ -888,8 +888,40 @@ async function getReservationByID(resID){
 
 async function deleteReservation(resID){
     return await pg.removeReservation(resID)
+}
 
+
+async function editReservation(data){
+    // return await pg.removeReservation(resID)
+
+    var res = await pg.getReservation(data.reservationID)
+    console.log(res.confirmationnumber)
+
+    var newRes = {}
+
+    newRes.rentalId = data.reservationID
+    newRes.customerId = res.customerid
+    newRes.pickupStationId = data.pickupStation
+    newRes.scheduledPickupTime = data.pickupDateTime
+    newRes.scheduledDropoffTime = data.dropoffDateTime
+    newRes.cardId = null
+    newRes.carId = null
+    newRes.pickupTime = null
+    newRes.dropoffTime = null 
+    newRes.confirmationNumber = res.confirmationnumber
     
+
+    await pg.updateReservation(newRes)
+
+    // res.pickupDateTime = data.pickupDateTime
+
+
+}
+
+
+async function getReservePrice(d1, d2){
+    pickup = new Date(d1)
+    dropoff = new Date (d2)
 }
 
 
@@ -926,5 +958,7 @@ module.exports = {
     addReservation,
     getCustomerReservations,
     getReservationByID,
-    deleteReservation
+    deleteReservation,
+    getReservePrice,
+    editReservation
 }

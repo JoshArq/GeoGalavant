@@ -457,6 +457,18 @@ router.delete("/deleteReservation", async (req, res) => {
 })
 
 
+router.post("/getReservePrice", async (req, res) => {
+
+
+});
+
+
+router.post("/editReservation", async (req, res) => {
+  await bl.editReservation(req.body)
+
+});
+
+
 
 router.get("/getUserReservations", async (req, res) => {
   const token = req.headers['auth-token']
@@ -477,9 +489,6 @@ router.get("/getUserReservations", async (req, res) => {
       errorMessage: "User could not be validated"
     })
   }
-
-
-  
 });
 
 
@@ -496,7 +505,6 @@ router.get("/getReservationsByUserID", async (req, res) => {
 });
 
 
-//TODO - connect to DB
 router.get("/getReservationByID", async (req, res) => {
   //insert DB logic here
 
