@@ -837,13 +837,27 @@ async function getStateProvince(){
 
 
 
-async function canFleetAccomodateDays(d1, d2){
+async function canFleetAccomodateDay(date){
+  
+  var startDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+  var endDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
   var query = {
-    text: "SELECT * FROM Rental WHERE ScheduledPickupTime BETWEEN $1 AND $2",
-    values: [d1, d2]
+    text: "SELECT count(*) FROM Rental WHERE ScheduledPickupTime BETWEEN $1 AND $2",
+    values: [startDay.toJSON(), endDay.toJSON()]
+  }
+
+  var carQuery = {
+      text: "SELECT count(*) FROM Car",
   }
   try{
-    return (await pool.query(query)).rows[0];
+    var reservationCount =  (await pool.query(query)).rows[0].count;
+    var carCount =  (await pool.query(carQuery)).rows[0].count;
+
+    if(reservationCount >= carCount){
+      return 0
+    }
+    
+    return 1
   }
   catch(err){
     console.log(err);
@@ -900,7 +914,7 @@ module.exports = {
   getTicket,
   getAllCustomers,
   getCustomerDetails,
-  canFleetAccomodateDays,
+  canFleetAccomodateDay,
   getMaintenance,
   addMaintenance,
   getAllEmployees,

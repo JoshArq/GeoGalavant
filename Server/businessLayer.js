@@ -784,28 +784,32 @@ async function getAvailableLocations(t1, t2){
             }
         }
 
+    } else { //reservation for a future day
+        var available = await pg.canFleetAccomodateDay(pickup)
 
-        //need to check if no overlap with future day reservation
-        //most efficient way?
+        if(available != 1){
+            return {success: false, errorMessage: "We cannot accomodate your request for this day."}
+        }
 
-    } else {
+        var stations = await pg.getAllStations()
 
         //check for overlap w/ fleet on every day
         //return all stations
+        for(i = 0; i < stations.length; i++){
+            var thisStn = {};
 
+            thisStn.stationID = stations[i].stationid
+            thisStn.name = stations[i].stationname
+            thisStn.address = stations[i].address
+            thisStn.latitude = parseFloat(stations[i].minlatitude)
+            thisStn.longitude = parseFloat(stations[i].minlongitude)
+
+            locations.push(thisStn)
+        }
     }
 
-    //SELECT * FROM table WHERE date1 BETWEEN date2 AND date3
 
-    //each car has a station (for "today")
-    //each station has x cars
-
-    //if i reserve today the station must have car already assigned to it
-    // & must have enough cars over the next few days
-
-    //if i reserve a car in the future it may be from any station, so long as the total fleet has enough cars to accomodate that day
-
-    return locations
+    return {locations: locations}
 }
 
 

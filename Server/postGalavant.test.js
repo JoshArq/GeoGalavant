@@ -182,6 +182,7 @@ async function main(){
     var d2 = new Date("09/04/2024")
     // console.log(await pg.canFleetAccomodateDays(d1, d2))
 
+    console.log(await pg.canFleetAccomodateDay(new Date()))
 
 
 }

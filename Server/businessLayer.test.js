@@ -9,10 +9,10 @@ async function main(){
 
     var reserveInfo = {}
     reserveInfo.customerId = 1;
-    reserveInfo.pickupStation = 3;
-    reserveInfo.pickupDateTime = new Date(2024, 3, 6, 20, 30, 0);
+    reserveInfo.pickupStation = 2;
+    reserveInfo.pickupDateTime = new Date(2024, 3, 8, 20, 30, 0);
     reserveInfo.dropoffStation = 2;
-    reserveInfo.dropoffDateTime = new Date(2024, 3, 7, 20, 30, 0);
+    reserveInfo.dropoffDateTime = new Date(2024, 3, 8, 22, 30, 0);
 
     // console.log(await bl.addReservation(6, reserveInfo))
 
@@ -28,7 +28,9 @@ async function main(){
     //     dropoffDateTime: "04/09/2024"
     // }))
 
-    bl.getReservePrice("2024-04-08T16:30:53.669Z", "2024-04-08T21:58:53.669Z")
+    // bl.getReservePrice("2024-04-08T16:30:53.669Z", "2024-04-08T21:58:53.669Z")
+
+    
 
 }
 

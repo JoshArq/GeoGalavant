@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 var cron = require('node-cron');
 
 
-cron.schedule('* 21 * * *', () => {
+cron.schedule('0 21 * * *', () => {
   console.log('running a task every minute');
 });
 
@@ -401,11 +401,13 @@ router.get("/getLocations", async (req, res) => {
 });
 
 
-router.post("/getAvailableLocations", (req, res) => {
+router.post("/getAvailableLocations", async (req, res) => {
   pickupDateTime = req.body.pickupDateTime
   dropoffDateTime = req.body.dropoffDateTime
   
-  bl.getAvailableLocations(pickupDateTime, dropoffDateTime)
+  var stations = await bl.getAvailableLocations(pickupDateTime, dropoffDateTime)
+
+  res.json(stations)
 
 
 })
