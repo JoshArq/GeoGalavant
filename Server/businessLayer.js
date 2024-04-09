@@ -224,6 +224,387 @@ async function addStatus(userAuth, inputData){
     return {success: "Added Status"};
 }
 
+async function getAllCars(auth){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    let cars = await pg.getAllCars();
+    if(cars == -1){
+        return {error: "Failed to retrieve cars"};
+    }
+    return cars;
+}
+
+async function getCarDetails(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must be present"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    let car = await pg.getCar(data.carId);
+    if(car == undefined){
+        return {error: "Car with that ID does not exist"}
+    }
+    if(car == -1){
+        return {error: "Failed to get car"}
+    }
+    return car;
+}
+
+async function addCar(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.stationId == null || data.stationId == undefined){
+        return {error: "stationId must be present"}
+    }
+    if(!Number.isInteger(data.stationId)){
+        return {error: "stationId must be a number"};
+    }
+    if(data.carStatusId == null || data.carStatusId == undefined){
+        return {error: "carStatusId must be present"}
+    }
+    if(!Number.isInteger(data.carStatusId)){
+        return {error: "carStatusId must be a number"};
+    }
+    const station = await pg.getStation(data.stationId);
+    if(station == undefined){
+        return {error: "Station does not exist"};
+    }
+    let carId = await pg.addCar(data);
+    if(carId == -1){
+        return {error: "Failed to add car"}
+    }
+    return {carId: carId}
+}
+
+async function removeCar(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must be present"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    const car = await pg.getCar(data.carId);
+    if(car == undefined){
+        return {error: "Car with that ID does not exist"}
+    }
+    const rowCount = await pg.removeCar(data.carId);
+    if(rowCount == 1){
+        return {success: "removed car"}
+    }
+    return {error: "Failed to delete car"}
+}
+
+async function updateCar(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must be present"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    if((data.stationId == null || data.stationId==undefined) && (data.carStatusId == null || data.carStatusId == undefined)){
+        return {error: "Must include something to update"}
+    }
+    var car = await pg.getCar(data.carId);
+    if(data.stationId != null || data.stationId!=undefined){
+        if(!Number.isInteger(data.carId)){
+            return {error: "stationId must be a number"};
+        }
+        const station = await pg.getStation(data.stationId);
+        if(station == undefined){
+            return {error: "Station with that ID doesn't exist"}
+        }
+    }
+    if(data.carStatusId != null || data.carStatusId!=undefined){
+        if(!Number.isInteger(data.carStatusId)){
+            return {error: "stationId must be a number"};
+        }
+    }
+    var car = await pg.getCar(data.carId);
+    //console.log(car);
+    let updateObj = data
+    if(car == undefined){
+        return {error: "Car with that ID does not exist"}
+    }
+
+    if(updateObj.stationId == null || updateObj.stationId==undefined){
+        updateObj.stationId = car.stationid
+    }
+    if(updateObj.carStatusId == null || updateObj.carStatusId==undefined){
+        updateObj.carStatusId = car.statusid
+    }
+    var result = await pg.editCar(updateObj);
+    if(result == 1){
+        return {success: "Updated Car"}
+    }
+    return {error: "Failed to update car"}
+}
+
+async function getWorkOrders(auth){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    let workOrders = await pg.getMaintenance();
+    if(workOrders == -1){
+        return {error: "Failed to retrieve work orders"};
+    }
+    return workOrders;
+}
+
+async function addWorkOrder(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    data.mechanic = auth.id;
+    if(data.stationId == null || data.stationId == undefined){
+        return {error: "stationId must be present"}
+    }
+    if(!Number.isInteger(data.stationId)){
+        return {error: "stationId must be a number"};
+    }
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must be present"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    if(data.hasDamage == null || data.hasDamage == undefined){
+        return {error: "hasDamage must be present"}
+    }
+    if(data.hasDamage!="true" && data.hasDamage!="false"){
+        return {error: "hasDamage must be true or false"}
+    }
+    if(data.servicePerformed == null || data.servicePerformed == undefined){
+        return {error: "servicePerformed must be present"}
+    }
+    if(data.maintenanceStart == null || data.maintenanceStart == undefined){
+        return {error: "maintenanceStart must be present"}
+    }
+    const station = await pg.getStation(data.stationId);
+    if(station == undefined){
+        return {error: "Station does not exist"};
+    }
+    const car = await pg.getCar(data.carId);
+    if(car == undefined){
+        return {error: "Car does not exist"};
+    }
+    var maintenanceId = await pg.addMaintenance(data);
+    console.log(maintenanceId);
+    if(maintenanceId != -1){
+        return {maintenanceId: maintenanceId}
+    }
+}
+
+async function addStation(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    //check if latitude exists in proper format
+    if(data.longitude == null || data.longitude == undefined){
+        return {error: "longitude must exist"}
+    }
+    if(Number.isNaN(Number.parseFloat(data.longitude))){
+        return {error: "longitude must be a number"}
+    }
+
+    //check if longitude exists in proper format
+    if(data.latitude == null || data.latitude == undefined){
+        return {error: "latitude must exist"}
+    }
+    if(Number.isNaN(Number.parseFloat(data.latitude))){
+        return {error: "latitude must be a number"}
+    }
+
+    //check if name exists
+    if(data.stationName == null || data.stationName == undefined){
+        return {error: "stationName must exist"}
+    }
+    
+    //check if address exists
+    if(data.address == null || data.address == undefined){
+        return {error: "address must exist"}
+    }
+
+    //check if isClosed exists and is boolean
+    if(data.isClosed == null || data.isClosed == undefined){
+        return {error: "isClosed must exist"}
+    }
+    if(data.isClosed!="true" && data.isClosed!="false"){
+        return {error: "hasDamage must be true or false"}
+    }
+
+    //insert
+    const stationId = await pg.addStation(data);
+    console.log(stationId);
+    if(stationId == undefined || stationId == -1){
+        return {error: "Failed to add station"}
+    }
+
+    //return stationid
+    return {stationId: stationId}
+}
+
+async function addEmployee(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+
+    //check username
+    if(data.username == null || data.username == undefined){
+       return {error: "username must exist"}
+    }
+    
+    //check password
+    if(data.password == null || data.password == undefined){
+        return {error: "password must exist"}
+    }
+
+    //check firstName
+    if(data.firstName == null || data.firstName == undefined){
+        return {error: "firstName must exist"}
+    }
+
+    //check lastName
+    if(data.lastName == null || data.lastName == undefined){
+        return {error: "lastName must exist"}
+    }
+
+    //check email
+    if(data.email == null || data.email == undefined){
+        return {error: "email must exist"}
+    }
+
+    //check address
+    if(data.address == null || data.address == undefined){
+        return {error: "address must exist"}
+    }
+
+    //check zipcode
+    if(data.zipcode == null || data.zipcode == undefined){
+        return {error: "zipcode must exist"}
+    }
+
+    //check associatedCity
+    if(data.associatedCity == null || data.associatedCity == undefined){
+        return {error: "associatedCity must exist"}
+    }
+
+    //check stateProvinceId
+    if(data.stateProvinceId == null || data.stateProvinceId == undefined){
+        return {error: "stateProvinceId must exist"}
+    }
+
+    //check role
+    if(data.role == null || data.role == undefined){
+        return {error: "role must exist"}
+    }
+    if(!Number.isInteger(data.role)){
+        return {error: "role must be a number"};
+    }
+    //check status
+    if(data.status == null || data.status == undefined){
+        return {error: "status must exist"}
+    }
+    const validStatuses = ["Active", "Suspended", "Terminated"];
+    if(!validStatuses.includes(data.status)){
+        return {error: "invalid status"}
+    }
+    data.driversLicense = {firstName: data.firstName, lastName:data.lastName}
+    // data.driversLicense.firstName = data.firstName;
+    // data.driversLicense.lastName = data.lastName;
+    // console.log(data);
+    //insert user
+    const empId = await pg.addUser(data);
+
+    //insert role
+    var roleId = await pg.addUserRole(empId, data.role)
+
+    //insert employee
+    var res = await pg.addEmployee(data.status, empId)
+
+    //return
+    if(res != -1){
+        return {empId: empId}
+    }
+
+    return {error: "Failed to add employee"}
+}
+
+async function getAllEmployees(auth){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    const employees = await pg.getAllEmployees();
+    if(employees == -1){
+        return {error: "Failed to get employees"}
+    }
+    return employees;
+}
+
+async function changeEmployeeStatus(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.status == null || data.status == undefined){
+        return {error: "status must be present"}
+    }
+    const validStatuses = ["Active", "Suspended", "Terminated"];
+    if(!validStatuses.includes(data.status)){
+        return {error: "invalid status"}
+    }
+    if(data.empId == null || data.empId == undefined){
+        return {error: "empId must be present"}
+    }
+    if(!Number.isInteger(data.empId)){
+        return {error: "empId must be a number"};
+    }
+    const rowCount = await pg.updateEmployeeStatus(data);
+    if(rowCount != 1){
+        return {error: "Failed to update status"}
+    }
+    return {success:"updated status"}
+}
+
+async function getEmployeeDetails(auth,data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.empId == null || data.empId == undefined){
+        return {error: "empId must be present"}
+    }
+    if(!Number.isInteger(data.empId)){
+        return {error: "empId must be a number"};
+    }
+    const emp = await pg.getEmployee(data);
+    if(emp == -1 || emp == undefined){
+        return {error: "failed to get employee"};
+    }
+    return emp;
+}
+
+async function getStateProvince(auth){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    const sp = await pg.getStateProvince();
+    console.log(sp);
+    if(sp != -1){
+        return sp;
+    }
+    return{error: "failed to get states and provinces"}
+}
+
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
@@ -231,5 +612,18 @@ module.exports = {
     addStatus,
     getMessages,
     markMessageResolved,
-    addMessage
+    addMessage,
+    getAllCars,
+    getCarDetails,
+    addCar,
+    removeCar,
+    updateCar,
+    getWorkOrders,
+    addWorkOrder,
+    addStation,
+    addEmployee,
+    getAllEmployees,
+    changeEmployeeStatus,
+    getEmployeeDetails,
+    getStateProvince
 }
