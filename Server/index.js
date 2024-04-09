@@ -3,8 +3,12 @@ const bl = require('./businessLayer.js')
 const pg = require('./postGalavant.js')
 require('dotenv').config()
 const bcrypt = require('bcrypt');
+var cron = require('node-cron');
 
 
+cron.schedule('* 21 * * *', () => {
+  console.log('running a task every minute');
+});
 
 
 const PORT = process.env.PORT || 5001;
