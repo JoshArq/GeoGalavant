@@ -1,12 +1,14 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Header from '../../GeoHeader/GeoHeader.js';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Badge from '../../Badges/Badge.js';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Alert from 'react-bootstrap/Alert';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
@@ -51,60 +53,72 @@ function AddNewGyrocar(props) {
     );
   }
 
-export default function Gyrocars() {
-
+export default function Gyrocars({token}) {
+    const [cars, setCars] = useState([]);
+    const [isValid, setIsValid] = useState(true);
     const [modalShow, setModalShow] = React.useState(false);
+
+    // Get data
+    useEffect(() => {
+        // Get cars
+        fetch("/api/getAllCars", {
+            headers: {
+              "auth-token": token
+            }
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setCars(data)
+                }
+          }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+          });
+    }, [modalShow])
 
     return (
         <main>
-
-        <AddNewGyrocar
+            <AddNewGyrocar
                 show={modalShow}
                 onHide={() => setModalShow(false)}
             />
-
             <Header title="Gyrocars" />
             <Container as={'section'}>
+                <Alert variant="danger" className={'text-danger my-3 bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
+                    There was an issue retrieving your data. Please refresh to try again.
+                </Alert> 
                 <Row>
                     <Col>
-                        <Button onClick={() => setModalShow(true)} className="mt-3"><i class="bi bi-plus"></i> Add New</Button>
+                        <Button onClick={() => setModalShow(true)} className="my-3"><i class="bi bi-plus"></i> Add New</Button>
                     </Col>
-                    {/* <Col className="d-flex justify-content-end">
-                        <Button className="mt-3">Submit Work Report</Button>
-                    </Col> */}
                 </Row>
-            
-
-                <Table className="mt-3">
-                    <thead>
-                        <tr className="d-flex flex-wrap border-1">
-                        <th className="border-0 col-12 col-md-6 col-lg-4" scope="col">Vehicles</th>
-                        <th className="border-0 col-12 col-md-6 col-lg-4" scope="col">Location</th>
-                        <th className="border-0 col-12 col-md-6 col-lg-2" scope="col">Status</th>
-                        <th className="border-0 col-12 col-md-6 col-lg-2" scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="d-flex flex-wrap border-1">
-                            <td className="border-0 col-12 col-md-6 col-lg-4">Gyrocar 12346</td>
-                            <td className="border-0 col-12 col-md-6 col-lg-4">Gyrogogo Center City</td>
-                            <td className="border-0 col-12 col-md-6 col-lg-2"><Badge status="available" /></td>
-                            <td className="border-0 col-12 col-md-6 col-lg-2"><Link to="/gyrocars/gyrocar">View Car</Link></td>
-                        </tr>
-                        <tr className="d-flex flex-wrap border-1">
-                            <td className="border-0 col-12 col-md-6 col-lg-4">Gyrocar 12346</td>
-                            <td className="border-0 col-12 col-md-6 col-lg-4">Gyrogogo Center City</td>
-                            <td className="border-0 col-12 col-md-6 col-lg-2"><Badge status="inuse" /></td>
-                            <td className="border-0 col-12 col-md-6 col-lg-2"><Link to="/gyrocars/gyrocar">View Car</Link></td>
-                        </tr>
-                        <tr className="d-flex flex-wrap border-1">
-                            <td className="border-0 col-12 col-md-6 col-lg-4">Gyrocar 12346</td>
-                            <td className="border-0 col-12 col-md-6 col-lg-4">Gyrogogo Center City</td>
-                            <td className="border-0 col-12 col-md-6 col-lg-2"><Badge status="offline" /></td>
-                            <td className="border-0 col-12 col-md-6 col-lg-2"><Link to="/gyrocars/gyrocar">View Car</Link></td>
-                        </tr>            
-                    </tbody>
-                </Table>
+                {cars.length == 0 ? <p>There are no cars.</p> : 
+                    <Table className="my-5">
+                        <thead>
+                            <tr className="d-flex flex-wrap border-1">
+                            <th className="border-0 col-12 col-md-6 col-lg-4" scope="col">Vehicles</th>
+                            <th className="border-0 col-12 col-md-6 col-lg-4" scope="col">Location</th>
+                            <th className="border-0 col-12 col-md-6 col-lg-2" scope="col">Status</th>
+                            <th className="border-0 col-12 col-md-6 col-lg-2" scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {cars.map((car) => { return (
+                                <tr className="d-flex flex-wrap border-1">
+                                    <td className="border-0 col-12 col-md-6 col-lg-4">Gyrocar {car.carid}</td>
+                                    <td className="border-0 col-12 col-md-6 col-lg-4">{car.stationname}</td>
+                                    <td className="border-0 col-12 col-md-6 col-lg-2"><Badge status={car.status.toLowerCase()} /></td>
+                                    <td className="border-0 col-12 col-md-6 col-lg-2"><Link to="/gyrocars/gyrocar" state={{ carID: car.carid }}>View Car</Link></td>
+                                </tr>
+                            )})}          
+                        </tbody>
+                    </Table>
+                }  
             </Container> 
         </main>
     )

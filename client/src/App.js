@@ -212,12 +212,12 @@ function App() {
             }/>
             <Route path="gyrocars" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.mechUp}>
-                <Gyrocars />
+                <Gyrocars token={token} />
               </ProtectedRoute>
             }/>
             <Route path="/gyrocars/gyrocar" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.mechUp}>
-                <Gyrocar />
+                <Gyrocar token={token} />
               </ProtectedRoute>
             }/>
             <Route path="employees" element={
