@@ -364,7 +364,7 @@ router.get("/getLocations", async (req, res) => {
     locations.push(resultItem)
   })
 
-router. 
+// router. 
   
   res.json({locations: locations})
   

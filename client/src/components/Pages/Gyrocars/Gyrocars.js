@@ -13,6 +13,82 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
 function AddNewGyrocar(props) {
+    const [locations, setLocations] = useState([]);
+    const [isValid, setIsValid] = useState(true);
+
+    function addCar() {
+        // Validate
+        let form = document.getElementById("addcar");
+        let err = document.getElementById("err");
+
+        // Check status is selected
+        if (!form.status.checkValidity() || form.status.value.length == 0) {
+            err.innerText = "Please select a status"
+            setIsValid(false)
+            return
+        }
+
+        // Check location is selected
+        if (!form.station.checkValidity() || form.station.value.length == 0) {
+            err.innerText = "Please select a station"
+            setIsValid(false)
+            return
+        }
+
+        // Send new car data
+        fetch("/api/addCar", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": props.token
+            },
+            body: JSON.stringify({
+                stationId: parseInt(form.station.value),
+                carStatusId: parseInt(form.status.value),
+            }),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            if (!data.error) {
+                // Close modal. The page should update to show the new car
+                setIsValid(true)
+                props.onHide()
+            }
+            else {
+                console.log(data.error)
+                err.innerText = "There was an issue submitting your request. Please try again."
+                setIsValid(false)
+            }
+        }).catch(error => {
+            console.log(error)
+            err.innerText = "There was an issue submitting your request. Please try again."
+            setIsValid(false)
+        });
+    }
+
+    // Get data
+    useEffect(() => {
+        // Get locations
+        fetch("/api/getLocations", {
+            headers: {
+                "auth-token": props.token
+            }
+        })
+        .then((res) => res.json())
+        .then((data) => {
+                if(data.error || !data.locations) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setLocations(data.locations)
+                }
+        }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+        });
+    }, [])
+
     return (
       <Modal
         {...props}
@@ -26,28 +102,34 @@ function AddNewGyrocar(props) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form>
-                <Form.Group className="mb-3" controlId="state">
+            <Alert variant="danger" className={'text-danger m-3 bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
+                There was an issue retrieving the location data. Please refresh to try again.
+            </Alert> 
+            <Form id="addcar">
+                <Form.Group className="mb-3" controlId="status">
                     <Form.Label>Status</Form.Label>
                     <Form.Select name="statusSelect" required>
                         <option value="">Select...</option>
-                        <option value="available">Available</option>
-                        <option value="offline">Offline</option>               
+                        <option value="1">Available</option>
+                        <option value="2">Unavailable</option>      
+                        <option value="3">Rented</option>
+                        <option value="4">Non-operational</option>    
                     </Form.Select>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="station">
                     <Form.Label>Station</Form.Label>
                     <Form.Select name="stationSelect" required>
                         <option value="">Select...</option>
-                        <option value="Center City">Gyrogogo Center City</option>   
-                        <option value="Airport">Gyrogogo Airport</option> 
+                        {locations.map((loc) => {return (
+                            <option value={loc.stationID}>{loc.name}</option>
+                        )})}   
                     </Form.Select>
                 </Form.Group>
             </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="" onClick={props.onHide}>Cancel</Button>
-          <Button onClick={props.onHide}>Submit</Button>
+          <Button onClick={() => {addCar()}}>Submit</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -86,6 +168,7 @@ export default function Gyrocars({token}) {
             <AddNewGyrocar
                 show={modalShow}
                 onHide={() => setModalShow(false)}
+                token={token}
             />
             <Header title="Gyrocars" />
             <Container as={'section'}>
