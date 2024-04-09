@@ -177,12 +177,12 @@ function App() {
             }/>
             <Route path="customers" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
-                <Customers />
+                <Customers token={token} />
               </ProtectedRoute>
             }/>
             <Route path="/customers/customer" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
-                <Customer />
+                <Customer token={token} />
               </ProtectedRoute>
             }/>
             <Route path="/modifyreservation/modifyreservation" element={
@@ -202,12 +202,12 @@ function App() {
             }/>
             <Route path="messages" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
-                <Messages />
+                <Messages token={token} />
               </ProtectedRoute>
             }/>
              <Route path="/messages/message" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.custserveUp}>
-                <Message />
+                <Message token={token} />
               </ProtectedRoute>
             }/>
             <Route path="gyrocars" element={
