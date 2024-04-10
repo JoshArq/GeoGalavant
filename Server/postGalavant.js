@@ -721,9 +721,10 @@ async function getCustomerDetails(id){
   }
 }
 
-async function getMaintenance(){
+async function getMaintenance(carId){
   var query = {
-    text: "SELECT * FROM Maintenance"
+    text: "SELECT * FROM Maintenance WHERE Car = $1",
+    values: [carId]
   }
   try{
     return (await pool.query(query)).rows;

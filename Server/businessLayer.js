@@ -351,11 +351,17 @@ async function updateCar(auth,data){
     return {error: "Failed to update car"}
 }
 
-async function getWorkOrders(auth){
+async function getWorkOrders(auth, data){
     if(!auth.validToken){
         return {error: "invalid authorization"}
     }
-    let workOrders = await pg.getMaintenance();
+    if(data.carId == null || data.carId == undefined){
+        return {error: "carId must exist"}
+    }
+    if(!Number.isInteger(data.carId)){
+        return {error: "carId must be a number"};
+    }
+    let workOrders = await pg.getMaintenance(data.carId);
     if(workOrders == -1){
         return {error: "Failed to retrieve work orders"};
     }
