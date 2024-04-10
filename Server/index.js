@@ -28,7 +28,6 @@ router.get("/test", (req, res) => {
 
 router.get("/testToken", async (req, res) => {
   
-  
   const token = req.headers['auth-token']
   console.log(token)
   // const token = req.body.token
