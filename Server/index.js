@@ -604,7 +604,7 @@ router.put("/updateCar", async (req,res)=>{
 });
 
 //getWorkOrders
-router.get("/getWorkOrders", async (req,res)=>{
+router.post("/getWorkOrders", async (req,res)=>{
   const token = req.headers['auth-token'];
   var userAuth = await decodeToken(token);
   const inputData = req.body;
