@@ -3,8 +3,12 @@ const bl = require('./businessLayer.js')
 const pg = require('./postGalavant.js')
 require('dotenv').config()
 const bcrypt = require('bcrypt');
+var cron = require('node-cron');
 
 
+cron.schedule('0 21 * * *', () => {
+  console.log('running a task every minute');
+});
 
 
 const PORT = process.env.PORT || 5001;
@@ -45,7 +49,10 @@ router.get("/getStateProvince", async (req,res)=>{
 
 //TODO needs address fix after GR#2
 router.post("/createCustomer", async (req, res) => {
-  var custID = await pg.addUser(req.body)
+  
+  var data = req.body;
+
+  var custID = await pg.addUser(data)
 
   if(custID == -1){
     console.log("In if custID == -1")
@@ -68,7 +75,11 @@ router.post("/createCustomer", async (req, res) => {
     return;
   }
 
-  var statusID = await pg.addUserStatus(custID, 1)
+  var stripeCust = await bl.addStripeCustomer(data.creditCard.fullName)
+  data.stripeCust = stripeCust.id 
+
+  custSuccess = await pg.addCustomer(custID, data)
+  var statusID = await pg.addUserStatus(custID, 1, "Created Account")
 
   custSuccess = await pg.addCustomer(custID, req.body)
   if(custSuccess == 0){
@@ -79,8 +90,25 @@ router.post("/createCustomer", async (req, res) => {
     return;
   }
 
-  res.json({ success: true, sessionToken: "to_be_implemented", role: roleID});
+  // bl.addPaymentMethod(stripeCust, data.creditCard)
+
+
+  //TODO more error checking on the above
+  //if all good so far, send email
+  
+
+  res.json({ success: true});
 });
+
+
+router.get("/setupNewCustomerCard", async (req,res) => {
+  var client_secret = await bl.setupNewCustomerCard()
+  apiLog(client_secret)
+
+  res.json({client_secret: client_secret});
+
+
+})
 
 
 
@@ -346,6 +374,9 @@ router.delete("/removeCreditCard", (req, res) => {
 
 //TODO connect to backend
 router.get("/getLocations", async (req, res) => {
+  apiLog(req.body)
+  
+  
   var query = await pg.getAllStations();
   apiLog(query)
 
@@ -363,38 +394,22 @@ router.get("/getLocations", async (req, res) => {
     
     locations.push(resultItem)
   })
-
-router. 
   
   res.json({locations: locations})
-  
-  // res.json({
-  //   locations:[
-  //     {
-  //       stationID: 1,
-  //       name: "GyroGoGo Northwest", 
-  //       address: "The mall at Greece Ridge...",
-  //       latitude: 43.20,
-  //       longitude: -77.69
-  //     },
-  //     {
-  //       stationID: 2,
-  //       name: "GyroGoGo Northeast", 
-  //       address: "Town Center of Webster...",
-  //       latitude: 43.21,
-  //       longitude: -77.46
-  //     },
-  //     {
-  //       stationID: 3,
-  //       name: "GyroGoGo Center City", 
-  //       address: "Genesee Crossroads Garage...",
-  //       latitude: 43.16,
-  //       longitude: -77.61
-  //     }
-  //   ]
-  // });
+
 });
 
+
+router.post("/getAvailableLocations", async (req, res) => {
+  pickupDateTime = req.body.pickupDateTime
+  dropoffDateTime = req.body.dropoffDateTime
+  
+  var stations = await bl.getAvailableLocations(pickupDateTime, dropoffDateTime)
+
+  res.json(stations)
+
+
+})
 
 //addLocation
 router.post("/addLocation", async (req,res)=>{
@@ -409,73 +424,100 @@ router.post("/addLocation", async (req,res)=>{
 
 
 //TODO - connect to DB
-router.post("/makeReservation", (req, res) => {
-  //insert DB logic here
+router.post("/addReservation", async (req, res) => {
+  const token = req.headers['auth-token']
 
-  res.json({
-    success: true, 
-    reservationNumber: 1111
-  })
+  var userAuth = await decodeToken(token)
+
+  //validate user
+  if(userAuth.validToken){
+    var conf = bl.addReservation(userAuth.id, req.body)
+
+    res.json({
+      success: true, 
+      confirmationNumber: conf
+    })
+
+  } else {
+    res.json({
+      success: false, 
+      errorMessage: "User could not be validated"
+    })
+  }
+
 });
 
 
-//TODO - connect to DB
-router.get("/getUserReservations", (req, res) => {
-  //insert DB logic here
+router.delete("/deleteReservation", async (req, res) => {
+  var conf = await bl.deleteReservation(req.body.reservationID)
 
-  res.json({
-    reservations: [
-      {
-        reservationNumber: 1111,
-        pickupStationName: "GyroGoGo Northwest",
-        pickupStationAddress: "The mall at Greece Ridge...",
-        dropoffStationName: "GyroGoGo Center City",
-        dropoffStationAddress: "Genesee Crossroads Garage...",
-        pickupDateTime: "2012-04-23T18:25:43.511Z",
-        dropoffDateTime: "2012-04-23T18:25:43.511Z"
-      },
-      {
-        reservationNumber: 2222,
-        pickupStationName: "GyroGoGo Northwest",
-        pickupStationAddress: "The mall at Greece Ridge...",
-        dropoffStationName: "GyroGoGo Center City",
-        dropoffStationAddress: "Genesee Crossroads Garage...",
-        pickupDateTime: "2012-04-23T18:25:43.511Z",
-        dropoffDateTime: "2012-04-23T18:25:43.511Z"
-      },
-      {
-        reservationNumber: 3333,
-        pickupStationName: "GyroGoGo Northwest",
-        pickupStationAddress: "The mall at Greece Ridge...",
-        dropoffStationName: "GyroGoGo Center City",
-        dropoffStationAddress: "Genesee Crossroads Garage...",
-        pickupDateTime: "2012-04-23T18:25:43.511Z",
-        dropoffDateTime: "2012-04-23T18:25:43.511Z"
-      }   
-    ]
+
+  if(conf == 1){
+    res.json({success: true})
+  } else {
+    res.json({success: false,
+    errorMessage: "Could not find reservation."})
+  }
+
+})
+
+
+router.get("/getReservePrice", async (req, res) => {
+  var result = await bl.getReservePrice(req.body.pickupDateTime, req.body.dropoffDateTime )
+ 
+  res.json(result)
+
+});
+
+
+router.post("/editReservation", async (req, res) => {
+  await bl.editReservation(req.body)
+
+});
+
+
+
+router.get("/getUserReservations", async (req, res) => {
+  const token = req.headers['auth-token']
+
+  var userAuth = await decodeToken(token)
+
+  //validate user
+  if(userAuth.validToken){
+    var reservations = await bl.getCustomerReservations(userAuth.id)
+
+    res.json({
+      reservations: reservations
+    })
     
-  })
+  } else {
+    res.json({
+      success: false, 
+      errorMessage: "User could not be validated"
+    })
+  }
 });
 
 
 
+router.get("/getReservationsByUserID", async (req, res) => {
+  var user = req.body.userID
 
-
-
-//TODO - connect to DB
-router.get("/getUserReservationByID", (req, res) => {
-  //insert DB logic here
+  var reservations = await bl.getCustomerReservations(user)
 
   res.json({
-    reservationNumber: 3333,
-    pickupStationName: "GyroGoGo Northwest",
-    pickupStationAddress: "The mall at Greece Ridge...",
-    dropoffStationName: "GyroGoGo Center City",
-    dropoffStationAddress: "Genesee Crossroads Garage...",
-    pickupDateTime: "2012-04-23T18:25:43.511Z",
-    dropoffDateTime: "2012-04-23T18:25:43.511Z",
-    cardLastNumbers: "Credit card ending in ####"
-  });
+    reservations: reservations
+  })
+
+});
+
+
+router.get("/getReservationByID", async (req, res) => {
+  //insert DB logic here
+
+  var result = await bl.getReservationByID(req.body.reservationID)
+
+  res.json({result});
 
 });
 

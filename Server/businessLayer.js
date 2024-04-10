@@ -1,5 +1,27 @@
 const pg = require('./postGalavant.js');
 require('dotenv').config()
+var nodemailer = require('nodemailer');
+const emailUser = process.env.EMAIL_USER
+const emailPass = process.env.EMAIL_PASSWORD
+
+// console.log(emailUser, emailPass)
+
+var transporter = nodemailer.createTransport({
+  host: "smtp.zoho.com",
+  secure: true,
+  port: 465,
+    auth: {
+      user: emailUser,
+      pass: emailPass
+    }
+  });
+
+var stripe_pk = process.env.STRIPE_PUBLIC_KEY;
+var stripe_sk = process.env.STRIPE_SECRET_KEY;
+
+const Stripe = require('stripe');
+const stripe = Stripe(stripe_sk)
+
 
 async function sampleFunction(id, startDate, endDate, obj){
     //check that a variable is present
@@ -31,6 +53,92 @@ async function sampleFunction(id, startDate, endDate, obj){
     //repeat for other fields
     //await pg.updateCar(updateObject);    
 }
+
+
+async function addStripeCustomer(name, email){
+    
+    const customer = await stripe.customers.create({
+        name: name,
+        email: email,
+      });
+
+      return customer
+}
+
+
+//must pass in Stripe cust id, not our internal ids
+async function deleteStripeCustomer(custID){
+    const deleted = await stripe.customers.del(custID);
+    return deleted
+}
+
+
+async function setupNewCustomerCard(){
+    const customer = await stripe.customers.create();
+
+
+    const setupIntent = await stripe.setupIntents.create({
+        customer: customer.id,
+        payment_method_types: ['card'],
+      });
+
+    return setupIntent.client_secret
+
+
+}
+
+
+//must pass in Stripe cust id
+async function addPaymentMethod(custID, cardInfo){
+    console.log(cardInfo)
+
+    var date = cardInfo.expirationDate.split("/")
+    var expMonth = date[0]
+    var expYear = "20" + date[1]
+    
+    const paymentMethod = await stripe.paymentMethods.create({
+        type: 'card',
+        card: {
+          number: cardInfo.number,
+          exp_month: expMonth,
+          exp_year: expYear,
+          cvc: cardInfo.ccv,
+        },
+      });
+
+    const result = await stripe.paymentMethods.attach(
+        paymentMethod.id,
+        {
+        customer: custID,
+        }
+    );
+
+    console.log(result)
+}
+
+//Cases:
+//AccountCreation
+async function emailCustomer (email, content){
+    var mailOptions
+
+        mailOptions = {
+            from: 'geogalavant@gmail.com',
+            to: email,
+            subject: 'Geogalavant Account Created',
+            text: content
+          };
+    
+    
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    
+}
+
 
 async function getAllCustomers(userAuth){
     if(!userAuth.validToken){
@@ -605,6 +713,225 @@ async function getStateProvince(auth){
     return{error: "failed to get states and provinces"}
 }
 
+
+//TODO finish DB logic
+async function getAvailableLocations(t1, t2){
+    var pickup = new Date(t1)
+    var dropoff = new Date(t2)
+    var today = new Date()
+
+    var locations = []
+
+    //if reservation for today
+    if(pickup.getDate() === today.getDate() &&
+    pickup.getMonth() === today.getMonth() &&
+    pickup.getYear() === today.getYear()) {
+
+        //get available stations today
+        var stations = await pg.getAllStations()
+
+        for(i = 0; i < stations.length; i++){
+            let available = false;
+
+            if(!stations[i].isclosed){
+                cars = await pg.getStationCars(stations[i].stationid)
+
+                
+
+                for(j = 0; j < cars.length; j++){
+                    
+                    if(cars[j].carstatusid == 1){
+                        available = true;
+                        break;
+                    }
+                }
+
+                if(available){
+                    var thisStn = {};
+
+                    thisStn.stationID = stations[i].stationid
+                    thisStn.name = stations[i].stationname
+                    thisStn.address = stations[i].address
+                    thisStn.latitude = parseFloat(stations[i].minlatitude)
+                    thisStn.longitude = parseFloat(stations[i].minlongitude)
+
+                    locations.push(thisStn)
+                  
+
+                }
+            }
+        }
+
+    } else { //reservation for a future day
+        var available = await pg.canFleetAccomodateDay(pickup)
+
+        if(available != 1){
+            return {success: false, errorMessage: "We cannot accomodate your request for this day."}
+        }
+
+        var stations = await pg.getAllStations()
+
+        //check for overlap w/ fleet on every day
+        //return all stations
+        for(i = 0; i < stations.length; i++){
+            var thisStn = {};
+
+            thisStn.stationID = stations[i].stationid
+            thisStn.name = stations[i].stationname
+            thisStn.address = stations[i].address
+            thisStn.latitude = parseFloat(stations[i].minlatitude)
+            thisStn.longitude = parseFloat(stations[i].minlongitude)
+
+            locations.push(thisStn)
+        }
+    }
+
+
+    return {locations: locations}
+}
+
+
+async function addReservation(userID, data){
+    custID = (await pg.getCustomerByUserId(userID)).customerid
+
+    data.customerId = custID;
+    
+    var conf = "" + (Math.floor(Math.random() * 10000));
+    while(conf.length < 4){
+        conf = "0" + conf
+    }
+
+    data.confirmationNumber = conf
+
+    pg.addReservation(data)
+
+
+    return data.confirmationNumber
+   
+   
+    //assign car ID if today
+        //assign car day before/day of if future - TODO?
+}
+
+
+async function getCustomerReservations(userID){
+    var result = []
+    
+    custID = (await pg.getCustomerByUserId(userID)).customerid
+
+    reservations = await pg.getCustomerReservations(custID)
+
+    for(i = 0; i < reservations.length; i++){
+        var thisRes ={}
+
+        thisRes.reservationNumber = reservations[i].rentalid
+        thisRes.pickupDateTime = reservations[i].scheduledpickuptime
+        thisRes.dropoffDateTime = reservations[i].scheduleddropofftime
+
+        var pickupStn = await pg.getStation(reservations[i].pickupstationid)
+
+        thisRes.pickupStationName = pickupStn.stationname
+        thisRes.pickupStationAddress = pickupStn.address
+
+        var dropoffStn = await pg.getStation(reservations[i].dropoffstationid)
+
+        thisRes.dropoffStationName = dropoffStn.stationname
+        thisRes.dropoffStationAddress = dropoffStn.address
+
+        result.push(thisRes)
+
+    }
+
+    return result
+
+}
+
+
+async function getReservationByID(resID){
+    var reservation = await pg.getReservation(resID)
+    var result = {}
+
+    result.pickupDateTime = reservation.scheduledpickuptime
+    result.dropoffDateTime = reservation.scheduleddropofftime
+    result.confirmationNumber = reservation.confirmationnumber
+
+    var pickupStn = await pg.getStation(reservation.pickupstationid)
+
+    result.pickupStationName = pickupStn.stationname
+    result.pickupStationAddress = pickupStn.address
+
+    var dropoffStn = await pg.getStation(reservation.dropoffstationid)
+
+    result.dropoffStationName = dropoffStn.stationname
+    result.dropoffStationAddress = dropoffStn.address
+
+    return result
+}
+
+async function deleteReservation(resID){
+    return await pg.removeReservation(resID)
+}
+
+
+async function editReservation(data){
+    // return await pg.removeReservation(resID)
+
+    var res = await pg.getReservation(data.reservationID)
+    console.log(res.confirmationnumber)
+
+    var newRes = {}
+
+    newRes.rentalId = data.reservationID
+    newRes.customerId = res.customerid
+    newRes.pickupStationId = data.pickupStation
+    newRes.scheduledPickupTime = data.pickupDateTime
+    newRes.scheduledDropoffTime = data.dropoffDateTime
+    newRes.cardId = null
+    newRes.carId = null
+    newRes.pickupTime = null
+    newRes.dropoffTime = null 
+    newRes.confirmationNumber = res.confirmationnumber
+    
+
+    await pg.updateReservation(newRes)
+
+    // res.pickupDateTime = data.pickupDateTime
+
+
+}
+
+
+async function getReservePrice(d1, d2){
+    pickup = new Date(d1)
+    dropoff = new Date (d2)
+
+    if(pickup.getDate() != dropoff.getDate() || pickup.getMonth() != dropoff.getMonth() || pickup.getYear() != dropoff.getYear()){
+        return {success: false, errorMessage: "Reservation pickup & dropoff must be on the same day."}
+    }
+    else if(dropoff.valueOf() - pickup.valueOf() > 21600000){
+        return {success: false, errorMessage: "Reservation pickup & dropoff must be within 6 hours of eachother."}
+    }
+    else {
+
+        var hours = (dropoff.valueOf() - pickup.valueOf()) / 3600000
+
+        var fees = await pg.getFeesByCity("Rochester")
+
+        var total = hours * fees.hourlyrate
+
+        if(total > fees.dailymaximum){
+            total = parseFloat(fees.dailymaximum)
+        }
+
+        return {cost: total.toFixed(2)}
+    }
+
+}
+
+
+
+
+
 module.exports = {
     getAllCustomers,
     getCustomerDetails,
@@ -625,5 +952,17 @@ module.exports = {
     getAllEmployees,
     changeEmployeeStatus,
     getEmployeeDetails,
-    getStateProvince
+    getStateProvince,
+    addStripeCustomer,
+    deleteStripeCustomer,
+    addPaymentMethod,
+    emailCustomer,
+    setupNewCustomerCard,
+    getAvailableLocations,
+    addReservation,
+    getCustomerReservations,
+    getReservationByID,
+    deleteReservation,
+    getReservePrice,
+    editReservation
 }
