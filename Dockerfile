@@ -8,9 +8,9 @@ WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y git
 
 # Clone the application code from the GitHub repository
-RUN git clone -b clustertesting https://github.com/JoshArq/GeoGalavant .
+RUN git clone https://github.com/JoshArq/GeoGalavant .
 WORKDIR /usr/src/app/
-
+RUN git pull
 # Install dependencies
 RUN npm install
 RUN npm install -g react-scripts react react-bootstrap react-dom react-router-dom
