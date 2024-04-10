@@ -491,26 +491,6 @@ async function addEmployee(auth, data){
         return {error: "email must exist"}
     }
 
-    //check address
-    if(data.address == null || data.address == undefined){
-        return {error: "address must exist"}
-    }
-
-    //check zipcode
-    if(data.zipcode == null || data.zipcode == undefined){
-        return {error: "zipcode must exist"}
-    }
-
-    //check associatedCity
-    if(data.associatedCity == null || data.associatedCity == undefined){
-        return {error: "associatedCity must exist"}
-    }
-
-    //check stateProvinceId
-    if(data.stateProvinceId == null || data.stateProvinceId == undefined){
-        return {error: "stateProvinceId must exist"}
-    }
-
     //check role
     if(data.role == null || data.role == undefined){
         return {error: "role must exist"}
@@ -527,9 +507,7 @@ async function addEmployee(auth, data){
         return {error: "invalid status"}
     }
     data.driversLicense = {firstName: data.firstName, lastName:data.lastName}
-    // data.driversLicense.firstName = data.firstName;
-    // data.driversLicense.lastName = data.lastName;
-    // console.log(data);
+
     //insert user
     const empId = await pg.addUser(data);
 
