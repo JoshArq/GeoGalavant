@@ -401,14 +401,14 @@ router.get("/getLocations", async (req, res) => {
 
 
 router.post("/getAvailableLocations", async (req, res) => {
-  pickupDateTime = req.body.pickupDateTime
-  dropoffDateTime = req.body.dropoffDateTime
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
   
-  var stations = await bl.getAvailableLocations(pickupDateTime, dropoffDateTime)
+  var stations = await bl.getAvailableLocations(userAuth, inputData)
 
   res.json(stations)
-
-
 })
 
 //addLocation
@@ -423,28 +423,10 @@ router.post("/addLocation", async (req,res)=>{
 });
 
 
-//TODO - connect to DB
 router.post("/addReservation", async (req, res) => {
   const token = req.headers['auth-token']
-
   var userAuth = await decodeToken(token)
-
-  //validate user
-  if(userAuth.validToken){
-    var conf = bl.addReservation(userAuth.id, req.body)
-
-    res.json({
-      success: true, 
-      confirmationNumber: conf
-    })
-
-  } else {
-    res.json({
-      success: false, 
-      errorMessage: "User could not be validated"
-    })
-  }
-
+  res.json(await bl.addReservation(userAuth, req.body))
 });
 
 

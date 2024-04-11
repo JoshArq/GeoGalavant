@@ -715,9 +715,18 @@ async function getStateProvince(auth){
 
 
 //TODO finish DB logic
-async function getAvailableLocations(t1, t2){
-    var pickup = new Date(t1)
-    var dropoff = new Date(t2)
+async function getAvailableLocations(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.pickup == null || data.pickup == undefined){
+        return {error: "must have pickup"}
+    }
+    if(data.dropoff == null || data.dropoff == undefined){
+        return {error: "must have pickup"}
+    }
+    var pickup = new Date(data.pickup)
+    var dropoff = new Date(data.dropoff)
     var today = new Date()
 
     var locations = []
@@ -728,41 +737,15 @@ async function getAvailableLocations(t1, t2){
     pickup.getYear() === today.getYear()) {
 
         //get available stations today
-        var stations = await pg.getAllStations()
+        var res = await pg.getCurrentCarAvailability()
 
-        for(i = 0; i < stations.length; i++){
-            let available = false;
-
-            if(!stations[i].isclosed){
-                cars = await pg.getStationCars(stations[i].stationid)
-
-                
-
-                for(j = 0; j < cars.length; j++){
-                    
-                    if(cars[j].carstatusid == 1){
-                        available = true;
-                        break;
-                    }
-                }
-
-                if(available){
-                    var thisStn = {};
-
-                    thisStn.stationID = stations[i].stationid
-                    thisStn.name = stations[i].stationname
-                    thisStn.address = stations[i].address
-                    thisStn.latitude = parseFloat(stations[i].minlatitude)
-                    thisStn.longitude = parseFloat(stations[i].minlongitude)
-
-                    locations.push(thisStn)
-                  
-
-                }
-            }
+        if(res == -1){
+            return {error: "failed to find"}
         }
+        return {locations: res};
 
-    } else { //reservation for a future day
+    } 
+    else { //reservation for a future day
         var available = await pg.canFleetAccomodateDay(pickup)
 
         if(available != 1){
@@ -779,8 +762,8 @@ async function getAvailableLocations(t1, t2){
             thisStn.stationID = stations[i].stationid
             thisStn.name = stations[i].stationname
             thisStn.address = stations[i].address
-            thisStn.latitude = parseFloat(stations[i].minlatitude)
-            thisStn.longitude = parseFloat(stations[i].minlongitude)
+            thisStn.latitude = stations[i].minlatitude
+            thisStn.longitude = stations[i].minlongitude
 
             locations.push(thisStn)
         }
@@ -791,8 +774,19 @@ async function getAvailableLocations(t1, t2){
 }
 
 
-async function addReservation(userID, data){
-    custID = (await pg.getCustomerByUserId(userID)).customerid
+async function addReservation(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+
+    const cust = (await pg.getCustomerByUserId(auth.id))
+    if(cust == undefined){
+        return {error: "failed to find customer"}
+    }
+    const custID = cust.customerid;
+    if(custID == undefined){
+        return {error: "failed to find customer"}
+    }
 
     data.customerId = custID;
     
@@ -803,14 +797,52 @@ async function addReservation(userID, data){
 
     data.confirmationNumber = conf
 
-    pg.addReservation(data)
-
-
-    return data.confirmationNumber
-   
-   
-    //assign car ID if today
-        //assign car day before/day of if future - TODO?
+    if(data.pickupStation == null || data.pickupStation == undefined){
+        return {error: "pickupStation must exist"}
+    }
+    if(data.dropoffStation == null || data.dropoffStation == undefined){
+        return {error: "dropoffStation must exist"}
+    }
+    if(data.pickupDateTime == null || data.pickupDateTime == undefined){
+        return {error: "pickupDateTime must exist"}
+    }
+    if(data.dropoffDateTime == null || data.dropoffDateTime == undefined){
+        return {error: "dropoffDateTime must exist"}
+    }
+    const today = new Date();
+    const pickup = new Date(data.pickupDateTime);
+    //for same day reservations, assign a car
+    if(pickup.getDate() === today.getDate() &&
+    pickup.getMonth() === today.getMonth() &&
+    pickup.getYear() === today.getYear()) {
+        const car = (await pg.getStationCars(data.pickupStation))[0]
+        if(car == undefined || null){
+            return {error: "Failed to find car"}
+        }
+        data.carId = car.carid;
+        var res = await pg.addReservationToday(data);
+        if(res == -1){
+            return {error: "Failed to reserve"}
+        }
+        res = await pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 3})
+        return {conf: data.confirmationNumber}
+    }
+    else{
+        //check that there are enough cars
+        var res = await pg.canFleetAccomodateDay(new Date(data.pickupDateTime))
+        if(res == 1){
+            res = await pg.addReservation(data)
+            if(res == -1){
+                return {error: "Failed to reserve"}
+            }
+            else{
+                return {conf: data.confirmationNumber}
+            }
+        }
+        else{
+            return {error:"Fleet cannot accomadate reservation"}
+        }
+    }
 }
 
 
