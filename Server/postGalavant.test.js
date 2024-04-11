@@ -2,7 +2,8 @@
 //https://www.w3schools.com/nodejs/ref_assert.asp
 
 const assert = require('assert');
-const pg = require('./postGalavant.js')
+const pg = require('./postGalavant.js');
+const { editReservation } = require('./businessLayer.js');
 
 
 async function main(){ 
@@ -149,7 +150,7 @@ async function main(){
     // console.log( await pg.getCarLocations(1) );
     // console.log("Removing all");
     // console.log(await pg.removeCarLocationsBefore("2025-02-16"));
-    console.log(await pg.getAllTickets())
+    // console.log(await pg.getAllTickets())
     //Customer Creation Tests
     var custObj = {
         "username": "max123",
@@ -172,8 +173,16 @@ async function main(){
         }
     }
     
+   
+
+
     // userID = await pg.createUser(custObj);
     // await pg.addUserRole(userID, 2)
+    var d1 = new Date()
+    var d2 = new Date("09/04/2024")
+    // console.log(await pg.canFleetAccomodateDays(d1, d2))
+
+    console.log(await pg.canFleetAccomodateDay(new Date()))
 
 
 }

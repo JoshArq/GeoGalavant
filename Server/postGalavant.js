@@ -65,12 +65,16 @@ async function addCustomer(userID, obj){
   var licenseID = obj.driversLicense.ID
   var licenseExpy = obj.driversLicense. expirationDate
   var state = obj.driversLicense.state
+  var stripeID = obj.stripeCust
   var appliedBefore = false
   //var appliedBefore = obj.appliedBefore
   var agreed = obj.tos
 
   console.log(state)
   
+
+
+
   var query = {
     text: "SELECT * from StateProvince WHERE StateProvinceName = $1",
     values: [state]
@@ -80,8 +84,8 @@ async function addCustomer(userID, obj){
   const stateCode = res.rows[0].stateprovinceid
 
   query = {
-    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID, HasAppliedBefore, HasAgreedToTerms) VALUES ($1, $2, $3, $4, $5, $6)",
-    values: [licenseID, licenseExpy, stateCode, userID, appliedBefore, agreed]
+    text: "INSERT INTO Customer (LicenseNumber, LicenseExpires, StateProvinceID, UserID, HasAppliedBefore, HasAgreedToTerms, StripeID) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+    values: [licenseID, licenseExpy, stateCode, userID, appliedBefore, agreed, stripeID]
   };
 
   const res2 = await pool.query(query);
@@ -362,8 +366,8 @@ async function getReservation(rentalId){
 
 async function addReservation(obj){
   var query ={
-    text: "INSERT INTO Rental (CustomerID, PickupStationID, ConfirmationNumber, DropoffStationID, ScheduledPickupTime, ScheduledDropoffTime, Rate, Fees, CardID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING RentalID",
-    values: [obj.customerId, obj.pickupStationId, obj.confirmationNumber, obj.dropoffStationId, obj.scheduledPickupTime, obj.scheduledDropoffTime, obj.rate, obj.fees, obj.cardId]
+    text: "INSERT INTO Rental (CustomerID, PickupStationID, ConfirmationNumber, DropoffStationID, ScheduledPickupTime, ScheduledDropoffTime, FeeID)VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING RentalID",
+    values: [obj.customerId, obj.pickupStation, obj.confirmationNumber, obj.dropoffStation, obj.pickupDateTime, obj.dropoffDateTime, 1]
   };
   try{
     return (await pool.query(query)).rows[0].rentalid;
@@ -376,8 +380,8 @@ async function addReservation(obj){
 
 async function updateReservation(obj){
   var query ={
-    text: "UPDATE Rental SET CustomerID = $1, PickupStationID=$2, ScheduledPickupTime=$3, ScheduledDropoffTime=$4, Rate=$5, Fees=$6, CardID=$7, CarID=$8, PickupTime=$9, DropoffTime=$10, ConfirmationNumber=11 WHERE RentalID = $12",
-    values: [obj.customerId, obj.pickupStationId, obj.scheduledPickupTime, obj.scheduledDropoffTime, obj.rate, obj.fees, obj.cardId, obj.carId, obj.pickupTime, obj.dropoffTime, obj.confirmationNumber, obj.rentalId]
+    text: "UPDATE Rental SET CustomerID = $1, PickupStationID=$2, ScheduledPickupTime=$3, ScheduledDropoffTime=$4, FeeID = $5, CardID=$6, CarID=$7, PickupTime=$8, DropoffTime=$9, ConfirmationNumber=$10 WHERE RentalID = $11",
+    values: [obj.customerId, obj.pickupStationId, obj.scheduledPickupTime, obj.scheduledDropoffTime, 1, obj.cardId, obj.carId, obj.pickupTime, obj.dropoffTime, obj.confirmationNumber, obj.rentalId]
   };
   try{
     return (await pool.query(query)).rowCount;
@@ -639,6 +643,17 @@ async function removeCarLocationsBefore(time){
   }
 }
 
+
+async function getFeesByCity(city){
+  var query = {
+    text: "SELECT * FROM Fee WHERE City = $1",
+    values: [city]
+  }
+
+  return (await pool.query(query)).rows[0]
+}
+
+
 async function addTicket(obj){
   var query = {
     text: "INSERT INTO TICKET (Name, Phone, Email, Comment) VALUES ($1, $2, $3, $4) RETURNING TicketID",
@@ -721,9 +736,10 @@ async function getCustomerDetails(id){
   }
 }
 
-async function getMaintenance(){
+async function getMaintenance(carId){
   var query = {
-    text: "SELECT * FROM Maintenance"
+    text: "SELECT * FROM Maintenance WHERE Car = $1",
+    values: [carId]
   }
   try{
     return (await pool.query(query)).rows;
@@ -820,6 +836,35 @@ async function getStateProvince(){
 }
 
 
+
+async function canFleetAccomodateDay(date){
+  
+  var startDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+  var endDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
+  var query = {
+    text: "SELECT count(*) FROM Rental WHERE ScheduledPickupTime BETWEEN $1 AND $2",
+    values: [startDay.toJSON(), endDay.toJSON()]
+  }
+
+  var carQuery = {
+      text: "SELECT count(*) FROM Car",
+  }
+  try{
+    var reservationCount =  (await pool.query(query)).rows[0].count;
+    var carCount =  (await pool.query(carQuery)).rows[0].count;
+
+    if(reservationCount >= carCount){
+      return 0
+    }
+    
+    return 1
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 module.exports = {
   pulseCheck, 
   addUser, 
@@ -862,12 +907,14 @@ module.exports = {
   getCurrentLocations,
   addCarLocation,
   removeCarLocationsBefore,
+  getFeesByCity,
   addTicket,
   updateTicket,
   getAllTickets,
   getTicket,
   getAllCustomers,
   getCustomerDetails,
+  canFleetAccomodateDay,
   getMaintenance,
   addMaintenance,
   getAllEmployees,
