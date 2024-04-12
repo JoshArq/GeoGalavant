@@ -146,7 +146,6 @@ async function getCustomerByUserId(userID){
 
   const res = await pool.query(query);
   return res.rows[0];
-
 }
 
 
@@ -378,6 +377,20 @@ async function addReservation(obj){
   }
 }
 
+async function addReservationToday(obj){
+  var query ={
+    text: "INSERT INTO Rental (CustomerID, PickupStationID, ConfirmationNumber, DropoffStationID, ScheduledPickupTime, ScheduledDropoffTime, CarID, FeeID)VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING RentalID",
+    values: [obj.customerId, obj.pickupStation, obj.confirmationNumber, obj.dropoffStation, obj.pickupDateTime, obj.dropoffDateTime, obj.carId, 1]
+  };
+  try{
+    return (await pool.query(query)).rows[0].rentalid;
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
 async function updateReservation(obj){
   var query ={
     text: "UPDATE Rental SET CustomerID = $1, PickupStationID=$2, ScheduledPickupTime=$3, ScheduledDropoffTime=$4, FeeID = $5, CardID=$6, CarID=$7, PickupTime=$8, DropoffTime=$9, ConfirmationNumber=$10 WHERE RentalID = $11",
@@ -478,7 +491,7 @@ async function addCreditCard(obj){
 
 async function getStationCars(stationId){
   var query = {
-    text: "SELECT * FROM Car WHERE stationId = $1",
+    text: "SELECT * FROM Car WHERE stationId = $1 AND CarStatusID=1",
     values: [stationId]
   };
   try{
@@ -835,8 +848,6 @@ async function getStateProvince(){
   }
 }
 
-
-
 async function canFleetAccomodateDay(date){
   
   var startDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
@@ -858,6 +869,20 @@ async function canFleetAccomodateDay(date){
     }
     
     return 1
+  }
+  catch(err){
+    console.log(err);
+    return -1;
+  }
+}
+
+async function getCurrentCarAvailability(){
+  var query = {
+    text: "SELECT COUNT(Car.CarID) FILTER (WHERE Car.CarStatusID = 1 AND Station.IsClosed = false) AS cars, Station.StationID AS stationID, Station.StationName AS name, Station.Address, Station.MinLatitude AS latitude, Station.MinLongitude AS longitude FROM Station RIGHT JOIN Car ON Car.StationID = Station.StationID GROUP BY Station.StationID, Station.StationName, Station.Address, Station.MinLatitude, Station.MinLongitude"
+  };
+  try{
+    const returnVal =  await (pool.query(query));
+    return returnVal.rows;
   }
   catch(err){
     console.log(err);
@@ -889,8 +914,9 @@ module.exports = {
   getReservation, 
   updateReservation, 
   addReservation, 
+  addReservationToday,
   removeReservation, 
-  getCreditCardsByCustomer, 
+  getCreditCardsByCustomer,
   getCreditCard, 
   addCreditCard, 
   removeCreditCard, 
@@ -921,5 +947,6 @@ module.exports = {
   getEmployee,
   updateEmployeeStatus,
   addEmployee,
-  getStateProvince
+  getStateProvince,
+  getCurrentCarAvailability
 }
