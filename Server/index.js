@@ -431,30 +431,26 @@ router.post("/addReservation", async (req, res) => {
 
 
 router.delete("/deleteReservation", async (req, res) => {
-  var conf = await bl.deleteReservation(req.body.reservationID)
-
-
-  if(conf == 1){
-    res.json({success: true})
-  } else {
-    res.json({success: false,
-    errorMessage: "Could not find reservation."})
-  }
-
+  const token = req.headers['auth-token'];
+  const userAuth = await decodeToken(token);
+  const conf = await bl.deleteReservation(userAuth, req.body)
+  res.json(conf);
 })
 
 
 router.get("/getReservePrice", async (req, res) => {
-  var result = await bl.getReservePrice(req.body.pickupDateTime, req.body.dropoffDateTime )
- 
+  const token = req.headers['auth-token'];
+  const userAuth = await decodeToken(token);
+  const result = await bl.getReservePrice(userAuth, req.body )
   res.json(result)
-
 });
 
 
 router.post("/editReservation", async (req, res) => {
-  await bl.editReservation(req.body)
-
+  const token = req.headers['auth-token'];
+  const userAuth = await decodeToken(token);
+  const conf = await bl.editReservation(userAuth, req.body);
+  res.json(conf);
 });
 
 
@@ -463,10 +459,10 @@ router.get("/getUserReservations", async (req, res) => {
   const token = req.headers['auth-token']
 
   var userAuth = await decodeToken(token)
-
+  const body = {userID: userAuth.id}
   //validate user
   if(userAuth.validToken){
-    var reservations = await bl.getCustomerReservations(userAuth.id)
+    var reservations = await bl.getCustomerReservations(userAuth, body)
 
     res.json({
       reservations: reservations
@@ -474,8 +470,7 @@ router.get("/getUserReservations", async (req, res) => {
     
   } else {
     res.json({
-      success: false, 
-      errorMessage: "User could not be validated"
+      error: "User could not be validated"
     })
   }
 });
@@ -483,9 +478,9 @@ router.get("/getUserReservations", async (req, res) => {
 
 
 router.get("/getReservationsByUserID", async (req, res) => {
-  var user = req.body.userID
-
-  var reservations = await bl.getCustomerReservations(user)
+  const token = req.headers['auth-token']
+  const userAuth = await decodeToken(token)
+  const reservations = await bl.getCustomerReservations(userAuth, req.body)
 
   res.json({
     reservations: reservations
@@ -495,12 +490,11 @@ router.get("/getReservationsByUserID", async (req, res) => {
 
 
 router.get("/getReservationByID", async (req, res) => {
-  //insert DB logic here
+  const token = req.headers['auth-token']
+  const userAuth = await decodeToken(token)
+  const result = await bl.getReservationByID(userAuth, req.body)
 
-  var result = await bl.getReservationByID(req.body.reservationID)
-
-  res.json({result});
-
+  res.json(result);
 });
 
 //get all customers for employees
