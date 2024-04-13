@@ -162,7 +162,7 @@ function App() {
             }/>
             <Route path="dashboard" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.managerUp}>
-                <Dashboard />
+                <Dashboard token={token} />
               </ProtectedRoute>
             }/>
             <Route path="content" element={
