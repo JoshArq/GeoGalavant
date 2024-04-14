@@ -136,7 +136,7 @@ function AddNewLocation(props) {
     );
   }
 
-export default function Dashboard({token}) {
+export default function Dashboard({token, isadmin}) {
     const [modalShow, setModalShow] = useState(false);
     const [locations, setLocations] = useState([]);
     const [isValid, setIsValid] = useState(true);
@@ -157,7 +157,6 @@ export default function Dashboard({token}) {
                 }
                 else {
                     setLocations(data.locations);
-                    console.log(data)
                 }
           }).catch(error => {
             setIsValid(false);
@@ -167,19 +166,20 @@ export default function Dashboard({token}) {
 
     return (
         <main>
-             <AddNewLocation
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                token={token}
-            />
-
+            {isadmin ?
+                <AddNewLocation
+                    show={modalShow}
+                    onHide={() => setModalShow(false)}
+                    token={token}
+                />
+            : '' }
             <Header title="Dashboard" />
             <Container as={'section'}>
                 <Alert variant="danger" className={'text-danger bg-danger-subtle' + (isValid ? ' d-none' : '')}>
                     There was an issue loading the data. Please try again.
                 </Alert>
 
-                <Button onClick={() => setModalShow(true)} className="mt-3"><i class="bi bi-plus"></i> Add New Location</Button>
+                <Button onClick={() => setModalShow(true)} className="mt-3" disabled={!isadmin}><i class="bi bi-plus"></i> Add New Location</Button>
 
                 <Row className="p-4">
                     {locations.map((loc) => {return(

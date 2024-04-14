@@ -162,7 +162,7 @@ function App() {
             }/>
             <Route path="dashboard" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.managerUp}>
-                <Dashboard token={token} />
+                <Dashboard token={token} isadmin={roles.admins.includes(role)} /> {/*Roles needed for perms with whether user can create locations*/}
               </ProtectedRoute>
             }/>
             <Route path="content" element={
@@ -222,12 +222,12 @@ function App() {
             }/>
             <Route path="employees" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.admins}>
-                <Employees />
+                <Employees token={token} issysadmin={roles.sysadmin.includes(role)} /> {/*Roles needed for perms with what type of accts user can create*/}
               </ProtectedRoute>
             }/>
             <Route path="/employees/employee" element={
               <ProtectedRoute role={role}  clearData={clearUserData} permitted={roles.admins}>
-                <Employee />
+                <Employee token={token} />
               </ProtectedRoute>
             }/>
             <Route path="/employee/account" element={
