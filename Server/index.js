@@ -438,7 +438,7 @@ router.delete("/deleteReservation", async (req, res) => {
 })
 
 
-router.get("/getReservePrice", async (req, res) => {
+router.post("/getReservePrice", async (req, res) => {
   const token = req.headers['auth-token'];
   const userAuth = await decodeToken(token);
   const result = await bl.getReservePrice(userAuth, req.body )
@@ -477,7 +477,7 @@ router.get("/getUserReservations", async (req, res) => {
 
 
 
-router.get("/getReservationsByUserID", async (req, res) => {
+router.post("/getReservationsByUserID", async (req, res) => {
   const token = req.headers['auth-token']
   const userAuth = await decodeToken(token)
   const reservations = await bl.getCustomerReservations(userAuth, req.body)
@@ -489,7 +489,7 @@ router.get("/getReservationsByUserID", async (req, res) => {
 });
 
 
-router.get("/getReservationByID", async (req, res) => {
+router.post("/getReservationByID", async (req, res) => {
   const token = req.headers['auth-token']
   const userAuth = await decodeToken(token)
   const result = await bl.getReservationByID(userAuth, req.body)
