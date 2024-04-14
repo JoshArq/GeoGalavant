@@ -401,14 +401,14 @@ router.get("/getLocations", async (req, res) => {
 
 
 router.post("/getAvailableLocations", async (req, res) => {
-  pickupDateTime = req.body.pickupDateTime
-  dropoffDateTime = req.body.dropoffDateTime
+  const token = req.headers['auth-token']
+  const inputData = req.body;
+
+  var userAuth = await decodeToken(token)
   
-  var stations = await bl.getAvailableLocations(pickupDateTime, dropoffDateTime)
+  var stations = await bl.getAvailableLocations(userAuth, inputData)
 
   res.json(stations)
-
-
 })
 
 //addLocation
@@ -423,56 +423,34 @@ router.post("/addLocation", async (req,res)=>{
 });
 
 
-//TODO - connect to DB
 router.post("/addReservation", async (req, res) => {
   const token = req.headers['auth-token']
-
   var userAuth = await decodeToken(token)
-
-  //validate user
-  if(userAuth.validToken){
-    var conf = bl.addReservation(userAuth.id, req.body)
-
-    res.json({
-      success: true, 
-      confirmationNumber: conf
-    })
-
-  } else {
-    res.json({
-      success: false, 
-      errorMessage: "User could not be validated"
-    })
-  }
-
+  res.json(await bl.addReservation(userAuth, req.body))
 });
 
 
 router.delete("/deleteReservation", async (req, res) => {
-  var conf = await bl.deleteReservation(req.body.reservationID)
-
-
-  if(conf == 1){
-    res.json({success: true})
-  } else {
-    res.json({success: false,
-    errorMessage: "Could not find reservation."})
-  }
-
+  const token = req.headers['auth-token'];
+  const userAuth = await decodeToken(token);
+  const conf = await bl.deleteReservation(userAuth, req.body)
+  res.json(conf);
 })
 
 
-router.get("/getReservePrice", async (req, res) => {
-  var result = await bl.getReservePrice(req.body.pickupDateTime, req.body.dropoffDateTime )
- 
+router.post("/getReservePrice", async (req, res) => {
+  const token = req.headers['auth-token'];
+  const userAuth = await decodeToken(token);
+  const result = await bl.getReservePrice(userAuth, req.body )
   res.json(result)
-
 });
 
 
 router.post("/editReservation", async (req, res) => {
-  await bl.editReservation(req.body)
-
+  const token = req.headers['auth-token'];
+  const userAuth = await decodeToken(token);
+  const conf = await bl.editReservation(userAuth, req.body);
+  res.json(conf);
 });
 
 
@@ -481,10 +459,10 @@ router.get("/getUserReservations", async (req, res) => {
   const token = req.headers['auth-token']
 
   var userAuth = await decodeToken(token)
-
+  const body = {userID: userAuth.id}
   //validate user
   if(userAuth.validToken){
-    var reservations = await bl.getCustomerReservations(userAuth.id)
+    var reservations = await bl.getCustomerReservations(userAuth, body)
 
     res.json({
       reservations: reservations
@@ -492,18 +470,17 @@ router.get("/getUserReservations", async (req, res) => {
     
   } else {
     res.json({
-      success: false, 
-      errorMessage: "User could not be validated"
+      error: "User could not be validated"
     })
   }
 });
 
 
 
-router.get("/getReservationsByUserID", async (req, res) => {
-  var user = req.body.userID
-
-  var reservations = await bl.getCustomerReservations(user)
+router.post("/getReservationsByUserID", async (req, res) => {
+  const token = req.headers['auth-token']
+  const userAuth = await decodeToken(token)
+  const reservations = await bl.getCustomerReservations(userAuth, req.body)
 
   res.json({
     reservations: reservations
@@ -512,13 +489,12 @@ router.get("/getReservationsByUserID", async (req, res) => {
 });
 
 
-router.get("/getReservationByID", async (req, res) => {
-  //insert DB logic here
+router.post("/getReservationByID", async (req, res) => {
+  const token = req.headers['auth-token']
+  const userAuth = await decodeToken(token)
+  const result = await bl.getReservationByID(userAuth, req.body)
 
-  var result = await bl.getReservationByID(req.body.reservationID)
-
-  res.json({result});
-
+  res.json(result);
 });
 
 //get all customers for employees

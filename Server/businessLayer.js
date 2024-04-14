@@ -699,9 +699,18 @@ async function getStateProvince(auth){
 
 
 //TODO finish DB logic
-async function getAvailableLocations(t1, t2){
-    var pickup = new Date(t1)
-    var dropoff = new Date(t2)
+async function getAvailableLocations(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.pickup == null || data.pickup == undefined){
+        return {error: "must have pickup"}
+    }
+    if(data.dropoff == null || data.dropoff == undefined){
+        return {error: "must have pickup"}
+    }
+    var pickup = new Date(data.pickup)
+    var dropoff = new Date(data.dropoff)
     var today = new Date()
 
     var locations = []
@@ -712,41 +721,15 @@ async function getAvailableLocations(t1, t2){
     pickup.getYear() === today.getYear()) {
 
         //get available stations today
-        var stations = await pg.getAllStations()
+        var res = await pg.getCurrentCarAvailability()
 
-        for(i = 0; i < stations.length; i++){
-            let available = false;
-
-            if(!stations[i].isclosed){
-                cars = await pg.getStationCars(stations[i].stationid)
-
-                
-
-                for(j = 0; j < cars.length; j++){
-                    
-                    if(cars[j].carstatusid == 1){
-                        available = true;
-                        break;
-                    }
-                }
-
-                if(available){
-                    var thisStn = {};
-
-                    thisStn.stationID = stations[i].stationid
-                    thisStn.name = stations[i].stationname
-                    thisStn.address = stations[i].address
-                    thisStn.latitude = parseFloat(stations[i].minlatitude)
-                    thisStn.longitude = parseFloat(stations[i].minlongitude)
-
-                    locations.push(thisStn)
-                  
-
-                }
-            }
+        if(res == -1){
+            return {error: "failed to find"}
         }
+        return {locations: res};
 
-    } else { //reservation for a future day
+    } 
+    else { //reservation for a future day
         var available = await pg.canFleetAccomodateDay(pickup)
 
         if(available != 1){
@@ -763,8 +746,8 @@ async function getAvailableLocations(t1, t2){
             thisStn.stationID = stations[i].stationid
             thisStn.name = stations[i].stationname
             thisStn.address = stations[i].address
-            thisStn.latitude = parseFloat(stations[i].minlatitude)
-            thisStn.longitude = parseFloat(stations[i].minlongitude)
+            thisStn.latitude = stations[i].minlatitude
+            thisStn.longitude = stations[i].minlongitude
 
             locations.push(thisStn)
         }
@@ -775,8 +758,19 @@ async function getAvailableLocations(t1, t2){
 }
 
 
-async function addReservation(userID, data){
-    custID = (await pg.getCustomerByUserId(userID)).customerid
+async function addReservation(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+
+    const cust = (await pg.getCustomerByUserId(auth.id))
+    if(cust == undefined){
+        return {error: "failed to find customer"}
+    }
+    const custID = cust.customerid;
+    if(custID == undefined){
+        return {error: "failed to find customer"}
+    }
 
     data.customerId = custID;
     
@@ -787,23 +781,77 @@ async function addReservation(userID, data){
 
     data.confirmationNumber = conf
 
-    pg.addReservation(data)
-
-
-    return data.confirmationNumber
-   
-   
-    //assign car ID if today
-        //assign car day before/day of if future - TODO?
+    if(data.pickupStation == null || data.pickupStation == undefined){
+        return {error: "pickupStation must exist"}
+    }
+    if(data.dropoffStation == null || data.dropoffStation == undefined){
+        return {error: "dropoffStation must exist"}
+    }
+    if(data.pickupDateTime == null || data.pickupDateTime == undefined){
+        return {error: "pickupDateTime must exist"}
+    }
+    if(data.dropoffDateTime == null || data.dropoffDateTime == undefined){
+        return {error: "dropoffDateTime must exist"}
+    }
+    const today = new Date();
+    const pickup = new Date(data.pickupDateTime);
+    //for same day reservations, assign a car
+    if(pickup.getDate() === today.getDate() &&
+    pickup.getMonth() === today.getMonth() &&
+    pickup.getYear() === today.getYear()) {
+        const car = (await pg.getStationCars(data.pickupStation))[0]
+        if(car == undefined || null){
+            return {error: "Failed to find car"}
+        }
+        data.carId = car.carid;
+        var res = await pg.addReservationToday(data);
+        if(res == -1){
+            return {error: "Failed to reserve"}
+        }
+        res = await pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 3})
+        return {conf: data.confirmationNumber}
+    }
+    else{
+        //check that there are enough cars
+        var res = await pg.canFleetAccomodateDay(new Date(data.pickupDateTime))
+        if(res == 1){
+            res = await pg.addReservation(data)
+            if(res == -1){
+                return {error: "Failed to reserve"}
+            }
+            else{
+                return {conf: data.confirmationNumber}
+            }
+        }
+        else{
+            return {error:"Fleet cannot accomadate reservation"}
+        }
+    }
 }
 
 
-async function getCustomerReservations(userID){
+async function getCustomerReservations(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.userID == null || data.userID == undefined){
+        return {error: "userID must exist"}
+    }
     var result = []
     
-    custID = (await pg.getCustomerByUserId(userID)).customerid
+    var cust = await pg.getCustomerByUserId(data.userID)
+    if(cust == undefined || cust == -1){
+        return {error: "customer not found"}
+    }
+    var custID = cust.customerid;
+    if(custID == undefined){
+        return {error: "customer not found"}
+    }
+    var reservations = await pg.getCustomerReservations(custID)
 
-    reservations = await pg.getCustomerReservations(custID)
+    if(reservations == -1){
+        return {error: "reservations not found"}
+    }
 
     for(i = 0; i < reservations.length; i++){
         var thisRes ={}
@@ -823,16 +871,29 @@ async function getCustomerReservations(userID){
         thisRes.dropoffStationAddress = dropoffStn.address
 
         result.push(thisRes)
-
     }
 
-    return result
-
+    return result;
 }
 
 
-async function getReservationByID(resID){
-    var reservation = await pg.getReservation(resID)
+async function getReservationByID(auth, data){
+    if(!auth.validToken){
+        return {error: "invalid authorization"}
+    }
+    if(data.reservationID == null || data.reservationID == undefined){
+        return {error: "reservationID must exist"}
+    }
+    if(!Number.isInteger(data.reservationID)){
+        return {error: "reservationID must be an integer"}
+    }
+    var reservation = await pg.getReservation(data.reservationID)
+    if(reservation == -1 ){
+        return {error: "failed to find reservation"}
+    }
+    if(reservation == undefined){
+        return {error: "reservation does not exist"}
+    }
     var result = {}
 
     result.pickupDateTime = reservation.scheduledpickuptime
@@ -852,47 +913,117 @@ async function getReservationByID(resID){
     return result
 }
 
-async function deleteReservation(resID){
-    return await pg.removeReservation(resID)
+async function deleteReservation(auth, data){
+    if(!auth.validToken){
+        return {success: false, error: "invalid authorization"}
+    }
+    if(data.reservationID == null || data.reservationID == undefined){
+        return {success: false, error: "reservationID must exist"}
+    }
+    if(!Number.isInteger(data.reservationID)){
+        return {success: false, error: "reservationID must be an integer"}
+    }
+    const res = await pg.removeReservation(data.reservationID)
+    if(res == -1){
+        return {success: false, error: "Failed to delete reservation"}
+    }
+    return {success: true}
 }
 
 
-async function editReservation(data){
-    // return await pg.removeReservation(resID)
+async function editReservation(auth, data){
+    if(!auth.validToken){
+        return {success: false, error: "Invalid Authorization"}
+    }
+    if(data.reservationID == null || data.reservationID == undefined){
+        return {success: false, error: "reservationID must exist"}
+    }
+    if(!Number.isInteger(data.reservationID)){
+        return {success: false, error: "reservationID must be an integer"}
+    }
 
     var res = await pg.getReservation(data.reservationID)
+    if(res == undefined ){
+        return {success: false, error: "reservation does not exist"}
+    }
+    if(res == -1){
+        return {success: false, error: "failed to edit reservation"}
+    }
     console.log(res.confirmationnumber)
 
-    var newRes = {}
+    let newRes = {}
 
     newRes.rentalId = data.reservationID
     newRes.customerId = res.customerid
-    newRes.pickupStationId = data.pickupStation
-    newRes.scheduledPickupTime = data.pickupDateTime
-    newRes.scheduledDropoffTime = data.dropoffDateTime
+    if(data.pickupStation == null || data.pickupStation == undefined){
+        newRes.pickupStationId = res.pickupstationid;
+    }
+    else{
+        newRes.pickupStationId = data.pickupStation
+    }
+    if(data.scheduledPickupTime == null || data.scheduledPickupTime == undefined){
+        newRes.scheduledPickupTime = res.scheduledpickuptime;
+    }
+    else{
+        newRes.scheduledPickupTime = data.scheduledPickupTime;
+    }
+    if(data.scheduledDropoffTime == null || data.scheduledDropoffTime == undefined){
+        newRes.scheduledDropoffTime = res.scheduleddropofftime; 
+    }
+    else{
+        newRes.scheduledDropoffTime = data.scheduledDropoffTime;
+    }
+
     newRes.cardId = null
-    newRes.carId = null
-    newRes.pickupTime = null
-    newRes.dropoffTime = null 
+
+    if(data.carID == null || data.carID == undefined ){
+        newRes.carId = res.carid
+    }
+    else{
+        newRes.carId = data.carid
+    }
+    if(data.actualPickupTime == null || data.actualPickupTime == undefined){
+        newRes.pickupTime = res.pickuptime;
+    }
+    else{
+        newRes.pickupTime = data.actualPickupTime;
+    }
+    if(data.actualDropoffTime == null || data.actualDropoffTime == undefined){
+        newRes.dropoffTime = res.dropofftime;
+    }
+    else{
+        newRes.dropoffTime = data.actualDropoffTime;
+    }
     newRes.confirmationNumber = res.confirmationnumber
+
+    if((newRes.dropoffTime != null && newRes.dropoffTime != undefined && newRes.pickupTime != null && newRes.dropoffTime != undefined) && (res.totalfees == null || res.totalfees == undefined)){
+        newRes.totalFees = (await this.getReservePrice(auth, {pickupDateTime: newRes.pickupTime, dropoffDateTime: newRes.dropoffTime})).cost
+    }
+    else{
+        newRes.totalFees = res.totalfees;
+    }
     
-
-    await pg.updateReservation(newRes)
-
-    // res.pickupDateTime = data.pickupDateTime
-
-
+    res = await pg.updateReservation(newRes)
+    if(res == -1){
+        return {success: false, error: "Failed to edit reservation"}
+    }
+    return {success: true}
 }
 
 
-async function getReservePrice(d1, d2){
-    pickup = new Date(d1)
-    dropoff = new Date (d2)
-
-    if(pickup.getDate() != dropoff.getDate() || pickup.getMonth() != dropoff.getMonth() || pickup.getYear() != dropoff.getYear()){
-        return {success: false, errorMessage: "Reservation pickup & dropoff must be on the same day."}
+async function getReservePrice(auth, data){
+    if(!auth.validToken){
+        return {error: "Invalid Authorization"}
     }
-    else if(dropoff.valueOf() - pickup.valueOf() > 21600000){
+    if(data.pickupDateTime==null || data.pickupDateTime == undefined){
+        return {error: "pickupDateTime must exist"}
+    }
+    if(data.dropoffDateTime==null || data.dropoffDateTime == undefined){
+        return {error: "dropoffDateTime must exist"}
+    }
+    pickup = new Date(data.pickupDateTime)
+    dropoff = new Date (data.dropoffDateTime)
+    if(dropoff.valueOf() - pickup.valueOf() > 21600000){
         return {success: false, errorMessage: "Reservation pickup & dropoff must be within 6 hours of eachother."}
     }
     else {
@@ -900,7 +1031,6 @@ async function getReservePrice(d1, d2){
         var hours = (dropoff.valueOf() - pickup.valueOf()) / 3600000
 
         var fees = await pg.getFeesByCity("Rochester")
-
         var total = hours * fees.hourlyrate
 
         if(total > fees.dailymaximum){
