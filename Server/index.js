@@ -95,7 +95,7 @@ router.post("/createCustomer", async (req, res) => {
 
   //TODO more error checking on the above
   //if all good so far, send email
-  
+  bl.emailCustomer(data.email, "Account Created", "Thank you for your interest in joining GyroGoGo! Our representatives will review your application.");
 
   res.json({ success: true});
 });

@@ -228,6 +228,21 @@ async function addUserStatus(userId, statusId){
   }
 }
 
+async function getUserStatus(userId){
+  query = {
+    text: "SELECT AccountStatus.StatusName, AccountStatus.StatusID FROM Users JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID WHERE Users.UserID = $1;",
+    values: [userId]
+  }
+
+  try{
+    var userStatus= (await pool.query(query)).rows
+    return userStatus;
+  }
+  catch (err){
+    return -1
+  }
+}
+
 async function updateUserStatus(userId, statusId){
   query = {
     text: "UPDATE User_Status SET StatusID = $1 WHERE UserID = $2",
@@ -900,7 +915,8 @@ module.exports = {
   deleteUser, 
   addUserRole, 
   deleteUserRole, 
-  addUserStatus, 
+  addUserStatus,
+  getUserStatus, 
   updateUserStatus,
   getUserPerms, 
   login, 

@@ -118,13 +118,13 @@ async function addPaymentMethod(custID, cardInfo){
 
 //Cases:
 //AccountCreation
-async function emailCustomer (email, content){
+async function emailCustomer (email, subject, content){
     var mailOptions
 
         mailOptions = {
             from: 'geogalavant@gmail.com',
             to: email,
-            subject: 'Geogalavant Account Created',
+            subject: subject,
             text: content
           };
     
@@ -299,6 +299,23 @@ async function changeStatus(userAuth, inputData){
     let statusId = await pg.updateUserStatus(inputData.userId, inputData.statusId);
     if(statusId == -1){
         return {error: "Failed to change status"};
+    }
+
+    switch(inputData.statusId){
+        case 2:
+            this.emailCustomer(user.email, "GyroGoGo Account Suspended", `Your Account has been suspended. \n Reason: \n ${inputData.reason}`)
+            break;
+        case 3:
+            this.emailCustomer(user.email, "GyroGoGo Account is now Active", `Your GyroGoGo account is now active! \n Reason: \n ${inputData.reason} \nHappy Driving!`)
+            break;
+        case 4:
+            this.emailCustomer(user.email, "GyroGoGo Account Denied", `Your GyroGoGo Account has been suspended \n Reason: \n ${inputData.reason}`)
+            break;
+        case 5: 
+            this.emailCustomer(user.email, "GyroGoGo Account Terminated", `Your GyroGoGo Account has been suspended \n Reason: \n ${inputData.reason}`)
+            break;
+        default:
+            break;
     }
 
     //return
