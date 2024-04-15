@@ -801,8 +801,28 @@ async function addReservation(auth, data){
     if(data.pickupStation == null || data.pickupStation == undefined){
         return {error: "pickupStation must exist"}
     }
+    if(!Number.isInteger(data.pickupStation)){
+        return {error: "pickupStation must be an integer"}
+    }
+    const station1 = await pg.getStation(data.pickupStation);
+    if(station1 == null || station1 == undefined){
+        return {error: "pickupStation does not exist"}
+    }
+    if(station1 == -1){
+        return {error: "pickupStation not found"}
+    }
     if(data.dropoffStation == null || data.dropoffStation == undefined){
         return {error: "dropoffStation must exist"}
+    }
+    if(!Number.isInteger(data.dropoffStation)){
+        return {error: "dropoffStation must be an integer"}
+    }
+    const station2 = await pg.getStation(data.dropoffStation);
+    if(station2 == null || station2 == undefined){
+        return {error: "dropoffStation does not exist"}
+    }
+    if(station2 == -1){
+        return {error: "dropoffStation not found"}
     }
     if(data.pickupDateTime == null || data.pickupDateTime == undefined){
         return {error: "pickupDateTime must exist"}
@@ -812,6 +832,7 @@ async function addReservation(auth, data){
     }
     const today = new Date();
     const pickup = new Date(data.pickupDateTime);
+    const dropoff = new Date(data.pickupDateTime);
     //for same day reservations, assign a car
     if(pickup.getDate() === today.getDate() &&
     pickup.getMonth() === today.getMonth() &&
@@ -825,7 +846,8 @@ async function addReservation(auth, data){
         if(res == -1){
             return {error: "Failed to reserve"}
         }
-        res = await pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 3})
+        res = await pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 3});
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \nPickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${data.confirmationNumber} \n Car Number: \n ${data.carId}`)
         return {conf: data.confirmationNumber}
     }
     else{
@@ -837,6 +859,7 @@ async function addReservation(auth, data){
                 return {error: "Failed to reserve"}
             }
             else{
+                this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \n You will recieve an email the day of the reservation with the car number. \n Pickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${data.confirmationNumber}`)
                 return {conf: data.confirmationNumber}
             }
         }

@@ -5,9 +5,12 @@ require('dotenv').config()
 const bcrypt = require('bcrypt');
 var cron = require('node-cron');
 
-
-cron.schedule('0 21 * * *', () => {
-  console.log('running a task every minute');
+//runs at 5
+cron.schedule('0 0 4,19 * * *', () => {
+  console.log(new Date());
+}, {
+  scheduled: true,
+  timezone: "America/New_York"
 });
 
 
