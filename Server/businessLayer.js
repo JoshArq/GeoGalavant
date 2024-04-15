@@ -967,6 +967,12 @@ async function editReservation(auth, data){
     else{
         newRes.scheduledPickupTime = data.scheduledPickupTime;
     }
+    if(data.dropoffStation == null || data.dropoffStation == undefined){
+        newRes.dropoffStationId = res.dropoffstationid;
+    }
+    else{
+        newRes.dropoffStationId = data.dropoffStation
+    }
     if(data.scheduledDropoffTime == null || data.scheduledDropoffTime == undefined){
         newRes.scheduledDropoffTime = res.scheduleddropofftime; 
     }
