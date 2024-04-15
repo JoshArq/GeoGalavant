@@ -113,13 +113,14 @@ export default function Customer({token}) {
     const { custID } = location.state
     const [modalShow, setModalShow] = React.useState(false);
     const [details, setDetails] = useState({});
+    const [reservations, setReservations] = useState([]);
     const [isValid, setIsValid] = useState(true);
     const [expDate, setExpDate] = useState("");
 
     
     // Get data
     useEffect(() => {
-        // Get customers
+        // Get customer
         fetch("/api/getCustomerDetails", {
             method: 'POST',
             headers: {
@@ -136,13 +137,51 @@ export default function Customer({token}) {
                 }
                 else {
                     setDetails(data)
+                    console.log(data)
                     setExpDate(new Date(data.licenseexpires))
+
+                    // Get reservations
+                    fetch("/api/getReservationsByUserID ", {
+                        method: 'POST',
+                        headers: {
+                        "auth-token": token,
+                        "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({userID: data.userid}),
+                    })
+                    .then((res) => res.json())
+                    .then((data) => {
+                            if(data.error || data.reservations.error) {
+                            // turned off bc this is throwing off the page load for unapproved customers
+                                setIsValid(false);
+                                console.log(data.error);
+                            }
+                            else {
+                            setReservations(data.reservations)
+                            }
+                    }).catch(error => {
+                        setIsValid(false);
+                        console.log(error);
+                    });
                 }
           }).catch(error => {
             setIsValid(false);
             console.log(error);
           });
     }, [modalShow])
+
+    function makeTimestamp(date) {
+        let mins = date.getMinutes();
+        if (mins < 10) {
+            mins = "0" + mins;
+        }
+
+        return date.getMonth() 
+                + "/" + date.getDate() + "/" 
+                + date.getFullYear() + " at " 
+                + date.getHours() 
+                + ":" + mins
+    }
 
     return (
         <main>
@@ -190,8 +229,6 @@ export default function Customer({token}) {
                         <Container as={'section'}>
 
                             <h2 className="pt-3 pb-3">Reservations</h2>
-
-                            <h2>Upcoming</h2>
                             <Table responsive="md">
                             <thead>
                                 <tr>
@@ -204,48 +241,16 @@ export default function Customer({token}) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="tr-width">
-                                    <td>123456</td>
-                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                                    <td>7654321</td>
-                                    <td>card ending in ####</td>
-                                    <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                                </tr>                   
-                            </tbody>
-                            </Table>
-
-                            <h2>Past</h2>
-                            <Table responsive="md">
-                            <thead>
-                                <tr>
-                                <th scope="col">Reservation #</th>
-                                <th scope="col">Pickup</th>
-                                <th scope="col">Dropoff</th>
-                                <th scope="col">Gyrocar #</th>
-                                <th scope="col">Payment</th>
-                                <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className="tr-width">
-                                    <td>123456</td>
-                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                                    <td>7654321</td>
-                                    <td>card ending in ####</td>
-                                    <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                                </tr>                   
-                            </tbody>
-                            <tbody>
-                                <tr className="tr-width">
-                                    <td>123456</td>
-                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                                    <td>09/12/2024 at 12:00pm <br/>Monroe County <br/>GyroGoGo Center City</td>
-                                    <td>7654321</td>
-                                    <td>card ending in ####</td>
-                                    <td> <Link to="/ModifyReservation/ModifyReservation"><i class="bi bi-pencil-square"></i></Link></td>
-                                </tr>                   
+                                {reservations.length == 0 ? '' : reservations.map((res) => { return (
+                                    <tr className="tr-width">
+                                        <td>{res.reservationNumber}</td>
+                                        <td>{makeTimestamp(new Date(res.pickupDateTime))} <br/>{res.pickupStationName}</td>
+                                        <td>{makeTimestamp(new Date(res.dropoffDateTime))} <br/>{res.dropoffStationName}</td>
+                                        <td>unknown</td>
+                                        <td>unknown</td>
+                                        <td> <Link to="/ModifyReservation/ModifyReservation" state={{ resID: res.reservationNumber }}><i class="bi bi-pencil-square"></i></Link></td>
+                                    </tr>  
+                                )})}                 
                             </tbody>
                             </Table>
                         </Container>
