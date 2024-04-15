@@ -488,4 +488,4 @@ CREATE TABLE Fee(
 	DailyMaximum DECIMAL NOT NULL
 );
 
-INSERT INTO Fee (City, HourlyRate, DailyMaximum) VALUES ('Rochester', 21.99, 120)
+INSERT INTO Fee (City, HourlyRate, DailyMaximum) VALUES ('Rochester', 21.99, 120);
