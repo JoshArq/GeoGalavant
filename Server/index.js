@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 var cron = require('node-cron');
 
 //runs at 5
-cron.schedule('0 0 4,19 * * *', () => {
+cron.schedule('0 0 5,20 * * *', () => {
   console.log(new Date());
 }, {
   scheduled: true,
