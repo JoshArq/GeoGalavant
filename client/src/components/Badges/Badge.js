@@ -6,6 +6,7 @@ export default function Badge({ status }) {
 
     // Set text and color based on status
     switch (status) {
+        // Accounts
         case 'active':
             text = 'Active';
             colorClass = 'text-bg-success';
@@ -26,18 +27,24 @@ export default function Badge({ status }) {
             text = 'Terminated';
             colorClass = 'text-bg-info';
             break;
+        // Cars
         case 'available':
             text = 'Available';
             colorClass = 'text-bg-success';
             break;
-        case 'in use':
-            text = 'In Use';
+        case 'rented':
+            text = 'Rented';
             colorClass = 'text-bg-info';
             break;
-        case 'offline':
-            text = 'Offline';
+        case 'unavailable':
+            text = 'Unavailable';
+            colorClass = 'text-bg-warning';
+            break;
+        case 'non-operational':
+            text = 'Non-Operational';
             colorClass = 'text-bg-danger';
             break;
+        // messages
         case 'resolved':
             text = 'Resolved';
             colorClass = 'text-bg-success';

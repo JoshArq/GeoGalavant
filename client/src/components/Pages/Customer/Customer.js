@@ -119,7 +119,7 @@ export default function Customer({token}) {
     
     // Get data
     useEffect(() => {
-        // Get customers
+        // Get customer
         fetch("/api/getCustomerDetails", {
             method: 'POST',
             headers: {
