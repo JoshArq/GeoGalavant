@@ -161,9 +161,8 @@ CREATE TABLE CarStatus(
 
 -- Populates CarStatus lookup table with some sample data --
 INSERT INTO CarStatus (StatusID, Name) VALUES (1, 'Available'),
-	(2, 'Unavailable'),
-	(3, 'Rented'),
-	(4, 'Non-operational');
+	(2, 'Offline'),
+	(3, 'In Use');
 
 -- Generate Car table --
 CREATE TABLE Car(
