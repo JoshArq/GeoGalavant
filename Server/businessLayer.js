@@ -989,7 +989,8 @@ async function editReservation(auth, data){
     if(res == -1){
         return {success: false, error: "failed to edit reservation"}
     }
-    console.log(res.confirmationnumber)
+
+    var cust = await pg.getCustomerDetails(res.customerid);
 
     let newRes = {}
 
@@ -1036,16 +1037,37 @@ async function editReservation(auth, data){
     }
     newRes.confirmationNumber = res.confirmationnumber
 
+    const station1 = await pg.getStation(newRes.pickupStationId);
+    if(station1 == null || station1 == undefined){
+        return {success:false, error: "pickup station does not exist"}
+    }
+    if(station1 == undefined){
+        return {success:false, error: "pickup station not found"}
+    }
+    const station2 = await pg.getStation(newRes.dropoffStationId);
+    if(station2 == null || station2 == undefined){
+        return {success:false, error: "dropoff station does not exist"}
+    }
+    if(station2 == undefined){
+        return {success:false, error: "dropoff station not found"}
+    }
     if((newRes.dropoffTime != null && newRes.dropoffTime != undefined && newRes.pickupTime != null && newRes.dropoffTime != undefined) && (res.totalfees == null || res.totalfees == undefined)){
         newRes.totalFees = (await this.getReservePrice(auth, {pickupDateTime: newRes.pickupTime, dropoffDateTime: newRes.dropoffTime})).cost
     }
     else{
         newRes.totalFees = res.totalfees;
     }
-    
+    const pickupDate = new Date(newRes.pickupTime);
+    const dropoffDate = new Date(newRes.dropoffTime);
     res = await pg.updateReservation(newRes)
     if(res == -1){
         return {success: false, error: "Failed to edit reservation"}
+    }
+    if(newRes.carId == null || newRes.carId == undefined){
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `Your Gyrocar Reservation has been edited! Gyrocar Number will be emailed to you before your reservation. \nPickup: ${station1.stationname}, ${station1.address} at ${pickupDate.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoffDate.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${newRes.confirmationNumber}`)
+    }
+    else{
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `Your Gyrocar Reservation has been edited! \nPickup: ${station1.stationname}, ${station1.address} at ${pickupDate.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoffDate.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${newRes.confirmationNumber} \n Car Number: \n ${newRes.carId}`)
     }
     return {success: true}
 }
