@@ -721,7 +721,7 @@ async function getAvailableLocations(auth, data){
     pickup.getYear() === today.getYear()) {
 
         //get available stations today
-        var res = await pg.getCurrentCarAvailability()
+        var res = await pg.getCurrentCarAvailability(pickup)
 
         if(res == -1){
             return {error: "failed to find"}
@@ -800,8 +800,16 @@ async function addReservation(auth, data){
     pickup.getMonth() === today.getMonth() &&
     pickup.getYear() === today.getYear()) {
         const car = (await pg.getStationCars(data.pickupStation))[0]
-        if(car == undefined || null){
+        if(car == undefined || car ==null){
             return {error: "Failed to find car"}
+        }
+        if(car == -1){
+            return {error: "Failed to find car"}
+        }
+        const droppedOff = new Date(car.max);
+        const interval = pickup.getTime() - droppedOff.getTime()
+        if(interval < 3600000 ){
+            return {error: "Cars are charging"}
         }
         data.carId = car.carid;
         var res = await pg.addReservationToday(data);

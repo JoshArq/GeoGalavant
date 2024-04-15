@@ -228,6 +228,21 @@ async function addUserStatus(userId, statusId){
   }
 }
 
+async function getUserStatus(userId){
+  query = {
+    text: "SELECT AccountStatus.StatusName, AccountStatus.StatusID FROM Users JOIN User_Status ON Users.UserID = User_Status.UserID JOIN AccountStatus ON User_Status.StatusID = AccountStatus.StatusID WHERE Users.UserID = $1;",
+    values: [userId]
+  }
+
+  try{
+    var userStatus= (await pool.query(query)).rows
+    return userStatus;
+  }
+  catch (err){
+    return -1
+  }
+}
+
 async function updateUserStatus(userId, statusId){
   query = {
     text: "UPDATE User_Status SET StatusID = $1 WHERE UserID = $2",
@@ -491,7 +506,7 @@ async function addCreditCard(obj){
 
 async function getStationCars(stationId){
   var query = {
-    text: "SELECT * FROM Car WHERE stationId = $1 AND CarStatusID=1",
+    text: "SELECT Car.CarID, max(Rental.DropoffTime) FROM Car LEFT JOIN Rental ON Car.CarID = Rental.CarID WHERE stationId = $1 AND CarStatusID=1 GROUP BY Car.CarID ORDER BY max DESC",
     values: [stationId]
   };
   try{
@@ -876,9 +891,10 @@ async function canFleetAccomodateDay(date){
   }
 }
 
-async function getCurrentCarAvailability(){
+async function getCurrentCarAvailability(pickupTime){
   var query = {
-    text: "SELECT COUNT(Car.CarID) FILTER (WHERE Car.CarStatusID = 1 AND Station.IsClosed = false) AS cars, Station.StationID AS stationID, Station.StationName AS name, Station.Address, Station.MinLatitude AS latitude, Station.MinLongitude AS longitude FROM Station RIGHT JOIN Car ON Car.StationID = Station.StationID GROUP BY Station.StationID, Station.StationName, Station.Address, Station.MinLatitude, Station.MinLongitude"
+    text: "SELECT COUNT(Car.CarID) FILTER (WHERE Station.IsClosed = false AND Car.CarID IN (SELECT Car.CarID FROM Car LEFT JOIN Rental ON Car.CarID = Rental.CarID WHERE CarStatusID=1 GROUP BY Car.CarID HAVING max(Rental.DropoffTime) <= $1)) AS cars, Station.StationID AS stationID, Station.StationName AS name, Station.Address, Station.MinLatitude AS latitude, Station.MinLongitude AS longitude FROM Station RIGHT JOIN Car ON Car.StationID = Station.StationID GROUP BY Station.StationID, Station.StationName, Station.Address, Station.MinLatitude, Station.MinLongitude",
+    values: [pickupTime]
   };
   try{
     const returnVal =  await (pool.query(query));
@@ -900,7 +916,8 @@ module.exports = {
   deleteUser, 
   addUserRole, 
   deleteUserRole, 
-  addUserStatus, 
+  addUserStatus,
+  getUserStatus, 
   updateUserStatus,
   getUserPerms, 
   login, 
