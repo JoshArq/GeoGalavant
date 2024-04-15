@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import LocMap from '../../LocMap/LocMap.js';
 
@@ -15,11 +15,19 @@ let form_template = {};
 
 export default function EditReservation({token}) {
     const form = form_template;
+    const [dates, setDates] = useState({
+        pickup: (new Date()).toISOString(),
+        dropoff: (new Date()).toISOString()
+    });
+    const [data, setData] = useState({}); // current data
     const [dropoffLocations, setDropoffLocations] = useState([]);
     const [pickupLocations, setPickupLocations] = useState([]);
+    const [price, setPrice] = useState("0.00")
     const [cards, setCards] = useState([]);
     const [step, setStep] = useState(0);
     const [isValid, setIsValid] = useState(true);
+    const location = useLocation()
+    const { resID } = location.state
     
     // Get form setup data
     useEffect(() => {
@@ -45,13 +53,55 @@ export default function EditReservation({token}) {
             setIsValid(false);
             console.log(error);
           });
-
-        // Get locations TODO: Edit for date-specificity once api is dones, move to run after pickup/dropoff date is selected
-        // Pickup
-        fetch("/api/getLocations", {
+        // Get locations
+        requestLocations()
+        // Get current reservation data
+        fetch("/api/getReservationByID", {
+            method: 'POST',
             headers: {
-              "auth-token": token
-            }
+                "Content-Type": "application/json",
+                "auth-token": token
+            },
+            body: JSON.stringify({
+                reservationID: resID
+            }),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+                if(data.error) {
+                    err.innerText = "There was an error loading your form. Please refresh to try again.";
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setData(data);
+                    // for datetime-local input setting value manually being a pain
+                    console.log(data.pickupDateTime)
+                    document.getElementById("reservation").pickup.defaultValue = makeInputTimestamp(new Date(data.pickupDateTime));
+                    document.getElementById("reservation").dropoff.defaultValue = makeInputTimestamp(new Date(data.dropoffDateTime));
+                }
+        }).catch(error => {
+            err.innerText = "There was an error loading your form. Please refresh to try again.";
+            setIsValid(false);
+            console.log(error);
+        });
+    }, [])
+
+    function makeInputTimestamp(date) {
+        return new Date(date.getTime() + new Date().getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19)
+    }
+
+    function requestLocations() {
+        let err = document.getElementById("err");
+        // Get locations
+        // This is currently not set up very well because of API quirks that still need resolution
+        fetch("/api/getAvailableLocations", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": token
+            },
+            body: JSON.stringify(dates),
           })
           .then((res) => res.json())
           .then((data) => {
@@ -62,60 +112,78 @@ export default function EditReservation({token}) {
                 }
                 else {
                     setPickupLocations(data.locations);
+                    console.log(data.locations)
+                    setDropoffLocations(data.locations);
                 }
           }).catch(error => {
             err.innerText = "There was an error loading your form. Please refresh to try again.";
             setIsValid(false);
             console.log(error);
           });
-          // Dropoff
-          fetch("/api/getLocations", {
-              headers: {
+    }
+
+    function fetchPrice() {
+        let err = document.getElementById("err");
+        // Get ride price
+        fetch("/api/getReservePrice", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
                 "auth-token": token
-              }
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                  if(data.error || !data.locations) {
-                      err.innerText = "There was an error loading your form. Please refresh to try again.";
-                      setIsValid(false);
-                      console.log(data.error);
-                  }
-                  else {
-                      setDropoffLocations(data.locations);
-                  }
-            }).catch(error => {
-              err.innerText = "There was an error loading your form. Please refresh to try again.";
-              setIsValid(false);
-              console.log(error);
-            });
-    }, [])
+            },
+            body: JSON.stringify({
+                pickupDateTime: dates.pickup,
+                dropoffDateTime: dates.dropoff
+            }),
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error) {
+                    err.innerText = "There was an error loading your price. Please refresh to try again.";
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setPrice(data.cost)
+                }
+          }).catch(error => {
+            err.innerText = "There was an error loading your price. Please refresh to try again.";
+            setIsValid(false);
+            console.log(error);
+          });
+    }
 
     const handleReserveCar = () => {
-        // TODO: CHANGE EXAMPLE CODE
-        // fetch("/api/createCustomer", {
-        //     method: 'POST',
-        //     body: JSON.stringify(form),
-        // })
-        // .then((res) => res.json())
-        // .then((data) => {
-        //     if (data.success) {
+        form.reservationID = resID;
+        console.log(form.scheduledPickupTime)
+        fetch("/api/editReservation", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": token
+            },
+            body: JSON.stringify(form),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success) {
                 // Show just success message
                 setStep(4);
                 document.getElementById("step-heading").innerText = "Completed";
                 document.getElementById("progBtns").classList.add("d-none");
                 document.getElementById("step-3").classList.add("d-none");
                 document.getElementById("done").classList.remove("d-none");
-            // }
-            // else {
-            //     document.getElementById("err").innerText = "There was an issue sending your reservation. Please try again."
-            //     setIsValid(false);
-            // }
-        // }).catch(error => {
-        //     console.log(error)
-        //     document.getElementById("err").innerText = "There was an issue sending your reservation. Please try again."
-        //     setIsValid(false);
-        // });
+            }
+            else {
+                console.log(data)
+                document.getElementById("err").innerText = "There was an issue editing your reservation. Please try again."
+                setIsValid(false);
+            }
+        }).catch(error => {
+            console.log(error)
+            document.getElementById("err").innerText = "There was an issue editing your reservation. Please try again."
+            setIsValid(false);
+        });
     }
 
     const validateStep = (step) => {
@@ -123,31 +191,83 @@ export default function EditReservation({token}) {
         let reservation = document.getElementById("reservation");
         let err = document.getElementById("err");
         // Determine which fields to validate
-        // switch (step) {
-            // case 0: // THIS IS AN EXAMPLE 
-            // // TODO: CHANGE 
-            //     // Applied before
-            //     if(reservation.appliedBefore.value !== "") {
-            //         form.appliedBefore = reservation.appliedBefore.value;
-            //     }
-            //     else {
-            //         err.innerText = "Answer whether you've applied to GyroGoGo before."
-            //         setIsValid(false);
-            //         return false;
-            //     }
-            //     // Agree to TOS
-            //     if(reservation.terms.checked === true) {
-            //         form.tos = reservation.terms.checked;
-            //     }
-            //     else {
-            //         err.innerText = "Agree to the Terms of Service."
-            //         setIsValid(false);
-            //         return false;
-            //     }
-            //     // All good
-            //     setIsValid(true);
-            //     return true;
-        // }
+        switch (step) {
+            case 0: 
+                // Make temp date vars for calculations
+                let testPickup = new Date(reservation.pickup.value);
+                let testDropoff = new Date(reservation.dropoff.value);
+                // Pickup date - in the future
+                if(reservation.pickup.checkValidity() && testPickup > (new Date())) {
+                    form.scheduledPickupTime = reservation.pickup.value;
+                }
+                else {
+                    err.innerText = "Please choose a pickup date and time that is in the future."
+                    setIsValid(false);
+                    return false;
+                }
+                // Dropoff date - in the future of pickup && within 6 horus of pickup
+                if(reservation.dropoff.checkValidity() 
+                    && testDropoff > testPickup
+                    && testDropoff < testPickup.setHours(testPickup.getHours() + 6)
+                ) {
+                    form.scheduledDropoffTime = reservation.dropoff.value;
+                }
+                else {
+                    err.innerText = "Please choose a dropoff date and time that is in the future and within 6 hours of pickup."
+                    setIsValid(false);
+                    return false;
+                }
+                // Update dates (for getting locations)
+                let newDates = dates;
+                newDates.pickup = reservation.pickup.value;
+                newDates.dropoff = reservation.dropoff.value;
+                setDates(newDates)
+                requestLocations()
+                // All good
+                setIsValid(true);
+                return true;
+            case 1: 
+                // A pickup loc has been selected
+                if(reservation.pickupLoc.value != "") {
+                    // There is a "pickup-" before the station id in the value to prevent value overlap with dropoffLoc
+                    form.pickupStation = parseInt(reservation.pickupLoc.value.split('-')[1])
+                }
+                else {
+                    err.innerText = "Please choose a pickup location."
+                    setIsValid(false);
+                    return false;
+                }
+                // All good
+                setIsValid(true);
+                return true;
+            case 2: 
+                // A dropoff loc has been selected
+                if(reservation.dropoffLoc.value != "") {
+                    // There is a "dropoff-" before the station id in the value to prevent value overlap with pickupLoc
+                    form.dropoffStation = parseInt(reservation.dropoffLoc.value.split('-')[1])
+                }
+                else {
+                    err.innerText = "Please choose a dropoff location."
+                    setIsValid(false);
+                    return false;
+                }
+                // All good
+                setIsValid(true);
+                return true;
+            case 3:
+                // A cc has been selected (this will be replaced with stripe)
+                if(reservation.paymentMethod.value != "") {
+                    form.payment = reservation.paymentMethod.value
+                }
+                else {
+                    err.innerText = "Please choose a payment method."
+                    setIsValid(false);
+                    return false;
+                }
+                // All good
+                setIsValid(true);
+                return true;
+        }
         return true;
     }
 
@@ -174,6 +294,11 @@ export default function EditReservation({token}) {
                 prevBtn.removeAttribute("disabled");
             }
             return;
+        }
+
+        // Check for fetch price case 
+        if (oldStep == 2) {
+            fetchPrice()
         }
 
         // Check for submission case
@@ -244,6 +369,30 @@ export default function EditReservation({token}) {
             prevBtn.removeAttribute("disabled");
         }
     }
+
+    function makeTimestamp(date) {
+        let mins = date.getMinutes();
+        if (mins < 10) {
+            mins = "0" + mins;
+        }
+
+        return date.getMonth() 
+                + "/" + date.getDate() + "/" 
+                + date.getFullYear() + " at " 
+                + date.getHours() 
+                + ":" + mins
+    }
+
+    function findLoc(time, value) {
+        let loc = null;
+        if (time == "pickup") {
+            loc = pickupLocations.find((loc) => loc.stationID == value)
+        }
+        else {
+            loc = dropoffLocations.find((loc) => loc.stationID == value)
+        }
+        return (loc ? loc : {})
+    }
     
     return (
         <Container as={'main'} className="py-5">
@@ -282,7 +431,7 @@ export default function EditReservation({token}) {
                 </section>
                 <section className="d-none" id="step-1">
                     <h1 className="mb-4 fw-bold">Pick-up Location</h1>
-                    <p>5 results for Monroe County on ##/##/####</p>
+                    <p>5 results for Monroe County on {makeTimestamp(new Date(dates.pickup))}</p>
                     <Container>
                         <Row>
                             <Col md={4} className="pb-4 pb-md-0 pe-md-2">
@@ -296,7 +445,7 @@ export default function EditReservation({token}) {
                                                         <p className="m-0">{location.address}</p>
                                                     </Col>
                                                     <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                        <Form.Check name="pickupLoc" type="radio" value={"pickup-" + location.stationID} id={"pickup-" + location.stationID} required/>
+                                                        <Form.Check name="pickupLoc" type="radio" value={"pickup-" + location.stationID} id={"pickup-" + location.stationID} required defaultChecked={location.name == data.pickupStationName ? true : false}/>
                                                     </Col>
                                                 </Row>
                                             </Card.Body>
@@ -312,7 +461,7 @@ export default function EditReservation({token}) {
                 </section>
                 <section className="d-none" id="step-2">
                     <h1 className="mb-4 fw-bold">Drop-off Location</h1>
-                    <p>5 results for Monroe County on ##/##/####</p>
+                    <p>5 results for Monroe County on {makeTimestamp(new Date(dates.dropoff))}</p>
                     <Container>
                         <Row>
                             <Col md={4} className="pb-4 pb-md-0 pe-md-2">
@@ -326,7 +475,7 @@ export default function EditReservation({token}) {
                                                         <p className="m-0">{location.address}</p>
                                                     </Col>
                                                     <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                        <Form.Check name="dropoffLoc" type="radio" value={"dropoff-" + location.stationID} id={"pickup-" + location.stationID} required/>
+                                                        <Form.Check name="dropoffLoc" type="radio" value={"dropoff-" + location.stationID} id={"dropoff-" + location.stationID} required defaultChecked={location.name == data.dropoffStationName ? true : false}/>
                                                     </Col>
                                                 </Row>
                                             </Card.Body>
@@ -345,20 +494,23 @@ export default function EditReservation({token}) {
                     <Container>
                         <Row>
                             <Col md={6} lg={4} className="d-flex align-items-stretch">
-                                <Card className="border-0 grey-section py-4 mb-3 mb-md-0">
+                                <Card className="border-0 grey-section py-4 mb-3 mb-md-0 w-100">
                                     <Card.Body>
                                         <h3 className="fw-bold fs-5">Reservation Details</h3>
                                         <h4 className="fw-bold fs-6 mt-4">Dates & Times</h4>
-                                        <p>Pick-up: Mon, Nov ##, #### - ##:## PM</p>
-                                        <p>Drop-off: Mon, Nov ##, #### - ##:## PM</p>
-                                        <h4 className="fw-bold fs-6 mt-4">Pick-up Location</h4>
-                                        <p className="m-0">Location name</p>
-                                        <p className="m-0">123 Fake St</p>
-                                        <p>Rochester, NY</p>
-                                        <h4 className="fw-bold fs-6 mt-4">Drop-off Location</h4>
-                                        <p className="m-0">Location name</p>
-                                        <p className="m-0">123 Fake St</p>
-                                        <p>Rochester, NY</p>
+                                        <p>Pick-up: {makeTimestamp(new Date(dates.pickup))}</p>
+                                        <p>Drop-off: {makeTimestamp(new Date(dates.dropoff))}</p>
+                                        {/* has some error prevention from trying to display data thats not there when we're in earlier steps */}
+                                        {pickupLocations.length == 0 || dropoffLocations.length == 0 || !form.pickupStation || !form.dropoffStation ? '' :
+                                        <>
+                                            <h4 className="fw-bold fs-6 mt-4">Pick-up Location</h4>
+                                            <p className="m-0">{findLoc("pickup", form.pickupStation).name ? findLoc("pickup", form.pickupStation).name : ''}</p>
+                                            <p>{findLoc("pickup", form.pickupStation).address ? findLoc("pickup", form.pickupStation).address : ''}</p>
+                                            <h4 className="fw-bold fs-6 mt-4">Drop-off Location</h4>
+                                            <p className="m-0">{findLoc("dropoff", form.dropoffStation).name ? findLoc("dropoff", form.dropoffStation).name : ''}</p>
+                                            <p>{findLoc("dropoff", form.dropoffStation).address ? findLoc("dropoff", form.dropoffStation).address : ''}</p>
+                                        </>
+                                        }
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -366,15 +518,9 @@ export default function EditReservation({token}) {
                                 <Card className="grey-section border-0 mb-3 py-4 px-lg-5">
                                     <Card.Body as={Container}>
                                         <Row>
-                                            <Col lg={6}>
-                                                <h3 className="fw-bold fs-5">Total Cost:</h3>
-                                                <p className="fw-bold fs-1">$75.99</p>
-                                            </Col>
-                                            <Col lg={6}>
-                                                <p>Breakdown</p>
-                                                <hr className="border-2 opacity-100" />
-                                                <p>Subtotal: <span className="float-end">$60.00</span></p>
-                                                <p>Taxes & Fees: <span className="float-end">$15.99</span></p>
+                                            <Col>
+                                                <h3 className="fw-bold fs-5 text-center">Total Cost:</h3>
+                                                <p className="fw-bold fs-1 text-center">${price}</p>
                                             </Col>
                                         </Row>
                                     </Card.Body>
@@ -387,7 +533,7 @@ export default function EditReservation({token}) {
                                             <Form.Label className="m-0">Payment Method</Form.Label>
                                             <hr className="border-2 opacity-100" />
                                             {cards.map((card) => { return (
-                                                <Form.Check name="paymentMethod" type="radio" label={card.lastNumbers} value={card.cardToken} required/>
+                                                <Form.Check name="paymentMethod" type="radio" label={card.lastNumbers} value={card.cardToken} id={card.cardToken} required/>
                                             )})}
                                         </Form.Group>
                                     </Card.Body>
@@ -398,28 +544,30 @@ export default function EditReservation({token}) {
                 </section>
                 <section className="d-none" id="done">
                     <h1 className="mb-4 fw-bold"><i class="bi bi-check-circle-fill me-3"></i> Reservation Changes Successful</h1>
-                    <p>Your reservation number is #####. Use this code to unlock your Gyrocar.</p>
+                    <p>Your reservation number is <span id="confNum">{data.confirmationNumber}</span>. Use this code to unlock your Gyrocar.</p>
                     <Card className="grey-section border-0 my-4 p-4">
                         <Card.Body as={Container}>
                             <h3 className="fw-bold fs-5">Resevation Details</h3>
                             <Row>
                                 <Col lg={6}>
                                     <h4 className="fw-bold fs-6 mt-4">Dates & Times</h4>
-                                    <p>Pick-up: Mon, Nov ##, #### - ##:## PM</p>
-                                    <p>Drop-off: Mon, Nov ##, #### - ##:## PM</p>
+                                    <p>Pick-up: {makeTimestamp(new Date(dates.pickup))}</p>
+                                    <p>Drop-off: {makeTimestamp(new Date(dates.dropoff))}</p>
                                 </Col>
-                                <Col md={6} lg={3}>
-                                    <h4 className="fw-bold fs-6 mt-4">Pick-up Location</h4>
-                                    <p className="m-0">Location name</p>
-                                    <p className="m-0">123 Fake St</p>
-                                    <p>Rochester, NY</p>
-                                </Col>
-                                <Col md={6} lg={3}>
-                                    <h4 className="fw-bold fs-6 mt-4">Drop-off Location</h4>
-                                    <p className="m-0">Location name</p>
-                                    <p className="m-0">123 Fake St</p>
-                                    <p>Rochester, NY</p>
-                                </Col>
+                                {pickupLocations.length == 0 || dropoffLocations.length == 0 || !form.pickupStation || !form.dropoffStation ? '' :
+                                    <>
+                                        <Col md={6} lg={3}>
+                                            <h4 className="fw-bold fs-6 mt-4">Pick-up Location</h4>
+                                            <p className="m-0">{findLoc("pickup", form.pickupStation).name ? findLoc("pickup", form.pickupStation).name : ''}</p>
+                                            <p>{findLoc("pickup", form.pickupStation).address ? findLoc("pickup", form.pickupStation).address : ''}</p>
+                                        </Col>
+                                        <Col md={6} lg={3}>
+                                            <h4 className="fw-bold fs-6 mt-4">Drop-off Location</h4>
+                                            <p className="m-0">{findLoc("dropoff", form.dropoffStation).name ? findLoc("dropoff", form.dropoffStation).name : ''}</p>
+                                            <p>{findLoc("dropoff", form.dropoffStation).address ? findLoc("dropoff", form.dropoffStation).address : ''}</p>
+                                        </Col>
+                                    </>
+                                }
                             </Row>
                         </Card.Body>
                     </Card>

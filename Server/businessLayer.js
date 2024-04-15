@@ -855,7 +855,6 @@ async function getCustomerReservations(auth, data){
 
     for(i = 0; i < reservations.length; i++){
         var thisRes ={}
-
         thisRes.reservationNumber = reservations[i].rentalid
         thisRes.pickupDateTime = reservations[i].scheduledpickuptime
         thisRes.dropoffDateTime = reservations[i].scheduleddropofftime

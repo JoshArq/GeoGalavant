@@ -442,7 +442,7 @@ export default function Reserve({token}) {
                     <Container>
                         <Row>
                             <Col md={6} lg={4} className="d-flex align-items-stretch">
-                                <Card className="border-0 grey-section py-4 mb-3 mb-md-0">
+                                <Card className="border-0 grey-section py-4 mb-3 mb-md-0 w-100">
                                     <Card.Body>
                                         <h3 className="fw-bold fs-5">Reservation Details</h3>
                                         <h4 className="fw-bold fs-6 mt-4">Dates & Times</h4>
@@ -499,8 +499,8 @@ export default function Reserve({token}) {
                             <Row>
                                 <Col lg={6}>
                                     <h4 className="fw-bold fs-6 mt-4">Dates & Times</h4>
-                                        <p>Pick-up: {makeTimestamp(new Date(dates.pickup))}</p>
-                                        <p>Drop-off: {makeTimestamp(new Date(dates.dropoff))}</p>
+                                    <p>Pick-up: {makeTimestamp(new Date(dates.pickup))}</p>
+                                    <p>Drop-off: {makeTimestamp(new Date(dates.dropoff))}</p>
                                 </Col>
                                 {pickupLocations.length == 0 || dropoffLocations.length == 0 || !form.pickupStation || !form.dropoffStation ? '' :
                                     <>
