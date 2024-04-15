@@ -118,13 +118,13 @@ async function addPaymentMethod(custID, cardInfo){
 
 //Cases:
 //AccountCreation
-async function emailCustomer (email, content){
+async function emailCustomer (email, subject, content){
     var mailOptions
 
         mailOptions = {
             from: 'geogalavant@gmail.com',
             to: email,
-            subject: 'Geogalavant Account Created',
+            subject: subject,
             text: content
           };
     
@@ -299,6 +299,23 @@ async function changeStatus(userAuth, inputData){
     let statusId = await pg.updateUserStatus(inputData.userId, inputData.statusId);
     if(statusId == -1){
         return {error: "Failed to change status"};
+    }
+
+    switch(inputData.statusId){
+        case 2:
+            this.emailCustomer(user.email, "GyroGoGo Account Suspended", `Your Account has been suspended. \n Reason: \n ${inputData.reason}`)
+            break;
+        case 3:
+            this.emailCustomer(user.email, "GyroGoGo Account is now Active", `Your GyroGoGo account is now active! \n Reason: \n ${inputData.reason} \nHappy Driving!`)
+            break;
+        case 4:
+            this.emailCustomer(user.email, "GyroGoGo Account Denied", `Your GyroGoGo Account has been suspended \n Reason: \n ${inputData.reason}`)
+            break;
+        case 5: 
+            this.emailCustomer(user.email, "GyroGoGo Account Terminated", `Your GyroGoGo Account has been suspended \n Reason: \n ${inputData.reason}`)
+            break;
+        default:
+            break;
     }
 
     //return
@@ -784,8 +801,28 @@ async function addReservation(auth, data){
     if(data.pickupStation == null || data.pickupStation == undefined){
         return {error: "pickupStation must exist"}
     }
+    if(!Number.isInteger(data.pickupStation)){
+        return {error: "pickupStation must be an integer"}
+    }
+    const station1 = await pg.getStation(data.pickupStation);
+    if(station1 == null || station1 == undefined){
+        return {error: "pickupStation does not exist"}
+    }
+    if(station1 == -1){
+        return {error: "pickupStation not found"}
+    }
     if(data.dropoffStation == null || data.dropoffStation == undefined){
         return {error: "dropoffStation must exist"}
+    }
+    if(!Number.isInteger(data.dropoffStation)){
+        return {error: "dropoffStation must be an integer"}
+    }
+    const station2 = await pg.getStation(data.dropoffStation);
+    if(station2 == null || station2 == undefined){
+        return {error: "dropoffStation does not exist"}
+    }
+    if(station2 == -1){
+        return {error: "dropoffStation not found"}
     }
     if(data.pickupDateTime == null || data.pickupDateTime == undefined){
         return {error: "pickupDateTime must exist"}
@@ -795,6 +832,7 @@ async function addReservation(auth, data){
     }
     const today = new Date();
     const pickup = new Date(data.pickupDateTime);
+    const dropoff = new Date(data.pickupDateTime);
     //for same day reservations, assign a car
     if(pickup.getDate() === today.getDate() &&
     pickup.getMonth() === today.getMonth() &&
@@ -816,7 +854,8 @@ async function addReservation(auth, data){
         if(res == -1){
             return {error: "Failed to reserve"}
         }
-        res = await pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 3})
+        res = await pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 3});
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \nPickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${data.confirmationNumber} \n Car Number: \n ${data.carId}`)
         return {conf: data.confirmationNumber}
     }
     else{
@@ -828,6 +867,7 @@ async function addReservation(auth, data){
                 return {error: "Failed to reserve"}
             }
             else{
+                this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \n You will recieve an email the day of the reservation with the car number. \n Pickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${data.confirmationNumber}`)
                 return {conf: data.confirmationNumber}
             }
         }
@@ -957,7 +997,8 @@ async function editReservation(auth, data){
     if(res == -1){
         return {success: false, error: "failed to edit reservation"}
     }
-    console.log(res.confirmationnumber)
+
+    var cust = await pg.getCustomerDetails(res.customerid);
 
     let newRes = {}
 
@@ -1004,16 +1045,37 @@ async function editReservation(auth, data){
     }
     newRes.confirmationNumber = res.confirmationnumber
 
+    const station1 = await pg.getStation(newRes.pickupStationId);
+    if(station1 == null || station1 == undefined){
+        return {success:false, error: "pickup station does not exist"}
+    }
+    if(station1 == undefined){
+        return {success:false, error: "pickup station not found"}
+    }
+    const station2 = await pg.getStation(newRes.dropoffStationId);
+    if(station2 == null || station2 == undefined){
+        return {success:false, error: "dropoff station does not exist"}
+    }
+    if(station2 == undefined){
+        return {success:false, error: "dropoff station not found"}
+    }
     if((newRes.dropoffTime != null && newRes.dropoffTime != undefined && newRes.pickupTime != null && newRes.dropoffTime != undefined) && (res.totalfees == null || res.totalfees == undefined)){
         newRes.totalFees = (await this.getReservePrice(auth, {pickupDateTime: newRes.pickupTime, dropoffDateTime: newRes.dropoffTime})).cost
     }
     else{
         newRes.totalFees = res.totalfees;
     }
-    
+    const pickupDate = new Date(newRes.pickupTime);
+    const dropoffDate = new Date(newRes.dropoffTime);
     res = await pg.updateReservation(newRes)
     if(res == -1){
         return {success: false, error: "Failed to edit reservation"}
+    }
+    if(newRes.carId == null || newRes.carId == undefined){
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `Your Gyrocar Reservation has been edited! Gyrocar Number will be emailed to you before your reservation. \nPickup: ${station1.stationname}, ${station1.address} at ${pickupDate.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoffDate.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${newRes.confirmationNumber}`)
+    }
+    else{
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `Your Gyrocar Reservation has been edited! \nPickup: ${station1.stationname}, ${station1.address} at ${pickupDate.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoffDate.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${newRes.confirmationNumber} \n Car Number: \n ${newRes.carId}`)
     }
     return {success: true}
 }
