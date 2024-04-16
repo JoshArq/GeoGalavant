@@ -1047,6 +1047,21 @@ async function editReservation(auth, data){
     if(station1 == -1){
         return {success:false, error: "pickup station not found"}
     }
+
+    //get a new car
+    const today = new Date();
+    const pickup = new Date(newRes.scheduledPickupTime);
+
+    //for same day reservations, assign a car
+    if((data.pickupStation != null && data.pickupStation != undefined && data.pickupStation != newRes.pickupStationId) && (pickup.getDate() === today.getDate() &&
+    pickup.getMonth() === today.getMonth() &&
+    pickup.getYear() === today.getYear())) {
+        const car = (await pg.getStationCars(data.pickupStation))[0]
+        if(car == undefined || car == null){
+            return {success: false, error: "No car available at that station"}
+        }
+        else if(car == -1){
+            return {success:false, error:"Car not found"}
         }
         else{
             //old car is now available
