@@ -998,6 +998,8 @@ async function editReservation(auth, data){
 
     let newRes = {}
 
+    console.log(data)
+
     newRes.rentalId = data.reservationID
     newRes.customerId = res.customerid
     if(data.pickupStation == null || data.pickupStation == undefined){

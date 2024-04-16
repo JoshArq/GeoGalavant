@@ -248,7 +248,7 @@ export default function Customer({token}) {
                                         <td>{makeTimestamp(new Date(res.dropoffDateTime))} <br/>{res.dropoffStationName}</td>
                                         <td>unknown</td>
                                         <td>unknown</td>
-                                        <td> <Link to="/ModifyReservation/ModifyReservation" state={{ resID: res.reservationNumber }}><i class="bi bi-pencil-square"></i></Link></td>
+                                        <td> <Link to="/ModifyReservation/ModifyReservation" state={{ resID: res.reservationNumber, custID: custID }}><i class="bi bi-pencil-square"></i></Link></td>
                                     </tr>  
                                 )})}                 
                             </tbody>

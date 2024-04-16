@@ -76,7 +76,6 @@ export default function EditReservation({token}) {
                 else {
                     setData(data);
                     // for datetime-local input setting value manually being a pain
-                    console.log(data.pickupDateTime)
                     document.getElementById("reservation").pickup.defaultValue = makeInputTimestamp(new Date(data.pickupDateTime));
                     document.getElementById("reservation").dropoff.defaultValue = makeInputTimestamp(new Date(data.dropoffDateTime));
                 }
@@ -112,7 +111,6 @@ export default function EditReservation({token}) {
                 }
                 else {
                     setPickupLocations(data.locations);
-                    console.log(data.locations)
                     setDropoffLocations(data.locations);
                 }
           }).catch(error => {
@@ -155,7 +153,6 @@ export default function EditReservation({token}) {
 
     const handleReserveCar = () => {
         form.reservationID = resID;
-        console.log(form.scheduledPickupTime)
         fetch("/api/editReservation", {
             method: 'POST',
             headers: {
@@ -175,7 +172,6 @@ export default function EditReservation({token}) {
                 document.getElementById("done").classList.remove("d-none");
             }
             else {
-                console.log(data)
                 document.getElementById("err").innerText = "There was an issue editing your reservation. Please try again."
                 setIsValid(false);
             }
