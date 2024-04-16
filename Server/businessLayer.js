@@ -840,11 +840,7 @@ async function addReservation(auth, data){
         if(car == -1){
             return {error: "Failed to find car"}
         }
-        console.log(car);
         const droppedOff = new Date(car.max);
-        console.log(pickup);
-        console.log(dropoff);
-        console.log(pickup.getTime() - droppedOff.getTime())
         const interval = pickup.getTime() - droppedOff.getTime()
         if(interval < 3600000 ){
             return {error: "Cars are charging"}
