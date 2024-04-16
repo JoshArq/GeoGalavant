@@ -140,7 +140,7 @@ async function getUserById(userId){
 
 async function getCustomerByUserId(userID){
   const query = {
-    text: "SELECT Customer.*, StateProvince.StateProvinceName FROM Customer LEFT JOIN Users ON Users.UserID = Customer.UserID LEFT JOIN StateProvince ON Customer.StateProvinceID = StateProvince.StateProvinceID WHERE Users.UserID = $1",
+    text: "SELECT Customer.*, Users.email, StateProvince.StateProvinceName FROM Customer LEFT JOIN Users ON Users.UserID = Customer.UserID LEFT JOIN StateProvince ON Customer.StateProvinceID = StateProvince.StateProvinceID WHERE Users.UserID = $1",
     values: [userID]
   };
 

@@ -847,7 +847,9 @@ async function addReservation(auth, data){
             return {error: "Failed to reserve"}
         }
         res = await pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 3});
-        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \nPickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${data.confirmationNumber} \n Car Number: \n ${data.carId}`)
+        console.log("Customer: ");
+        console.log(cust);
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \nPickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \nDropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \nConfirmation Number: ${data.confirmationNumber} \nCar Number: ${data.carId}`)
         return {conf: data.confirmationNumber}
     }
     else{
@@ -859,7 +861,9 @@ async function addReservation(auth, data){
                 return {error: "Failed to reserve"}
             }
             else{
-                this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \n You will recieve an email the day of the reservation with the car number. \n Pickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${data.confirmationNumber}`)
+                console.log("Customer: ");
+                console.log(cust);
+                this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \nYou will recieve an email the day of the reservation with the car number. \nPickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \nDropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \nConfirmation Number: ${data.confirmationNumber}`)
                 return {conf: data.confirmationNumber}
             }
         }
