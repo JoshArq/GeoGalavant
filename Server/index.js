@@ -5,11 +5,13 @@ require('dotenv').config()
 const bcrypt = require('bcrypt');
 var cron = require('node-cron');
 
-
-cron.schedule('0 21 * * *', () => {
-  console.log('running a task every minute');
+//runs at 5am and 10 pm, reorganizes cars
+cron.schedule('0 0 5,20 * * *', () => {
+  console.log(new Date());
+}, {
+  scheduled: true,
+  timezone: "America/New_York"
 });
-
 
 const PORT = process.env.PORT || 5001;
 
@@ -95,7 +97,7 @@ router.post("/createCustomer", async (req, res) => {
 
   //TODO more error checking on the above
   //if all good so far, send email
-  
+  bl.emailCustomer(data.email, "Account Created", "Thank you for your interest in joining GyroGoGo! Our representatives will review your application.");
 
   res.json({ success: true});
 });
