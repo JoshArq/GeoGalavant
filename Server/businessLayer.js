@@ -4,8 +4,6 @@ var nodemailer = require('nodemailer');
 const emailUser = process.env.EMAIL_USER
 const emailPass = process.env.EMAIL_PASSWORD
 
-// console.log(emailUser, emailPass)
-
 var transporter = nodemailer.createTransport({
   host: "smtp.zoho.com",
   secure: true,
@@ -90,7 +88,6 @@ async function setupNewCustomerCard(){
 
 //must pass in Stripe cust id
 async function addPaymentMethod(custID, cardInfo){
-    console.log(cardInfo)
 
     var date = cardInfo.expirationDate.split("/")
     var expMonth = date[0]
@@ -112,8 +109,6 @@ async function addPaymentMethod(custID, cardInfo){
         customer: custID,
         }
     );
-
-    console.log(result)
 }
 
 //Cases:
@@ -457,7 +452,7 @@ async function updateCar(auth,data){
         }
     }
     var car = await pg.getCar(data.carId);
-    //console.log(car);
+
     let updateObj = data
     if(car == undefined){
         return {error: "Car with that ID does not exist"}
@@ -531,7 +526,7 @@ async function addWorkOrder(auth,data){
         return {error: "Car does not exist"};
     }
     var maintenanceId = await pg.addMaintenance(data);
-    console.log(maintenanceId);
+
     if(maintenanceId != -1){
         return {maintenanceId: maintenanceId}
     }
@@ -577,7 +572,7 @@ async function addStation(auth,data){
 
     //insert
     const stationId = await pg.addStation(data);
-    console.log(stationId);
+
     if(stationId == undefined || stationId == -1){
         return {error: "Failed to add station"}
     }
@@ -707,7 +702,7 @@ async function getStateProvince(auth){
         return {error: "invalid authorization"}
     }
     const sp = await pg.getStateProvince();
-    console.log(sp);
+
     if(sp != -1){
         return sp;
     }
@@ -847,8 +842,7 @@ async function addReservation(auth, data){
             return {error: "Failed to reserve"}
         }
         res = await pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 3});
-        console.log("Customer: ");
-        console.log(cust);
+
         this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \nPickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \nDropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \nConfirmation Number: ${data.confirmationNumber} \nCar Number: ${data.carId}`)
         return {conf: data.confirmationNumber}
     }
@@ -861,8 +855,6 @@ async function addReservation(auth, data){
                 return {error: "Failed to reserve"}
             }
             else{
-                console.log("Customer: ");
-                console.log(cust);
                 this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `You have reserved a Gyrocar! \nYou will recieve an email the day of the reservation with the car number. \nPickup: ${station1.stationname}, ${station1.address} at ${pickup.toLocaleString('en-US', {timezone: 'EST'})} \nDropoff: ${station2.stationname}, ${station2.address} at ${dropoff.toLocaleString('en-US', {timezone: 'EST'})} \nConfirmation Number: ${data.confirmationNumber}`)
                 return {conf: data.confirmationNumber}
             }
@@ -1051,14 +1043,14 @@ async function editReservation(auth, data){
     if(station1 == null || station1 == undefined){
         return {success:false, error: "pickup station does not exist"}
     }
-    if(station1 == undefined){
+    if(station1 == -1){
         return {success:false, error: "pickup station not found"}
     }
     const station2 = await pg.getStation(newRes.dropoffStationId);
     if(station2 == null || station2 == undefined){
         return {success:false, error: "dropoff station does not exist"}
     }
-    if(station2 == undefined){
+    if(station2 == -1){
         return {success:false, error: "dropoff station not found"}
     }
     if((newRes.dropoffTime != null && newRes.dropoffTime != undefined && newRes.pickupTime != null && newRes.dropoffTime != undefined) && (res.totalfees == null || res.totalfees == undefined)){
@@ -1074,10 +1066,10 @@ async function editReservation(auth, data){
         return {success: false, error: "Failed to edit reservation"}
     }
     if(newRes.carId == null || newRes.carId == undefined){
-        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `Your Gyrocar Reservation has been edited! Gyrocar Number will be emailed to you before your reservation. \nPickup: ${station1.stationname}, ${station1.address} at ${pickupDate.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoffDate.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${newRes.confirmationNumber}`)
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `Your Gyrocar Reservation has been edited! Gyrocar Number will be emailed to you before your reservation.\nPickup: ${station1.stationname}, ${station1.address} at ${pickupDate.toLocaleString('en-US', {timezone: 'EST'})} \nDropoff: ${station2.stationname}, ${station2.address} at ${dropoffDate.toLocaleString('en-US', {timezone: 'EST'})}\n Confirmation Number: ${newRes.confirmationNumber}`)
     }
     else{
-        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `Your Gyrocar Reservation has been edited! \nPickup: ${station1.stationname}, ${station1.address} at ${pickupDate.toLocaleString('en-US', {timezone: 'EST'})} \n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoffDate.toLocaleString('en-US', {timezone: 'EST'})} \n Confirmation Number: ${newRes.confirmationNumber} \n Car Number: \n ${newRes.carId}`)
+        this.emailCustomer(cust.email, "GyroGoGo Reservation Created", `Your Gyrocar Reservation has been edited! \nPickup: ${station1.stationname}, ${station1.address} at ${pickupDate.toLocaleString('en-US', {timezone: 'EST'})}\n Dropoff: ${station2.stationname}, ${station2.address} at ${dropoffDate.toLocaleString('en-US', {timezone: 'EST'})}\n Confirmation Number: ${newRes.confirmationNumber}\n Car Number:\n ${newRes.carId}`)
     }
     return {success: true}
 }
