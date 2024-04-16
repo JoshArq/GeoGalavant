@@ -7,13 +7,14 @@ import Header from '../../GeoHeader/GeoHeader.js';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Account({token}) {
     const [userData, setUserData] = useState({driversLicense:{}});
     const [cards, setCards] = useState([]);
     const [reservations, setReservations] = useState([]);
     const [isValid, setIsValid] = useState(true);
+    let navigate = useNavigate();
 
     // Get data
     useEffect(() => {
@@ -56,25 +57,29 @@ export default function Account({token}) {
             console.log(error);
           });
         // Get reservations
-        fetch("/api/getUserReservations ", {
-        headers: {
-            "auth-token": token
-        }
-        })
-        .then((res) => res.json())
-        .then((data) => {
-            if(data.error) {
-                setIsValid(false);
-                console.log(data.error);
-            }
-            else {
-                setReservations(data.reservations);
-            }
-        }).catch(error => {
-        setIsValid(false);
-        console.log(error);
-        });
+        getReservations();
     }, [])
+
+    function getReservations() {
+        fetch("/api/getUserReservations ", {
+            headers: {
+                "auth-token": token
+            }
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if(data.error) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setReservations(data.reservations);
+                }
+            }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+            });
+    }
 
     function makeTimestamp(date) {
         let mins = date.getMinutes();
@@ -87,6 +92,33 @@ export default function Account({token}) {
                 + date.getFullYear() + " at " 
                 + date.getHours() 
                 + ":" + mins
+    }
+
+
+    function deleteReservation(id) {
+        console.log('delete')
+        // Delete car
+        fetch("/api/deleteReservation", {
+            method: 'DELETE',
+            headers: {
+              "auth-token": token,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({reservationID: id}),
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    getReservations()
+                }
+          }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+          });
     }
 
     return (
@@ -146,7 +178,7 @@ export default function Account({token}) {
                     <Card className="grey-section border-0 mb-3 p-4">
                         <Card.Body as={Container}>
                             <Row>
-                                <Col md={11}>
+                                <Col md={10}>
                                     <h3 className="fs-5 mb-4"><b>Reservation Number:</b> {res.reservationNumber}</h3>
                                     <Row>
                                         <Col md={6}>
@@ -161,8 +193,9 @@ export default function Account({token}) {
                                         </Col>
                                     </Row>
                                 </Col>
-                                <Col md={1}>
-                                    <Button className="float-end" as={Link} to="/reserve/edit" state={{ resID: res.reservationNumber }}>Edit</Button>
+                                <Col md={2}>
+                                    <Button className="float-end m-2" as={Link} to="/reserve/edit" state={{ resID: res.reservationNumber }}>Edit</Button>
+                                    <Button className="float-end m-2" variant="danger" onClick={() => {deleteReservation(res.reservationNumber)}}>Delete</Button>
                                 </Col>
                             </Row>
                         </Card.Body>

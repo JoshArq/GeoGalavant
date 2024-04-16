@@ -341,6 +341,17 @@ export default function Reserve({token}) {
                 + date.getHours() 
                 + ":" + mins
     }
+
+    function findLoc(time, value) {
+        let loc = null;
+        if (time == "pickup") {
+            loc = pickupLocations.find((loc) => loc.stationID == value)
+        }
+        else {
+            loc = dropoffLocations.find((loc) => loc.stationID == value)
+        }
+        return (loc ? loc : {})
+    }
     
     return (
         <Container as={'main'} className="py-5">
@@ -423,7 +434,7 @@ export default function Reserve({token}) {
                                                         <p className="m-0">{location.address}</p>
                                                     </Col>
                                                     <Col xs={3} className="d-flex align-items-center justify-content-end">
-                                                        <Form.Check name="dropoffLoc" type="radio" value={"dropoff-" + location.stationID} id={"pickup-" + location.stationID} required/>
+                                                        <Form.Check name="dropoffLoc" type="radio" value={"dropoff-" + location.stationID} id={"dropoff-" + location.stationID} required/>
                                                     </Col>
                                                 </Row>
                                             </Card.Body>
@@ -452,11 +463,11 @@ export default function Reserve({token}) {
                                         {pickupLocations.length == 0 || dropoffLocations.length == 0 || !form.pickupStation || !form.dropoffStation ? '' :
                                         <>
                                             <h4 className="fw-bold fs-6 mt-4">Pick-up Location</h4>
-                                            <p className="m-0">{pickupLocations.find((loc) => loc.stationID == form.pickupStation).name}</p>
-                                            <p>{pickupLocations.find((loc) => loc.stationID == form.pickupStation).address}</p>
+                                            <p className="m-0">{findLoc("pickup", form.pickupStation).name ? findLoc("pickup", form.pickupStation).name : ''}</p>
+                                            <p>{findLoc("pickup", form.pickupStation).address ? findLoc("pickup", form.pickupStation).address : ''}</p>
                                             <h4 className="fw-bold fs-6 mt-4">Drop-off Location</h4>
-                                            <p className="m-0">{dropoffLocations.find((loc) => loc.stationID == form.dropoffStation).name}</p>
-                                            <p>{dropoffLocations.find((loc) => loc.stationID == form.dropoffStation).address}</p>
+                                            <p className="m-0">{findLoc("dropoff", form.dropoffStation).name ? findLoc("dropoff", form.dropoffStation).name : ''}</p>
+                                            <p>{findLoc("dropoff", form.dropoffStation).address ? findLoc("dropoff", form.dropoffStation).address : ''}</p>
                                         </>
                                         }
                                     </Card.Body>
@@ -506,13 +517,13 @@ export default function Reserve({token}) {
                                     <>
                                         <Col md={6} lg={3}>
                                             <h4 className="fw-bold fs-6 mt-4">Pick-up Location</h4>
-                                            <p className="m-0">{pickupLocations.find((loc) => loc.stationID == form.pickupStation).name}</p>
-                                            <p>{pickupLocations.find((loc) => loc.stationID == form.pickupStation).address}</p>
+                                            <p className="m-0">{findLoc("pickup", form.pickupStation).name ? findLoc("pickup", form.pickupStation).name : ''}</p>
+                                            <p>{findLoc("pickup", form.pickupStation).address ? findLoc("pickup", form.pickupStation).address : ''}</p>
                                         </Col>
                                         <Col md={6} lg={3}>
                                             <h4 className="fw-bold fs-6 mt-4">Drop-off Location</h4>
-                                            <p className="m-0">{dropoffLocations.find((loc) => loc.stationID == form.dropoffStation).name}</p>
-                                            <p>{dropoffLocations.find((loc) => loc.stationID == form.dropoffStation).address}</p>
+                                            <p className="m-0">{findLoc("dropoff", form.dropoffStation).name ? findLoc("dropoff", form.dropoffStation).name : ''}</p>
+                                            <p>{findLoc("dropoff", form.dropoffStation).address ? findLoc("dropoff", form.dropoffStation).address : ''}</p>
                                         </Col>
                                     </>
                                 }

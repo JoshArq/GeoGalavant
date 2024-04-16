@@ -149,13 +149,38 @@ export default function ModifyReservation({token}) {
         });
     }
 
+    function deleteReservation() {
+        // Delete car
+        fetch("/api/deleteReservation", {
+            method: 'DELETE',
+            headers: {
+              "auth-token": token,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({reservationID: resID}),
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    navigate("/customers/customer", {state : { custID: custID }});
+                }
+          }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+          });
+    }
+
     function makeInputTimestamp(date) {
         return new Date(date.getTime() + new Date().getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19)
     }
 
     return (
         <main>
-            <Header title="Modify Reservation #1234567" />
+            <Header title={"Modify Reservation #" + resID} />
             <Container as={'section'} className="p-4">
                 <Alert variant="danger" className={'text-danger bg-danger-subtle' + (isValid ? ' d-none' : '')} id="err">
                     Something is wrong with your submission. Please try again.
@@ -204,7 +229,7 @@ export default function ModifyReservation({token}) {
                         </Form.Select>
                     </Form.Group> 
                     */}
-                    <Button variant="danger" className="mx-3 my-2">Cancel Reservation</Button>
+                    <Button variant="danger" className="mx-3 my-2" onClick={() => {deleteReservation()}}>Cancel Reservation</Button>
                     <Button variant="secondary" className="mx-3 my-2" as={Link} to="/customers/customer" state={{ custID: custID }}>Cancel Changes</Button>
                     <Button variant="primary" className="mx-3 my-2" onClick={() => {editReservation()}}>Save Changes</Button>
                 </Form>
