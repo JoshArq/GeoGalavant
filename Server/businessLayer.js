@@ -828,12 +828,13 @@ async function addReservation(auth, data){
     const today = new Date();
     const pickup = new Date(data.pickupDateTime);
     const dropoff = new Date(data.pickupDateTime);
+
     //for same day reservations, assign a car
     if(pickup.getDate() === today.getDate() &&
     pickup.getMonth() === today.getMonth() &&
     pickup.getYear() === today.getYear()) {
         const car = (await pg.getStationCars(data.pickupStation))[0]
-        if(car == undefined || null){
+        if(car == undefined || car == null){
             return {error: "Failed to find car"}
         }
         data.carId = car.carid;
@@ -1046,6 +1047,17 @@ async function editReservation(auth, data){
     if(station1 == -1){
         return {success:false, error: "pickup station not found"}
     }
+        }
+        else{
+            //old car is now available
+            pg.editCar({stationId: data.pickupStation, carId: data.carId, carStatusId: 1});
+            //new car is now reserved
+            pg.editCar({stationId: newRes.pickupStationId, carId: car.carId, carStatusId: 3});
+            newRes.carId = car.carid;
+        }
+
+    }
+
     const station2 = await pg.getStation(newRes.dropoffStationId);
     if(station2 == null || station2 == undefined){
         return {success:false, error: "dropoff station does not exist"}
