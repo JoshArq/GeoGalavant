@@ -46,7 +46,7 @@ export default function LocMap({locations}) {
             >
             {markers.map(marker => (
                     <MarkerF
-                    position={{ lat: marker.latitude, lng: marker.longitude }}
+                    position={{ lat: parseFloat(marker.latitude), lng: parseFloat(marker.longitude) }}
                     key={marker.id}
                     title={marker.name}
                     />

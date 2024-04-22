@@ -7,12 +7,14 @@ import Header from '../../GeoHeader/GeoHeader.js';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Account({token}) {
     const [userData, setUserData] = useState({driversLicense:{}});
     const [cards, setCards] = useState([]);
+    const [reservations, setReservations] = useState([]);
     const [isValid, setIsValid] = useState(true);
+    let navigate = useNavigate();
 
     // Get data
     useEffect(() => {
@@ -46,7 +48,6 @@ export default function Account({token}) {
                 if(data.error) {
                     setIsValid(false);
                     console.log(data.error);
-                    console.log(data)
                 }
                 else {
                     setUserData(data);
@@ -55,7 +56,70 @@ export default function Account({token}) {
             setIsValid(false);
             console.log(error);
           });
+        // Get reservations
+        getReservations();
     }, [])
+
+    function getReservations() {
+        fetch("/api/getUserReservations ", {
+            headers: {
+                "auth-token": token
+            }
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if(data.error) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    setReservations(data.reservations);
+                }
+            }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+            });
+    }
+
+    function makeTimestamp(date) {
+        let mins = date.getMinutes();
+        if (mins < 10) {
+            mins = "0" + mins;
+        }
+
+        return date.getMonth() 
+                + "/" + date.getDate() + "/" 
+                + date.getFullYear() + " at " 
+                + date.getHours() 
+                + ":" + mins
+    }
+
+
+    function deleteReservation(id) {
+        console.log('delete')
+        // Delete car
+        fetch("/api/deleteReservation", {
+            method: 'DELETE',
+            headers: {
+              "auth-token": token,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({reservationID: id}),
+          })
+          .then((res) => res.json())
+          .then((data) => {
+                if(data.error) {
+                    setIsValid(false);
+                    console.log(data.error);
+                }
+                else {
+                    getReservations()
+                }
+          }).catch(error => {
+            setIsValid(false);
+            console.log(error);
+          });
+    }
 
     return (
         <main>
@@ -108,41 +172,35 @@ export default function Account({token}) {
                 </Card>
             </Container> 
             <Container as={'section'}>
-                <h2 className="my-4 fw-bold">Upcoming Reservations</h2>
-                <Card className="grey-section border-0 mb-3 p-4">
-                    <Card.Body as={Container}>
-                        <Row>
-                            <Col md={11}>
-                                <h3 className="fs-5 mb-4"><b>Reservation Number:</b> ############</h3>
-                                <Row>
-                                    <Col md={6}>
-                                        <h3 className="fs-6 mb-3"><b>Pick-up:</b> Mon, Nov ##, #### - ##:## PM</h3>
-                                        <p className="mb-1">Location name</p>
-                                        <p className="mb-1">123 Fake Street</p>
-                                        <p>Rochester, NY 14623</p>
-                                    </Col>
-                                    <Col md={6}>
-                                        <h3 className="fs-6 mb-3"><b>Drop-off:</b> Mon, Nov ##, #### - ##:## PM</h3>
-                                        <p className="mb-1">Location name</p>
-                                        <p className="mb-1">123 Fake Street</p>
-                                        <p>Rochester, NY 14623</p>
-                                    </Col>
-                                </Row>
-                            </Col>
-                            <Col md={1}>
-                                <Button className="float-end" as={Link} to="/reserve/edit">Edit</Button>
-                            </Col>
-                        </Row>
-                    </Card.Body>
-                </Card>
-            </Container> 
-            <Container as={'section'} className="mb-5">
-                <h2 className="my-4 fw-bold">Past Reservations</h2>
-                <Card className="grey-section border-0 mb-3 p-4">
-                    <Card.Body as={Container}>
-                        <p className="mb-0"><em>No past reservations yet</em></p>
-                    </Card.Body>
-                </Card>
+                <h2 className="my-4 fw-bold">Reservations</h2>
+                {reservations.length == 0 ? <p className="mb-4">You have no reservations at this time.</p> : ''}
+                {reservations.map((res) => { return (
+                    <Card className="grey-section border-0 mb-3 p-4">
+                        <Card.Body as={Container}>
+                            <Row>
+                                <Col md={10}>
+                                    <h3 className="fs-5 mb-4"><b>Reservation Number:</b> {res.reservationNumber}</h3>
+                                    <Row>
+                                        <Col md={6}>
+                                            <h3 className="fs-6 mb-3"><b>Pick-up:</b> {makeTimestamp(new Date(res.pickupDateTime))}</h3>
+                                            <p className="mb-1">{res.pickupStationName}</p>
+                                            <p>{res.pickupStationAddress}</p>
+                                        </Col>
+                                        <Col md={6}>
+                                            <h3 className="fs-6 mb-3"><b>Drop-off:</b> {makeTimestamp(new Date(res.dropoffDateTime))}</h3>
+                                            <p className="mb-1">{res.dropoffStationName}</p>
+                                            <p>{res.dropoffStationAddress}</p>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                                <Col md={2}>
+                                    <Button className="float-end m-2" as={Link} to="/reserve/edit" state={{ resID: res.reservationNumber }}>Edit</Button>
+                                    <Button className="float-end m-2" variant="danger" onClick={() => {deleteReservation(res.reservationNumber)}}>Delete</Button>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
+                )})}
             </Container> 
         </main>
     )
