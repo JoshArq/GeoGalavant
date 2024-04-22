@@ -25,8 +25,11 @@ export default function Contact() {
         }
         // Valid input, sending comment
         else {
-            fetch("/api/submitContactForm", {
+            fetch("/api/addMessage", {
                 method: 'POST',
+                headers: {
+                  "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     name: form.contactName.value, 
                     phone: form.contactPhone.value, 
@@ -36,8 +39,9 @@ export default function Contact() {
             })
             .then((res) => res.json())
             .then((data) => {
+                console.log(data)
                 // Server returned successful
-                if(data.success) {
+                if(!data.error) {
                     setIsValid(true);
                     setIsSent(true);
                     // Clearing out inputs
@@ -48,11 +52,13 @@ export default function Contact() {
                 }
                 // Server returned unsuccessful
                 else {
+                    console.log(data.error)
                     setIsValid(false);
                     setIsSent(false);
                 }
             // Error with server
             }).catch(error => {
+                console.log(error)
                 setIsValid(false);
                 setIsSent(false);
             });
@@ -178,7 +184,7 @@ export default function Contact() {
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="contactPhone">
                                             <Form.Label>Phone</Form.Label>
-                                            <Form.Control type="tel" placeholder="585-555-1234" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
+                                            <Form.Control type="tel" placeholder="5855551234" pattern="[0-9]{3}[0-9]{3}[0-9]{4}" required />
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="contactMessage">
                                             <Form.Label>Message</Form.Label>
